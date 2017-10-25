@@ -26,7 +26,7 @@ public class DateTimeConvertor {
 	}
 
 	public static void main(String[] args) throws SQLException {
-		Connection con = DBConnection.CON1.getConnection();
+		Connection con = DBConnection.COMMENTS.getConnection();
 		//Demo insert date
 		PreparedStatement ps = con.prepareStatement("update videos set date=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s.%f') where id=1;");
 		ps.setString(1, ldtToSql(LocalDateTime.now()));
@@ -36,7 +36,7 @@ public class DateTimeConvertor {
 		ResultSet rs=ps.executeQuery();
 		rs.next();
 		String s = rs.getString(1);
-		DBConnection.CON1.closeConnection();
+		DBConnection.COMMENTS.closeConnection();
 		System.out.println(sqlToLdt(s));
 		System.out.println(s);
 	}

@@ -1,4 +1,4 @@
-package  com.itvideo.model;
+package com.itvideo.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,24 +9,23 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.catalina.core.ApplicationContext;
 import org.omg.CORBA.UserException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.playlists.PlaylistException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 
+@Component
 public class PlaylistDao {
-	private static final Connection con = DBConnection.CON1.getConnection();
-	private static PlaylistDao instance;
-	static {
-		instance = new PlaylistDao();
-	}
+	private Connection con;
 
-	private PlaylistDao() {
-	}
-
-	public static PlaylistDao getInstance() {
-		return instance;
+	@Autowired
+	private void initCon() {
+		con = DBConnection.COMMENTS.getConnection();
 	}
 
 	/**
@@ -39,7 +38,7 @@ public class PlaylistDao {
 	 */
 	public void createPlaylist(Playlist playlist) throws PlaylistException, SQLException, UserException {
 		// initial checks
-		List<Playlist> userPlayslist = PlaylistDao.getInstance().getPlaylistForUser(playlist.getUserId());
+		List<Playlist> userPlayslist = getPlaylistForUser(playlist.getUserId());
 		for (Playlist p : userPlayslist) {
 			if (p.getPlaylistName().equalsIgnoreCase(playlist.getPlaylistName())) {
 				throw new PlaylistException(PlaylistException.PLAYLIST_ALREADY_EXISTS);
@@ -250,7 +249,7 @@ public class PlaylistDao {
 		List<Playlist> playslist = new ArrayList<>();
 		String sql = "select * from playlists where playlist_name like ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setString(1, "%"+searchPlaylistName.toLowerCase().trim()+"%");
+			ps.setString(1, "%" + searchPlaylistName.toLowerCase().trim() + "%");
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					Playlist p = new Playlist(rs.getLong("playlist_id"), rs.getString("playlist_name"),
@@ -261,9 +260,12 @@ public class PlaylistDao {
 		}
 		return playslist;
 	}
+
 	public static void main(String[] args) throws UserException, SQLException, PlaylistException {
-		Playlist p=PlaylistDao.getInstance().getPlaylist(1, "list");
-		PlaylistDao.getInstance().deletePlaylist(p.getPlaylistId());
-		p=PlaylistDao.getInstance().getPlaylist(1, "list");
+//		ApplicationContext context= new AnnotationConfigApplicationContext(PlaylistDao.class);
+//		PlaylistDao pd;
+//		Playlist p = pd.getPlaylist(1, "list");
+//		pd.deletePlaylist(p.getPlaylistId());
+//		p = pd.getPlaylist(1, "list");
 	}
 }
