@@ -17,7 +17,7 @@ import com.itvideo.model.utils.DBConnection;
 
 public class TagDao {
 	private static TagDao instance;
-	private static final Connection con = DBConnection.CON1.getConnection();
+	private static final Connection con = DBConnection.VIDEOS.getConnection();
 
 	static {
 		instance = new TagDao();
