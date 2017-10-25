@@ -25,7 +25,7 @@ public class PlaylistDao {
 
 	@Autowired
 	private void initCon() {
-		con = DBConnection.COMMENTS.getConnection();
+		con = DBConnection.PLAYLISTS.getConnection();
 	}
 
 	/**

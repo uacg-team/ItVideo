@@ -22,12 +22,14 @@ import com.itvideo.model.utils.DateTimeConvertor;
 @Component
 public class CommentDao {
 	private Connection con;
-
+	
 	@Autowired
 	private void initCon() {
 		con = DBConnection.COMMENTS.getConnection();
 	}
-
+	private CommentDao() {
+		
+	}
 	public static final Comparator<Comment> ASC_BY_DATE = (o1, o2) -> o1.getDate().compareTo(o2.getDate());
 	public static final Comparator<Comment> DESC_BY_DATE = (o1, o2) -> o2.getDate().compareTo(o1.getDate());
 

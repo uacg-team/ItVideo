@@ -7,7 +7,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +15,9 @@ import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
 import com.itvideo.model.VideoDao;
+import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.exceptions.user.UserNotFoundException;
+import com.itvideo.model.exceptions.video.VideoNotFoundException;
 
 @Controller
 public class MainController {
@@ -23,6 +25,8 @@ public class MainController {
 	VideoDao vd;
 	@Autowired
 	UserDao ud;
+	@Autowired
+	CommentController cc;
 		
 	@RequestMapping(value="/main", method = RequestMethod.GET)
 	public String main(Model model) {
@@ -50,8 +54,8 @@ public class MainController {
 		model.addAttribute("likes", likes);
 		model.addAttribute("disLikes", disLikes);
 		model.addAttribute("related", related);
-	
-		CommentServlet.loadCommentsForVideo(request, video.getVideoId());
+		
+		cc.loadCommentsForVideo(model,videoId);
 		if(request.getSession().getAttribute("user")!=null) {
 			User user = (User)request.getSession().getAttribute("user");
 			long userId = user.getUserId();
