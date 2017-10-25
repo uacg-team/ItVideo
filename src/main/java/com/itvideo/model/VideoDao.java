@@ -123,7 +123,7 @@ public class VideoDao {
 			con.setAutoCommit(false);
 			deleteVideoLikes(videoId);
 			deleteVideosFromPlaylist(videoId);
-			CommentDao.getInstance().deleteComments(videoId);
+//			CommentDao.getInstance().deleteComments(videoId);
 			TagDao.getInstance().delete(videoId);
 			String sql = "DELETE FROM videos WHERE video_id = ?;";
 			try (PreparedStatement ps = con.prepareStatement(sql);) {

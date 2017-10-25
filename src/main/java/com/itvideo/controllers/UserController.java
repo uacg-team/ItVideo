@@ -10,7 +10,6 @@ public class UserController {
 
 	@RequestMapping(value="/user", method=RequestMethod.GET)
 	public String sayHi(Model viewModel) {
-		
 		return "home";
 	}
 }

@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
+import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.exceptions.comments.CommentNotFoundException;
@@ -18,22 +18,11 @@ import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 
-
+@Component
 public class CommentDao {
-	private final Connection con;
-	private static CommentDao instance;
+	private final static Connection con = DBConnection.CON1.getConnection();
 	public static final Comparator<Comment> ASC_BY_DATE = (o1,o2)->o1.getDate().compareTo(o2.getDate());
 	public static final Comparator<Comment> DESC_BY_DATE = (o1,o2)->o2.getDate().compareTo(o1.getDate());
-	private CommentDao() {
-		con = DBConnection.CON1.getConnection();
-	}
-
-	public static CommentDao getInstance() {
-		if (instance == null) {
-			instance = new CommentDao();
-		}
-		return instance;
-	}
 
 	/**
 	 * <b>!Warning! set replyId only to comment,not for reply!</b>
@@ -428,14 +417,14 @@ public class CommentDao {
 	}
 
 	public static void main(String[] args) throws SQLException, CommentException {
-		// generating comments
-		for (int i = 0; i < 15; i++) {
-			CommentDao.getInstance().createComment(new Comment("comment" + i, LocalDateTime.now(), 1, 1, 0));
-		}
-		// replies
-		for (int i = 0; i < 15; i++) {
-			CommentDao.getInstance()
-					.createComment(new Comment("reply" + i, LocalDateTime.now(), 1, 1, 1 + new Random().nextInt(15)));
-		}
+//		// generating comments
+//		for (int i = 0; i < 15; i++) {
+//			CommentDao.getInstance().createComment(new Comment("comment" + i, LocalDateTime.now(), 1, 1, 0));
+//		}
+//		// replies
+//		for (int i = 0; i < 15; i++) {
+//			CommentDao.getInstance()
+//					.createComment(new Comment("reply" + i, LocalDateTime.now(), 1, 1, 1 + new Random().nextInt(15)));
+//		}
 	}
 }
