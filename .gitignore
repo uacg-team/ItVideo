@@ -1,5 +1,10 @@
 # Compiled class file
 *.class
+*.DS_Store
+*.mvn
+*.project
+*.springBeans
+*.classpath
 
 # Log file
 *.log
@@ -9,6 +14,11 @@
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+
+#Settings
+.settings/
+mvnw
+mvnw.cmd
 
 # Package Files #
 *.jar
