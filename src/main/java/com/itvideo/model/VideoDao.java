@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
@@ -23,8 +24,15 @@ import com.itvideo.model.utils.DateTimeConvertor;
 @Component
 public class VideoDao {
 	//private static VideoDao instance;
-	private static final Connection con = DBConnection.VIDEOS.getConnection();
 	
+	private Connection con;
+	
+	@Autowired
+    private void initField() {
+		 con = DBConnection.VIDEOS.getConnection();
+    }
+	
+//	private static Connection con = DBConnection.VIDEOS.getConnection();
 //	
 //	static {
 //		instance = new VideoDao();

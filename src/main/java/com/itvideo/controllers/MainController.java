@@ -20,7 +20,9 @@ public class MainController {
 	@RequestMapping(value="/index", method = RequestMethod.GET)
 	public String index(Model model) {
 		try {
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 			List<Video> videos = vd.getAllVideoOrderByDate();
+			System.out.println("==================================");
 			model.addAttribute("videos", videos);
 		} catch (SQLException e) {
 			e.printStackTrace();
