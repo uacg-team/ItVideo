@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +29,9 @@ public class MainController {
 	UserDao ud;
 	@Autowired
 	CommentController cc;
+	@Autowired
+	PlaylistController pc;
+	
 		
 	@RequestMapping(value="/main", method = RequestMethod.GET)
 	public String main(Model model) {
@@ -40,46 +45,43 @@ public class MainController {
 	}
 	
 	@RequestMapping(value="/player/{videoId}", method = RequestMethod.GET)
-	public String player(Model model, @PathVariable("videoId") long videoId) {
-
-		vd.increaseViews(videoId);
-		Video video = vd.getVideo(videoId);
-		User videoOwner =  ud.getUser(video.getUserId());
-		int likes = vd.getLikes(videoId);
-		int disLikes = vd.getDisLikes(videoId);
-		Set<Video> related = vd.getRelatedVideos(videoId);
+	public String player(Model model, @PathVariable("videoId") long videoId,HttpSession session) {
 		
-		model.addAttribute("mainVideo", video);
-		model.addAttribute("videoOwner", videoOwner);
-		model.addAttribute("likes", likes);
-		model.addAttribute("disLikes", disLikes);
-		model.addAttribute("related", related);
-		
-		cc.loadCommentsForVideo(model,videoId);
-		if(request.getSession().getAttribute("user")!=null) {
-			User user = (User)request.getSession().getAttribute("user");
-			long userId = user.getUserId();
-			PlaylistServlet.loadPlaylistForUser(request, userId);
+		try {
+			vd.increaseViews(videoId);
+			Video video = vd.getVideo(videoId);
+			User videoOwner =  ud.getUser(video.getUserId());
+			int likes = vd.getLikes(videoId);
+			int disLikes = vd.getDisLikes(videoId);
+			Set<Video> related = vd.getRelatedVideos(videoId);
+			
+			model.addAttribute("mainVideo", video);
+			model.addAttribute("videoOwner", videoOwner);
+			model.addAttribute("likes", likes);
+			model.addAttribute("disLikes", disLikes);
+			model.addAttribute("related", related);
+			
+			cc.loadCommentsForVideo(model,videoId);
+			if(session.getAttribute("user")!=null) {
+				User user = (User)session.getAttribute("user");
+				long userId = user.getUserId();
+				pc.loadPlaylistForUser(model, userId);
+			}
+			return "forward:player";
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (VideoNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UserNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		request.getRequestDispatcher("player.jsp").forward(request, response);
-	} catch (VideoNotFoundException e) {
-		request.getRequestDispatcher("player.jsp").forward(request, response);
-	} catch (SQLException e) {
-		request.getRequestDispatcher("player.jsp").forward(request, response);
-	} catch (UserNotFoundException e) {
-		request.getRequestDispatcher("player.jsp").forward(request, response);
-	} catch (UserException e) {
-		request.getRequestDispatcher("player.jsp").forward(request, response);
-	}
-		
-		
-		
-		
-		
-		
-		
-		model.addAttribute("videoId", videoId);
-		return "player";
+		return null;
 	}
 	
 	@RequestMapping(value="/login", method = RequestMethod.GET)
