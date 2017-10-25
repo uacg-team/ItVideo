@@ -20,6 +20,8 @@
 mvnw
 mvnw.cmd
 
+#Folders
+target/
 # Package Files #
 *.jar
 *.war

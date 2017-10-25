@@ -36,7 +36,7 @@ public class CommentController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "home";
+		return "comments";
 	}
 	
 
@@ -76,6 +76,6 @@ public class CommentController {
 		}
 
 	}
-	
+	//test view img
 	
 }
