@@ -13,7 +13,6 @@
 	<c:if test="${sessionScope.user!=null}">
 	<b><c:out value="${sessionScope.user.username}"></c:out></b>
 	<img src="img?path=${sessionScope.user.avatarUrl}&userId=${sessionScope.user.userId}" width="50px" height="auto"/>
-
 		<form action="comment?videoId=${requestScope.mainVideo.videoId}&url=${requestScope.mainVideo.locationUrl}" method="post">
 			New Comment<input type="text" placeholder="add comment" name="newComment"/>
 			<input type="submit" value="comment"/>

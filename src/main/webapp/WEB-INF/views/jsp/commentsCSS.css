@@ -1,0 +1,114 @@
+@CHARSET "UTF-8";
+#comment {
+	width: 300px;
+    margin: auto;
+    border: 1px solid red;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    margin-right: 150px;
+    margin-left: 80px;
+}
+#reply {
+	 width: 300px;
+    margin: auto;
+    border: 1px solid red;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    margin-right: 150px;
+    margin-left: 80px;
+}
+body{
+font-family:Helvetica,Arial,sans-serif; 
+}
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.comment-box{
+margin:20px 10px;
+width:750px;
+/* display:inline-block; */
+}
+.comment-box-inner{
+  background: none repeat scroll 0 0 #EEE;
+  border: 0px solid #CCC;
+ border-radius: 5px;
+  -webkit-border-radius: 5px;
+-moz-border-radius: 5px; 
+  padding: 8px;  
+ }
+.comment-box-inner p{
+background: none repeat scroll 0 0 #FFF;
+padding: 20px;
+ border-radius: 5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+
+}
+.comment-box p.comment-header{
+margin: 5px 0;
+}
+.comment-box p.comment-header span{
+  font-weight: bold;
+  font-size: 18px;
+}
+.comment-box p.comment-date{
+  text-align: right;
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.triangle-comment{
+  position: absolute;
+	width: 0px;
+height: 0px;
+border-style: solid;
+border-width: 40px 30px 0 0;
+border-color: #EEE transparent transparent transparent;
+-moz-transform:rotate(20deg);
+-webkit-transform:rotate(20deg);
+-o-transform:rotate(20deg);
+-ms-transform:rotate(20deg);
+ margin: -10px 0 0 50px;  
+ z-index: -1;
+}
+.reply-box{
+margin:20px 10px;
+margin-left:60px;
+width:700px;
+/* display:inline-block; */
+}
+.reply-box-inner{
+  background: none repeat scroll 0 0 #EEE;
+  border: 0px solid #CCC;
+ border-radius: 5px;
+  -webkit-border-radius: 5px;
+-moz-border-radius: 5px; 
+  padding: 8px;  
+ }
+.reply-box-inner p{
+background: none repeat scroll 0 0 #FFF;
+padding: 20px;
+ border-radius: 5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px; 
+}
+.reply-box p.reply-header{
+margin: 5px 0;
+}
+.reply-box p.reply-header span{
+  font-weight: bold;
+  font-size: 18px;
+}
+.reply-box p.comment-date{
+  text-align: right;
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 12px;
+}
+.like-buttons{
+	float: left;
+	display: inline;
+}
