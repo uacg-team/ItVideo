@@ -1,4 +1,4 @@
-package com.itvideo.controlers;
+package com.itvideo.controllers;
 
 import org.springframework.stereotype.Controller;
 

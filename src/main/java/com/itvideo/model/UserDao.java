@@ -23,7 +23,7 @@ import com.itvideo.model.utils.DateTimeConvertor;
 public class UserDao {
 
 	private static UserDao instance;
-	private static final Connection con = DBConnection.CON1.getConnection();
+	private static final Connection con = DBConnection.USERS.getConnection();
 	
 	static {
 		instance = new UserDao();

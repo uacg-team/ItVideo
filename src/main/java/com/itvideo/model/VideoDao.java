@@ -10,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
@@ -17,21 +20,22 @@ import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 
 
-
+@Component
 public class VideoDao {
-	private static VideoDao instance;
-	private static final Connection con = DBConnection.CON1.getConnection();
+	//private static VideoDao instance;
+	private static final Connection con = DBConnection.VIDEOS.getConnection();
 	
-	static {
-		instance = new VideoDao();
-	}
+//	
+//	static {
+//		instance = new VideoDao();
+//	}
+//
+//	public static VideoDao getInstance() {
+//		return instance;
+//	}
 
-	public static VideoDao getInstance() {
-		return instance;
-	}
-
-	private VideoDao() {
-	}
+//	private VideoDao() {
+//	}
 
 	public String getPrivacy(long privacyId) throws SQLException {
 		String result = null;
