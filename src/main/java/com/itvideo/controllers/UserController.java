@@ -1,4 +1,4 @@
-package com.itvideo.controlers;
+package com.itvideo.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +10,6 @@ public class UserController {
 
 	@RequestMapping(value="/main", method=RequestMethod.GET)
 	public String sayHi(Model viewModel) {
-		
 		return "home";
 	}
 }

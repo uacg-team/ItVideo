@@ -8,8 +8,9 @@
 <title>Demo</title>
 </head>
 <body>
-	<h2> ${Text} </h2>
-	<p> ${product.name} </p>
-	<p> ${product.quantity} </p>
+<p>Hello
+	<c:forEach items="${comments}" var="comment">
+		${comment.text}
+	</c:forEach>
 </body>
 </html>
