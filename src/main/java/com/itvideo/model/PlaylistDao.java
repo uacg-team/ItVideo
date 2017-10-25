@@ -9,13 +9,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.catalina.core.ApplicationContext;
-import org.omg.CORBA.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.playlists.PlaylistException;
+import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 

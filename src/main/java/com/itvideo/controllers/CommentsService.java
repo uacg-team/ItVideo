@@ -6,5 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 @RestController
 public class CommentsService {
-
+	
+	public String getComments() {
+		return null;
+	}
 }
