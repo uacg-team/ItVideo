@@ -8,18 +8,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 
 
-/**
- * User Data Access Object
- * 
- * @author HP
- *
- */
+@Component
 public class UserDao {
 
 	private static UserDao instance;

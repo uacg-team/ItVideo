@@ -31,7 +31,7 @@ div.inline {
 				<c:out value="#${tag.tag} "></c:out>
 		</c:forEach>
 		<br>
-		<a href="player?videoId=${video.videoId}">	
+		<a href="player/${video.videoId}">	
 			<video width="320" height="240" preload="none">
 		  		<source src="video?url=${video.locationUrl}&userId=${video.userId}" type="video/mp4">
 			</video>
