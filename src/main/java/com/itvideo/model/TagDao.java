@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Set;
 
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
+import com.itvideo.model.utils.DBConnection;
 
 /**
  * Tag Data Access Object

@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.omg.CORBA.UserException;
 
 import com.itvideo.model.exceptions.playlists.PlaylistException;
+import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.exceptions.video.VideoException;
+import com.itvideo.model.exceptions.video.VideoNotFoundException;
 
 
 public class Playlist {

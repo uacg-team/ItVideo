@@ -10,10 +10,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import org.omg.CORBA.UserException;
 
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.exceptions.comments.CommentNotFoundException;
+import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 
