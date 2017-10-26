@@ -6,8 +6,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
- <link type="text/css" rel="stylesheet" href="/ItVideo/css/commentsCSS.css"/>
+<title>Insert title here</title>	
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/comments.css"/>"/>
 
 <script type="text/javascript">
 	
@@ -53,7 +53,8 @@
 	<c:if test="${sessionScope.user!=null}">
 	<img src="<c:url value="/img/${sessionScope.user.userId}"/>" width="50px" height="auto"/>
 	</c:if>
-		<form action="comment?videoId=${requestScope.mainVideo.videoId}&url=${requestScope.mainVideo.locationUrl}" method="post">
+		<form action="<c:url value="/addComment"/>" method="post">
+			<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId"/>
 			New Comment<input type="text" placeholder="add comment" name="newComment"/>
 			<input type="submit" value="comment"/>
 		</form>
@@ -84,7 +85,10 @@
   				<p>${comment.likes} likes</p>
   			</li>
   			<li>
-  				<form action="commentLike?videoId=${requestScope.mainVideo.videoId}&commentId=${comment.commentId}&like=1&url=${requestScope.mainVideo.locationUrl}" method="post">
+  				<form action="<c:url value="/commentLike"/>" method="post">
+					<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
+					<input type="hidden" value="${comment.commentId}" name="commentId">
+					<input type="hidden" value="1" name="like">
 					<input type="submit" value="like"/>
 				</form>
 			</li>
@@ -92,8 +96,11 @@
 				<p>${comment.dislikes} dislikes</p>
 			</li>
 			<li>
-				<form action="commentLike?videoId=${requestScope.mainVideo.videoId}&commentId=${comment.commentId}&like=-1&url=${requestScope.mainVideo.locationUrl}" method="post">
-				<input type="submit" value="dislike"/>
+				<form action="<c:url value="/commentLike"/>" method="post">
+					<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
+					<input type="hidden" value="${comment.commentId}" name="commentId">
+					<input type="hidden" value="-1" name="like">
+					<input type="submit" value="dislike"/>
 				</form>
 			</li>
 		</ul>
@@ -107,7 +114,9 @@
 	</div>
 	<br>
 	
-	<form action="comment?videoId=${requestScope.mainVideo.videoId}&reply=${comment.commentId}&url=${requestScope.mainVideo.locationUrl}" method="post">
+	<form action="<c:url value="/addComment"/>" method="post">
+		<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId"/>
+		<input type="hidden" value="${comment.commentId}" name="reply"/>
 		New reply<input type="text" placeholder="add reply" name="newComment"/>
 		<input type="submit" value="reply"/>
 	</form>
@@ -130,25 +139,32 @@
 			  					<p>${reply.likes} likes</p>
 			  				</li>
 			  				<li>
-				  				<form action="commentLike?videoId=${requestScope.mainVideo.videoId}&commentId=${reply.commentId}&like=1&url=${requestScope.mainVideo.locationUrl}" method="post">
-								<input type="submit" value="like"/>
+								<form action="<c:url value="/commentLike"/>" method="post">
+									<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
+									<input type="hidden" value="${reply.commentId}" name="commentId">
+									<input type="hidden" value="1" name="like">
+									<input type="submit" value="like"/>
 								</form>
 							<li>
 							<li>
 								<p>${reply.dislikes} dislikes</p>
 							</li>
 							<li>
-								<form action="commentLike?videoId=${requestScope.mainVideo.videoId}&commentId=${reply.commentId}&like=-1&url=${requestScope.mainVideo.locationUrl}" method="post">
-								<input type="submit" value="dislike"/>
+								<form action="<c:url value="/commentLike"/>" method="post">
+									<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
+									<input type="hidden" value="${reply.commentId}" name="commentId">
+									<input type="hidden" value="-1" name="like">
+									<input type="submit" value="dislike"/>
 								</form>
 							</li>
 						</ul>
 						</div>
 					</div>
 				<br>
-				<!-- test koito e samo za stranicata? -->
-					<form action="comment?videoId=${requestScope.mainVideo.videoId}&reply=${comment.commentId}&url=${requestScope.mainVideo.locationUrl}" method="post">
-						New reply<input type="text" placeholder="add comment" name="newComment"/>
+					<form action="<c:url value="/addComment"/>" method="post">
+						<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId"/>
+						<input type="hidden" value="${comment.commentId}" name="reply"/>
+						New reply<input type="text" placeholder="add reply" name="newComment"/>
 						<input type="submit" value="reply"/>
 					</form>
 				
