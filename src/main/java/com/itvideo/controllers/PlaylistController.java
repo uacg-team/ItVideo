@@ -18,7 +18,7 @@ public class PlaylistController {
 	@Autowired
 	PlaylistDao playlist;
 	
-	public void loadPlaylistForUser(Model model, long userId) {
+	public void loadPlaylistsForUser(Model model, long userId) {
 		List<Playlist> playlists = null;
 		try {
 			playlist.getPlaylistForUser(userId);
@@ -33,4 +33,5 @@ public class PlaylistController {
 			return;
 		}
 	}
+	//TODO loadPlaylistForUserByName(Model model,long userId,...)
 }

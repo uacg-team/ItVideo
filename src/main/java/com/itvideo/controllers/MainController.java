@@ -146,7 +146,7 @@ public class MainController {
 			if(session.getAttribute("user")!=null) {
 				User user = (User)session.getAttribute("user");
 				long userId = user.getUserId();
-				pc.loadPlaylistForUser(model, userId);
+				pc.loadPlaylistsForUser(model, userId);
 			}
 			return "player";
 		} catch (SQLException e) {

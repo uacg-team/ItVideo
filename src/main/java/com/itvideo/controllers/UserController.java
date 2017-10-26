@@ -56,7 +56,7 @@ public class UserController {
 				model.addAttribute("followers", followers);
 				model.addAttribute("following", following);
 				model.addAttribute("videos", videos);
-				pc.loadPlaylistForUser(model, u.getUserId());
+				pc.loadPlaylistsForUser(model, u.getUserId());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

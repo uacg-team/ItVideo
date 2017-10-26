@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.itvideo.model.Comment;
 import com.itvideo.model.CommentDao;
@@ -101,6 +103,28 @@ public class CommentController {
 				return "forward:/player";
 			}
 			return "redirect:/player/"+videoId;
+		}
+	}
+	
+	@RequestMapping(value="player/commentLove/{commentId}", method=RequestMethod.POST)
+	@ResponseBody
+	public void likeCommentTest(HttpServletResponse resp,HttpSession session,@RequestParam("commentId") long commentId) {
+		User u = ((User)session.getAttribute("user"));
+		if(u == null) {
+			resp.setStatus(401);
+		}else {
+			try {
+				comment.likeComment(commentId, u.getUserId());
+			} catch (SQLException e) {
+				//TODO add status code
+				e.printStackTrace();
+			} catch (CommentException e) {
+				//TODO add statusCode
+				e.printStackTrace();
+			} catch (UserException e) {
+				//TODO add statusCode
+				e.printStackTrace();
+			}
 		}
 	}
 }

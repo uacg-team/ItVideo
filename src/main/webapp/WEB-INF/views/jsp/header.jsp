@@ -66,7 +66,7 @@ li a:hover {
 		</a>
 	</li>
 	<li><a href="updateUser">Update user</a></li>
-	<li><a href="logout">Logout</a></li>
+	<li><a href="<c:url value="/logout"/>">Logout</a></li>
 	</c:if>
 </ul>
 <br>

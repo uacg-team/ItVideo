@@ -11,17 +11,6 @@
 
 <script type="text/javascript">
 	
-		function handleLike(){
-			var button = document.getElementById("likebutton");
-			var title = button.innerHTML;
-			if(title == "Like"){
-				likeVideo();
-			}
-			else{
-				unlikeVideo();
-			}
-		}
-	
 		function likeVideo() {
 			var request = new XMLHttpRequest();
 			request.onreadystatechange = function() {
@@ -37,7 +26,7 @@
 				}
 					
 			}
-			request.open("post", "like", true);
+			request.open("post", "commentLove/1", true);
 			request.send();
 		}
 		
@@ -63,11 +52,11 @@
 <body>
 	<c:if test="${sessionScope.user!=null}">
 	<img src="<c:url value="/img/${sessionScope.user.userId}"/>" width="50px" height="auto"/>
+	</c:if>
 		<form action="comment?videoId=${requestScope.mainVideo.videoId}&url=${requestScope.mainVideo.locationUrl}" method="post">
 			New Comment<input type="text" placeholder="add comment" name="newComment"/>
 			<input type="submit" value="comment"/>
 		</form>
-	</c:if>
 	<br>
 	<br>
 	<br>
@@ -77,8 +66,10 @@
 	<br>
 	<br>
 	<c:forEach items="${requestScope.comments}" var="comment">
-	<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
+
 	
+	<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
+
 	<div class="comment-box">
 			<p class="comment-header"><span>${comment.username}</span></p>
 		<div class="comment-box-inner"> 
@@ -106,6 +97,7 @@
 				</form>
 			</li>
 		</ul>
+		<button style="background-color: green" id="likebutton" onclick="likeVideo()">Like</button>
 		</div>
 		<c:if test="${sessionScope.user.userId==comment.userId}">
 			<form action="comment?deleteCommentId=${comment.commentId}&url=${requestScope.mainVideo.locationUrl}" method="post">
