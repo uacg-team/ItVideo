@@ -62,8 +62,7 @@
 </head>
 <body>
 	<c:if test="${sessionScope.user!=null}">
-	<b><c:out value="${sessionScope.user.username}"></c:out></b>
-	<img src="img?path=${sessionScope.user.avatarUrl}&userId=${sessionScope.user.userId}" width="50px" height="auto"/>
+	<img src="<c:url value="/img/${sessionScope.user.userId}"/>" width="50px" height="auto"/>
 		<form action="comment?videoId=${requestScope.mainVideo.videoId}&url=${requestScope.mainVideo.locationUrl}" method="post">
 			New Comment<input type="text" placeholder="add comment" name="newComment"/>
 			<input type="submit" value="comment"/>
@@ -78,7 +77,8 @@
 	<br>
 	<br>
 	<c:forEach items="${requestScope.comments}" var="comment">
-	<img src="/img/${comment.userId}" width="50px" height="auto"/>
+	<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
+	
 	<div class="comment-box">
 			<p class="comment-header"><span>${comment.username}</span></p>
 		<div class="comment-box-inner"> 
@@ -122,7 +122,7 @@
 	
 		<c:if test="${comment.hasReplies}">
 			<c:forEach items="${comment.replies}" var="reply">
-				<img src="/img/${reply.userId}" width="50px" height="auto"/>
+				<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
 				<div class="reply-box">
  						<p class="reply-header"><span>${reply.username}</span></p>
 					<div class="reply-box-inner"> 
