@@ -7,16 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<style type="text/css">
-div.inline { 
-	float:left; 
-	margin:5px;
-	padding: 5px;
-	border-style: solid; 
-	border-color: black; 
-	border-width: 1px;
-}
-</style>
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css" />" />
 <title>Player</title>
 </head>
 <body>
@@ -34,7 +25,7 @@ div.inline {
 		</h3>
 		
 		<h3>Owner: 
-			<a href="viewProfile?username=${requestScope.videoOwner.username}">
+			<a href="<c:url value="/viewProfile/${requestScope.videoOwner.userId}" />">
 				<c:out value="${requestScope.videoOwner.username }"></c:out>
 				<img src="<c:url value="/img/${requestScope.videoOwner.userId}"/>" width="50px" height="auto"/>
 			</a>
@@ -76,9 +67,9 @@ div.inline {
 	<c:forEach items="${requestScope.related}" var="relVideo">	
 	<div class="inline">
 		Name: <c:out value="${relVideo.name }"></c:out><br>
-		<a href="player?videoId=${relVideo.videoId}">	
+		<a href="<c:url value= "/player/${relVideo.videoId}" />">	
 			<video width="320" height="240">
-		  		<source src="video?url=${relVideo.locationUrl}&userId=${relVideo.userId}" type="video/mp4">
+		  		<source src="/video/${relVideo.userId}" type="video/mp4">
 			</video>
 		</a><br>	
 		Tags: <c:forEach items="${relVideo.tags}" var="tag">	

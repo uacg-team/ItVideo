@@ -105,6 +105,11 @@ public class MainController {
 		}
 		return "redirect:/main";
 	}
+	
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index() {
+		return "forward:/main";
+	}
 
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
 	public String main(HttpSession session) {

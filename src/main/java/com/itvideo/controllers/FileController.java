@@ -30,7 +30,7 @@ public class FileController {
 	UserDao ud;
 	
 	@RequestMapping(value = "/video/{videoId}", method = RequestMethod.GET)
-	public void getVideo(@PathVariable("videoId") long videoId, HttpServletResponse response) {
+	public void getVideo(@PathVariable("videoId") Long videoId, HttpServletResponse response) {
 		try {
 			Video video = vd.getVideo(videoId);
 			Resources.readVideo(video.getLocationUrl(), video.getUserId(), response);
@@ -48,7 +48,7 @@ public class FileController {
 	
 
 	@RequestMapping(value = "/img/{userId}", method = RequestMethod.GET)
-	public void getAvatar(@PathVariable("userId") long userId, HttpServletResponse response) {
+	public void getAvatar(@PathVariable("userId") Long userId, HttpServletResponse response) {
 			try {
 				User user = ud.getUser(userId);
 				Resources.readAvatar(user.getAvatarUrl(), userId, response);
