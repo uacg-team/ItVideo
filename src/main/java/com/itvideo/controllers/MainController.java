@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
@@ -42,12 +42,11 @@ public class MainController {
 	PlaylistDao pd;
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
-	public String search(HttpServletRequest request) {
+	public String search(HttpServletRequest request, Model model) {
+		String search = (String) request.getAttribute("search");
 		List<Video> videos = null;
 		List<User> users = null;
 		List<Playlist> playlists = null;
-		String search = request.getParameter("search");
-		System.out.println(search);
 		try {
 			if (search != null) {
 				videos = vd.searchVideo(search);
@@ -73,9 +72,9 @@ public class MainController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		request.setAttribute("videos", videos);
-		request.setAttribute("users", users);
-		request.setAttribute("playlists", playlists);
+		model.addAttribute("videos", videos);
+		model.addAttribute("users", users);
+		model.addAttribute("playlists", playlists);
 		return "search";
 	}
 	
@@ -125,9 +124,10 @@ public class MainController {
 	public String main(HttpSession session) {
 		try {
 			String param = (String) session.getAttribute("sort");
+			List<Video> videos = null;
 			if (param == null) {
 				
-				List<Video> videos = vd.getAllVideoOrderByDate();
+				videos = vd.getAllVideoOrderByDate();
 				if (videos != null) {
 					for (Video video : videos) {
 						video.setUserName(vd.getUserName(video.getUserId()));
@@ -138,6 +138,32 @@ public class MainController {
 				session.setAttribute("sort", "date");
 				session.setAttribute("videos", videos);
 				return "main";
+			}else {
+				switch (param) {
+				case "date":
+					session.setAttribute("sort", "date");
+					videos = vd.getAllVideoOrderByDate();
+					break;
+				case "like":
+					session.setAttribute("sort", "like");
+					videos = vd.getAllVideoOrderByLikes();
+					break;
+				case "view":
+					session.setAttribute("sort", "view");
+					videos = vd.getAllVideoOrderByViews();
+					break;
+				default:
+					session.setAttribute("sort", "date");
+					videos = vd.getAllVideoOrderByDate();
+					break;
+				}
+				
+				for (Video video : videos) {
+					video.setUserName(vd.getUserName(video.getUserId()));
+					video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
+				}
+				
+				session.setAttribute("videos", videos);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

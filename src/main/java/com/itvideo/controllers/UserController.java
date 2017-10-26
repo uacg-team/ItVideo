@@ -38,6 +38,15 @@ public class UserController {
 		return "updateUser";
 	}
 	
+	@RequestMapping(value = "/deleteUser/{userId}", method = RequestMethod.POST)
+	public String deleteUserPost(HttpSession session, @PathVariable("userId") long userId) {
+		User user = (User) session.getAttribute("user");
+		if (user.getUserId() == userId) {
+			ud.delete(user.getUserId());
+		}
+		return "redirect:/main";
+	}
+	
 	
 	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.POST)
 	public String updateUserPost(HttpSession session, Model model, HttpServletRequest request) {

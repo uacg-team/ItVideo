@@ -48,12 +48,12 @@ li a:hover {
 		<li><a href="<c:url value="/login"/>">Login</a></li>
 		<li><a href="<c:url value="/register"/>">Register</a></li>
 	</c:if>
-	<li><a href="<c:url value="/upload"/>">Upload</a></li>
+	<li><a href="<c:url value="/uploadVideo"/>">Upload</a></li>
 	
 	
 	<li>
 		<form action="<c:url value="/search" />" method="get">
-			<input type="text" name="search" placeholder="Search..">
+			<input type="search" name="search" placeholder="Search..">
 		</form>
 	</li>
 		
@@ -66,7 +66,6 @@ li a:hover {
 		</a>
 	</li>
 
-	<li><a href="<c:url value="/updateUser/${sessionScope.user.userId}"/>">Update user</a></li>
 	<li><a href="<c:url value="/logout"/>">Logout</a></li>
 
 	</c:if>

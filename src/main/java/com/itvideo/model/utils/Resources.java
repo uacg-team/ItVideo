@@ -19,13 +19,17 @@ import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.model.Picture;
 import org.jcodec.scale.AWTUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.itvideo.model.User;
+import com.itvideo.model.Video;
+import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 
 
 public abstract class Resources {
+
 	public static final String ROOT = "C:" + File.separator + "res";
 	public static final String VIDEO_URL = "videos";
 	public static final String IMAGE_URL = "images";
@@ -96,12 +100,15 @@ public abstract class Resources {
 		inputStream.close();
 	}
 	
-	private static void read(String absolutePath, Long userId, HttpServletResponse response) throws IOException {
+	private static void read(String absolutePath, Long userId, HttpServletResponse response) {
 		File myFile = new File(absolutePath);
 		try (OutputStream out = response.getOutputStream()) {
-			Path path = myFile.toPath();
-			Files.copy(path, out);
+			Files.copy(myFile.toPath(), out);
 			out.flush();
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -118,4 +125,14 @@ public abstract class Resources {
 		read(absolutePath, userId, response);
 	}
 
+	public static void deleteVideo(Video v) {
+		String absoluteVideoPath = Resources.ROOT + File.separator +v.getUserId() + File.separator + Resources.VIDEO_URL+ File.separator + v.getLocationUrl();
+		String absoluteThumbnailPath = Resources.ROOT + File.separator +v.getUserId() + File.separator + Resources.VIDEO_URL+ File.separator + v.getThumbnailUrl();
+	
+		File video = new File(absoluteVideoPath);
+		File thumbnail = new File(absoluteThumbnailPath);
+		
+		video.delete();
+		thumbnail.delete();
+	}
 }

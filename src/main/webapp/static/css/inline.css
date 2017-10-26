@@ -7,3 +7,7 @@ div.inline {
 	border-color: black; 
 	border-width: 1px;
 }
+
+div.err { 
+	background-color: red
+}

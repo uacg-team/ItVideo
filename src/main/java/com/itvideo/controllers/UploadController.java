@@ -1,18 +1,25 @@
 package com.itvideo.controllers;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.ServletException;
+import javax.imageio.ImageIO;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
 
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,94 +44,109 @@ public class UploadController {
 	@Autowired
 	VideoDao vd;
 	
-	@RequestMapping(value="kachi", method=RequestMethod.POST)
-	public String zapishiSnimka(@RequestParam("failche") MultipartFile file){
-		//SAVE IMAGE
+
+	@RequestMapping(value="/uploadVideo", method = RequestMethod.GET)
+	public String uploadVideoGet() {
+		return "upload";
+	}
+	
+	@RequestMapping(value="/uploadVideo", method = RequestMethod.POST)
+	public String uploadVideoPost(
+			HttpSession session,
+			Model model, 
+			@RequestParam("newVideo") MultipartFile file, 
+			@RequestParam("name") String name, 
+			@RequestParam("tags") String allTags, 
+			@RequestParam("privacy") long privacy) {
+		
+		User u = (User) session.getAttribute("user");
+		if (u == null) {
+			return "redirect:login";
+		}
 		try {
-//			System.out.println(file.getContentType());
-//			MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-//			MimeType type = allTypes.forName(file.getContentType());
-//			String ext = type.getExtension(); // .whatever
-//			File f = new File(WebInitializer.LOCATION + File.separator + "krasi" + ext);
-			File f = new File(WebInitializer.LOCATION + File.separator + file.getOriginalFilename());
-			//Product p = ses.getuser.getProduct
-			//p.setProductUrl(file.getOriginalFileName);
-			//dao.updateProduct(p);
+			if (!file.getContentType().equals("video/mp4")) {
+				model.addAttribute("error", "Wrong File Type");
+				return "upload";
+			}
+			
+			String[] inputTags = allTags.split("\\s+");
+			Set<Tag> tags = new HashSet<>();
+			for (String string : inputTags) {
+				tags.add(new Tag(string));
+			}
+		
+			MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+			MimeType type = allTypes.forName(file.getContentType());
+			String ext = type.getExtension(); // .whatever
+			
+			File f = new File(
+					WebInitializer.LOCATION + 
+					File.separator + 
+					u.getUserId() + 
+					File.separator + 
+					Resources.VIDEO_URL + 
+					File.separator +
+					file.getOriginalFilename());
+			
 			file.transferTo(f);
+			
+			int frameNumber = 40;
+			Picture picture = FrameGrab.getFrameFromFile(f, frameNumber);
+		
+			BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
+			
+			bufferedImage = resize(bufferedImage, 320, 240);
+				
+			ImageIO.write(bufferedImage, "png", new File(
+					WebInitializer.LOCATION + 
+					File.separator + 
+					u.getUserId() + 
+					File.separator + 
+					Resources.VIDEO_URL + 
+					File.separator +
+					file.getOriginalFilename() +
+					".png"));
+			
+			
+			Video v = new Video(name, file.getOriginalFilename() , privacy, u.getUserId(), tags);
+			v.setThumbnailUrl(file.getOriginalFilename() + ".png");
+			vd.createVideo(v);
+			
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-//		} catch (MimeTypeException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-		}
-		return "kachi";
-	}
-	
-	
-	@RequestMapping(value="/upload", method = RequestMethod.GET)
-	public String uploadGet() {
-		return "upload";
-	}
-	
-	@RequestMapping(value="/upload", method = RequestMethod.POST)
-	public String uploadPost(
-			Model model,
-			HttpSession session, 
-			HttpServletRequest request,
-			@RequestParam("newVideo") MultipartFile file) {
-		
-		
-		System.out.println(file.getContentType());
-		
-		return "redirect:main";
-		
-/*		
-		try {
-			User u = (User) session.getAttribute("user");
-			if (u == null) {
-				return "redirect:login";
-			}
-			
-			Part newVideo = request.getPart("newVideo");
-			if (!newVideo.getContentType().equals("video/mp4")) {
-				model.addAttribute("error", "Wrong File Type");
-				return "upload";
-			}
-			  
-			String name = request.getParameter("name");
-			Resources.writeVideo(u, newVideo);
-			
-			String[] inputTags = request.getParameter("tags").split("\\s+");
-			Set<Tag> tags = new HashSet<>();
-			for (String string : inputTags) {
-				tags.add(new Tag(string));
-			}
-		
-			try {
-				long privacy = Long.valueOf(request.getParameter("privacy"));
-				String fileName = Paths.get(newVideo.getSubmittedFileName()).getFileName().toString();
-				Video v = new Video(name, fileName , privacy, u.getUserId(), tags);
-				vd.createVideo(v);
-			} catch (VideoException e) {
-				return "upload";
-			} catch (SQLException e) {
-				return "upload";
-			} catch (TagNotFoundException e) {
-				return "upload";
-			}
-		} catch (IOException e) {
+		} catch (VideoException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ServletException e1) {
-			e1.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TagNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JCodecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MimeTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return "redirect:main";
 		
-		*/
-		
+		return "redirect:/main";
 	}
+	
+	public static BufferedImage resize(BufferedImage img, int newW, int newH) { 
+	    Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+	    BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+
+	    Graphics2D g2d = dimg.createGraphics();
+	    g2d.drawImage(tmp, 0, 0, null);
+	    g2d.dispose();
+
+	    return dimg;
+	}  
 	
 }

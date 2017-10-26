@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>main</title>
-<link type="text/css" rel="stylesheet" href="/css/inline.css" />
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css"/>" />
 </head>
 <body>
 
@@ -35,7 +35,7 @@
 				</c:forEach>
 				<br>
 				<a href="<c:url value="/player/${video.videoId}" />">	
-					<video width="320" height="240" preload="none">
+					<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />">
 				  		<source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 					</video>
 				</a><br>

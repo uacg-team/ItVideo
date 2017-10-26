@@ -21,8 +21,11 @@
 		<!-- Delete user -->
 		<c:if test="${ not empty sessionScope.user  }">
 			<c:if test="${sessionScope.user.userId == user.userId}">
-				<form action="deleteUser" method="post">
-					<input type="submit" value="delete account">
+				<form action="<c:url value="/updateUser/${sessionScope.user.userId}"/>" method="post">
+					<input type="submit" value="edit user">
+				</form>
+				<form action="<c:url value="/deleteUser/${sessionScope.user.userId}"/>" method="post">
+					<input type="submit" value="delete user">
 				</form>
 			</c:if>
 		</c:if>

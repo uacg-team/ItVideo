@@ -11,7 +11,7 @@
 <jsp:include page="header.jsp"></jsp:include><br>
 	<div class="inline">
 		<!-- Video Edit -->
-		<form action="editVideo" method="post">
+		<form action="<c:url value="/editVideo/${requestScope.video.videoId}"/>" method="post">
 			<input type="hidden" value="${requestScope.video.videoId }" name="videoId"><br>
 		 	name: <input type="text" placeholder="${requestScope.video.name }" name="name"><br>
 		 	description: <input type="text" placeholder="${requestScope.video.description }" name="description"><br>
@@ -23,15 +23,10 @@
 	 		<input type="submit" value="Update">
 		</form>
 		
-		<!-- Delete video -->
-		<c:if test="${ not empty sessionScope.user  }">
-			<c:if test="${sessionScope.user.userId == requestScope.video.userId}">
-				<form action="deleteVideo" method="post">
-					<input type="hidden" value="${requestScope.video.videoId}" name="videoId">
-					<input type="submit" value="Delete">
-				</form>
-			</c:if>
-		</c:if>
+		<!-- back to player -->
+		<form action="<c:url value="/player/${requestScope.video.videoId}"/>" method="get">
+	 		<input type="submit" value="back to player">
+		</form>
 		
 		<br>
 		TAGS:
@@ -42,15 +37,15 @@
 		<h3>Views: <c:out value="${requestScope.video.views }"></c:out></h3>
 		<!-- video owner -->
 		<h3>Owner: 
-			<a href="viewProfile?username=${sessionScope.user.username}">
+			<a href="<c:url value="/viewProfile/${user.userId}" />">
 				<c:out value="${sessionScope.user.username }"></c:out>
-				<img src="img?path=${sessionScope.user.avatarUrl }&userId=${sessionScope.user.userId }" width="50px" height="auto"/>
+				<img src="<c:url value="/img/${user.userId}" />" width="50px" height="auto"/>
 			</a>
 		</h3>
 		<br>
 		<!-- video player -->
 		<video width="800" height="600" controls preload="auto">
-		  		<source src="video?url=${requestScope.video.locationUrl}&userId=${requestScope.video.userId}" type="video/mp4">
+		  		<source src="<c:url value="/video/${requestScope.video.videoId}"/>" type="video/mp4">
 		</video>
 	</div>
 </body>

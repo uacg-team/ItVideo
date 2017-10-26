@@ -11,11 +11,17 @@
 	<jsp:include page="header.jsp"></jsp:include><br>
 	
 	<c:if test="${ sessionScope.user == null }">
-		<c:redirect url="login"></c:redirect>
+		<c:redirect url="/login"></c:redirect>
+	</c:if>
+	
+	<c:if test="${ requestScope.error != null }">
+		<div class="err">
+			<c:out value="${requestScope.error}"></c:out>
+		</div>
 	</c:if>
 	
 	<c:if test="${ sessionScope.user != null }">
-	<form action="<c:url value="/upload"/>" method="post"  enctype="multipart/form-data">
+	<form action="<c:url value="/uploadVideo"/>" method="post"  enctype="multipart/form-data">
 		<div  class="container">
 			<fieldset>
 				<legend>Upload</legend>
@@ -24,16 +30,11 @@
 				<input type="text" placeholder="Enter tags separated by space" name="tags"><br>
 				<input type="radio" name="privacy" value="1" checked>Public 
 				<input type="radio" name="privacy" value="2">Private<br>
-				<input type="file" name="newVideo" accept="video/mp4"><br>
+				<input type="file" name="newVideo" accept="video/*"><br>
 			 	<input type="submit" value="Upload">
 			</fieldset>
 		</div>
 	</form>
-	</c:if>	
-	
-	<form action="<c:url value="kachi"/>" method="POST" enctype="multipart/form-data">
-		<input type="file" id="file" name="failche" accept="video/*">
-		<input type="submit" value="Upload now">
-	</form>
+	</c:if>
 </body>
 </html>

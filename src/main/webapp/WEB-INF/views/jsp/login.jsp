@@ -15,13 +15,13 @@
   		<form action="login" method = "post">
 	      <input type="text" placeholder="Enter Username" name="username" required><br>
 	      <c:if test="${requestScope.usernameError != null }">
-			<div style="color: red">
+			<div class="err">
 				<c:out value="${requestScope.usernameError }"></c:out>
 			</div>
 	      </c:if>
 	      <input type="password" placeholder="Enter Password" name="password" required><br>
 	      <c:if test="${requestScope.passwordError != null }">
-			<div style="color: red">
+			<div class="err">
 				<c:out value="${requestScope.passwordError }"></c:out><br>
 				<a href="#">Forgot password?</a>
 			</div>

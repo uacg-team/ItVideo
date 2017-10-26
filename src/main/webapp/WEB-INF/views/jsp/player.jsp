@@ -14,7 +14,7 @@
 	<jsp:include page="header.jsp"></jsp:include><br>
 
 	<div class="inline">
-	<!-- video info -->
+		<!-- video info -->
 		<h3>Name: <c:out value="${requestScope.mainVideo.name }"></c:out></h3>
 		<h3>Desc: <c:out value="${requestScope.mainVideo.description }"></c:out></h3>
 		<h3>Views: <c:out value="${requestScope.mainVideo.views }"></c:out></h3>
@@ -30,12 +30,28 @@
 				<img src="<c:url value="/img/${requestScope.videoOwner.userId}"/>" width="50px" height="auto"/>
 			</a>
 		</h3>
+		
 		<br>
 		
+		<!-- Edit video -->
 		<c:if test="${sessionScope.user.userId == requestScope.mainVideo.userId }">
-			<a href="editVideo?videoId=${requestScope.mainVideo.userId}"><button>edit video</button></a>
+			<form action="<c:url value="/editVideo/${requestScope.mainVideo.videoId}"/>" method="get">
+				<input type="submit" value="edit video">
+			</form>
 		</c:if>
+		
 		<br>
+		
+		
+		<!-- Delete video -->
+		<c:if test="${ not empty sessionScope.user  }">
+			<c:if test="${sessionScope.user.userId == requestScope.mainVideo.userId}">
+				<form action="<c:url value="/deleteVideo"/>" method="post">
+					<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
+					<input type="submit" value="Delete">
+				</form>
+			</c:if>
+		</c:if>
 		
 		<!-- video player -->
 		<video width="800" height="600" controls preload="auto">
@@ -43,13 +59,21 @@
 		</video>
 		
 		<!-- Like video button -->
-		<form action="videoLike?like=1&videoId=${requestScope.mainVideo.videoId}&userId=${sessionScope.user.userId}&url=${requestScope.mainVideo.locationUrl}" method="post">
+		<form action="<c:url value="/videoLike" />" method="post">
+			<input type="hidden" name="like" value="1">
+			<input type="hidden" name="videoId" value="${requestScope.mainVideo.videoId}">
+			<input type="hidden" name="userId" value="${sessionScope.user.userId}">
+			<input type="hidden" name="url" value="${requestScope.mainVideo.locationUrl}">
 			<c:out value="${requestScope.likes}"></c:out>
 			<input type="submit" value="Like">
 		</form>
 		
 		<!-- dislike video button -->
-		<form action="videoLike?like=-1&videoId=${requestScope.mainVideo.videoId}&userId=${sessionScope.user.userId}&url=${requestScope.mainVideo.locationUrl}" method="post">
+		<form action="<c:url value="/videoLike" />" method="post">
+			<input type="hidden" name="like" value="-1">
+			<input type="hidden" name="videoId" value="${requestScope.mainVideo.videoId}">
+			<input type="hidden" name="userId" value="${sessionScope.user.userId}">
+			<input type="hidden" name="url" value="${requestScope.mainVideo.locationUrl}">
 			<c:out value="${requestScope.disLikes}"></c:out>
 			<input type="submit" value="Dislike">
 		</form>

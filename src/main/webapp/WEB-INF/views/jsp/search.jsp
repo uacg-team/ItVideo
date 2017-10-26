@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Search</title>
-<link type="text/css" rel="stylesheet" href="/css/inline.css" />
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css" />" />
 </head>
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
@@ -24,12 +24,12 @@
 						<c:out value="Privacy: ${video.privacy}"></c:out><br>
 						<c:out value="Tags: "></c:out><br>
 						<c:forEach items="${video.tags}" var="tag">	
-								<c:out value="#${tag.tag} "></c:out>
+							<c:out value="#${tag.tag} "></c:out>
 						</c:forEach>
 						<br>
-						<a href="player/${video.videoId}">	
+						<a href="<c:url value="/player/${video.videoId}" />">	
 							<video width="320" height="240" preload="none">
-						  		<source src="video?url=${video.locationUrl}&userId=${video.userId}" type="video/mp4">
+						  		<source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 							</video>
 						</a><br>
 					</div>
@@ -48,8 +48,9 @@
 				<h1>Users found</h1>
 					<c:forEach items="${requestScope.users}" var="userFound">
 						<div class="inline">
-							<a href="viewProfile?username=${userFound.username}">
-								<img src="img?path=${userFound.avatarUrl}" width="50px" height="auto"/>
+						
+							<a href="<c:url value="/viewProfile/${userFound.userId}" />">
+								<img src="<c:url value="/img/${userFound.userId}" />" width="50px" height="auto"/>
 								<c:out value="${userFound.username}"></c:out>
 							</a>
 						</div>
