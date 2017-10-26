@@ -1,5 +1,6 @@
 package com.itvideo.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.itvideo.WebInitializer;
 import com.itvideo.model.Tag;
 import com.itvideo.model.User;
 import com.itvideo.model.Video;
@@ -35,6 +37,34 @@ public class UploadController {
 	@Autowired
 	VideoDao vd;
 	
+	@RequestMapping(value="kachi", method=RequestMethod.POST)
+	public String zapishiSnimka(@RequestParam("failche") MultipartFile file){
+		//SAVE IMAGE
+		try {
+//			System.out.println(file.getContentType());
+//			MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+//			MimeType type = allTypes.forName(file.getContentType());
+//			String ext = type.getExtension(); // .whatever
+//			File f = new File(WebInitializer.LOCATION + File.separator + "krasi" + ext);
+			File f = new File(WebInitializer.LOCATION + File.separator + file.getOriginalFilename());
+			//Product p = ses.getuser.getProduct
+			//p.setProductUrl(file.getOriginalFileName);
+			//dao.updateProduct(p);
+			file.transferTo(f);
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+//		} catch (MimeTypeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+		}
+		return "kachi";
+	}
+	
+	
 	@RequestMapping(value="/upload", method = RequestMethod.GET)
 	public String uploadGet() {
 		return "upload";
@@ -45,7 +75,14 @@ public class UploadController {
 			Model model,
 			HttpSession session, 
 			HttpServletRequest request,
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam("newVideo") MultipartFile file) {
+		
+		
+		System.out.println(file.getContentType());
+		
+		return "redirect:main";
+		
+/*		
 		try {
 			User u = (User) session.getAttribute("user");
 			if (u == null) {
@@ -81,10 +118,13 @@ public class UploadController {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ServletException e) {
-			e.printStackTrace();
+		} catch (ServletException e1) {
+			e1.printStackTrace();
 		}
 		return "redirect:main";
+		
+		*/
+		
 	}
 	
 }

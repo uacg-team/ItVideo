@@ -17,11 +17,11 @@ public class ReadFromVideo {
 
 	
 	public static void main(String[] args) throws IOException, JCodecException {
-		int frameNumber = 50;
+		int frameNumber = 40;
 		Picture picture = FrameGrab.getFrameFromFile(new File("C:/res/1/videos/1.mp4"), frameNumber);
 		
 		BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
-		ImageIO.write(bufferedImage, "png", new File("C:/res/1/videos/frame50.png"));
+		ImageIO.write(bufferedImage, "png", new File("C:/res/1/videos/frame"+frameNumber+".png"));
 	}
 	
 }

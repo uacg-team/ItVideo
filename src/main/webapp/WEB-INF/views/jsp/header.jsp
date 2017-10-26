@@ -45,10 +45,10 @@ li a:hover {
   		<a href="<c:url value="/main" />"><img src="<c:url value="/pics/logo.png"/>" style="width: 200px; height: auto"></a>
 	</li>
 	<c:if test="${sessionScope.user == null}"> 
-		<li><a href="login">Login</a></li>
-		<li><a href="register">Register</a></li>
+		<li><a href="<c:url value="/login"/>">Login</a></li>
+		<li><a href="<c:url value="/register"/>">Register</a></li>
 	</c:if>
-	<li><a href="upload">Upload</a></li>
+	<li><a href="<c:url value="/upload"/>">Upload</a></li>
 	
 	
 	<li>
@@ -68,7 +68,6 @@ li a:hover {
 
 	<li><a href="<c:url value="/updateUser/${sessionScope.user.userId}"/>">Update user</a></li>
 	<li><a href="<c:url value="/logout"/>">Logout</a></li>
-	<li><a href="logout">Logout</a></li>
 
 	</c:if>
 </ul>
