@@ -21,7 +21,7 @@ public class PlaylistController {
 	public void loadPlaylistsForUser(Model model, long userId) {
 		List<Playlist> playlists = null;
 		try {
-			playlist.getPlaylistForUser(userId);
+			playlists=playlist.getPlaylistForUser(userId);
 			model.addAttribute("myPlaylists", playlists);
 		} catch (UserException e) {
 			// TODO handle

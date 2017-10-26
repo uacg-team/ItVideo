@@ -158,4 +158,37 @@ public class CommentController {
 			}
 		}
 	}
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public String test() {
+		return "asinch_comments";
+	}
+	@ResponseBody
+	@RequestMapping(value = "player/commentLikeTest", method = RequestMethod.POST)
+	public void likeCommentTest(HttpServletRequest req) {
+		Long userId = Long.parseLong(req.getParameter("userId"));
+		long commentId = Long.parseLong(req.getParameter("commentId"));
+
+		if (userId == 0) {
+			//status
+		} else {
+			try {
+				int like = Integer.parseInt(req.getParameter("like"));
+				// add like or dislike for comment id
+				if (like == 1) {
+					comment.likeComment(commentId, userId);
+				} else if (like == -1) {
+					comment.dislikeComment(commentId, userId);
+				}
+			} catch (SQLException e) {
+				// TODO add status code
+				e.printStackTrace();
+			} catch (CommentException e) {
+				// TODO add statusCode
+				e.printStackTrace();
+			} catch (UserException e) {
+				// TODO add statusCode
+				e.printStackTrace();
+			}
+		}
+	}
 }

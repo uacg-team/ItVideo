@@ -8,46 +8,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>	
 <link type="text/css" rel="stylesheet" href="<c:url value="/css/comments.css"/>"/>
-
-<script type="text/javascript">
-	
-		function likeVideo() {
-			var request = new XMLHttpRequest();
-			request.onreadystatechange = function() {
-				//when response is received
-				if (this.readyState == 4 && this.status == 200) {
-					var button = document.getElementById("likebutton");
-					button.innerHTML = "Unlike";
-					button.style.background='red';
-				}
-				else
-				if (this.readyState == 4 && this.status == 401) {
-					alert("Sorry, you must log in to like this video!");
-				}
-					
-			}
-			request.open("post", "commentLove/1", true);
-			request.send();
-		}
-		
-		function unlikeVideo() {
-			var request = new XMLHttpRequest();
-			request.onreadystatechange = function() {
-				//when response is received
-				if (this.readyState == 4 && this.status == 200) {
-					var button = document.getElementById("likebutton");
-					button.innerHTML = "Like";
-					button.style.background='green';
-				}
-				else
-					if (this.readyState == 4 && this.status == 401) {
-						alert("Sorry, you must log in to like this video!");
-					}
-			}
-			request.open("post", "unlike", true);
-			request.send();
-		}
-	</script>
 </head>
 <body>
 	<c:if test="${sessionScope.user!=null}">
@@ -104,7 +64,6 @@
 				</form>
 			</li>
 		</ul>
-		<button style="background-color: green" id="likebutton" onclick="likeVideo()">Like</button>
 		</div>
 		<c:if test="${sessionScope.user.userId==comment.userId}">
 			<form action="comment?deleteCommentId=${comment.commentId}&url=${requestScope.mainVideo.locationUrl}" method="post">
