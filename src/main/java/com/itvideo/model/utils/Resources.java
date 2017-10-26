@@ -1,5 +1,6 @@
 package com.itvideo.model.utils;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,8 +11,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.jcodec.api.FrameGrab;
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
 
 import com.itvideo.model.User;
 import com.itvideo.model.exceptions.user.UserException;
@@ -22,6 +29,9 @@ public abstract class Resources {
 	public static final String ROOT = "C:" + File.separator + "res";
 	public static final String VIDEO_URL = "videos";
 	public static final String IMAGE_URL = "images";
+	
+	private static final int FRAME_NUMBER = 50;
+
 	
 	/**
 	 * Example: C:\\Users\\YouTube-PNG-Photos.png
@@ -65,6 +75,14 @@ public abstract class Resources {
 		String absolutePath = Resources.ROOT + File.separator + u.getUserId()+ File.separator + Resources.VIDEO_URL+ File.separator + fileName;
 		System.out.println("Resources:writeVideo:absolutePath:"+absolutePath);
 		write(file, absolutePath);
+		//String path = Resources.ROOT + File.separator + u.getUserId()+ File.separator + Resources.VIDEO_URL+ File.separator;
+		//generateThumbnail(fileName, path);
+	}
+
+	public static void generateThumbnail(String fileName, String path) throws IOException, JCodecException {
+		Picture picture = FrameGrab.getFrameFromFile(new File(path+fileName), FRAME_NUMBER);
+		BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
+		ImageIO.write(bufferedImage, "png", new File(path+fileName.substring(fileName.length()-3, fileName.length())));
 	}
 	
 	private static void write(Part file, String absolutePath) throws IOException {

@@ -33,16 +33,14 @@ public class VideoDao {
     }
 
 	public String getPrivacy(long privacyId) throws SQLException {
-		String result = null;
 		String sql = "SELECT name FROM privacy_settings WHERE privacy_id = ?;";
 		try(PreparedStatement ps = con.prepareStatement(sql);){
 			ps.setLong(1, privacyId);
 			try(ResultSet rs = ps.executeQuery();){
 				rs.next();
-				result = rs.getString("name");
+				return rs.getString("name");
 			}
 		}
-		return result;
 	}
 	
 	public String getUserName(long userId) throws SQLException {
