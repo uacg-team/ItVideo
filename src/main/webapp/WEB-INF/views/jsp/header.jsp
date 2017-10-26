@@ -42,7 +42,7 @@ li a:hover {
 	
 <ul>
 	<li>
-  		<a href="<c:url value="/main" />"><img src="<c:url value="/img/logo.png"/>" style="width: 200px; height: auto"></a>
+  		<a href="<c:url value="/main" />"><img src="<c:url value="/pics/logo.png"/>" style="width: 200px; height: auto"></a>
 	</li>
 	<c:if test="${sessionScope.user == null}"> 
 		<li><a href="login">Login</a></li>
