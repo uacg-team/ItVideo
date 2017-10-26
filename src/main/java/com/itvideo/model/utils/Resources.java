@@ -99,4 +99,5 @@ public abstract class Resources {
 		System.out.println("Resources:readVideo:absolutePath:"+absolutePath);
 		read(absolutePath, userId, response);
 	}
+
 }

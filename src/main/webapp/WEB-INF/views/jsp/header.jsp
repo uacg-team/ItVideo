@@ -6,6 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>header</title>
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css" />" />
 <style type="text/css">
 ul {
     list-style-type: none;
@@ -41,7 +42,7 @@ li a:hover {
 	
 <ul>
 	<li>
-  		<a href="main"><img src="logo.png" style="width: 200px; height: auto"></a>
+  		<a href="<c:url value="/main" />"><img src="<c:url value="/img/logo.png"/>" style="width: 200px; height: auto"></a>
 	</li>
 	<c:if test="${sessionScope.user == null}"> 
 		<li><a href="login">Login</a></li>
@@ -51,7 +52,7 @@ li a:hover {
 	
 	
 	<li>
-		<form action="main" method="get">
+		<form action="<c:url value="/search" />" method="get">
 			<input type="text" name="search" placeholder="Search..">
 		</form>
 	</li>
@@ -60,7 +61,7 @@ li a:hover {
 	<c:if test="${ sessionScope.user != null}"> 
 	<li>
 		<a href="viewProfile?username=${sessionScope.user.username}">
-			<img src="img?path=${sessionScope.user.avatarUrl}&userId=${sessionScope.user.userId}" width="50px" height="auto"/>
+			<img src="<c:url value="/img/${sessionScope.user.userId}"/>" width="50px" height="auto"/>
 			<c:out value="${sessionScope.user.username}"></c:out>
 		</a>
 	</li>

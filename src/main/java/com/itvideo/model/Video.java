@@ -42,6 +42,7 @@ public class Video implements Serializable {
 		this.privacyId = privacyId;
 		this.tags = tags;
 	}
+	
 	public Video(String name, String locationUrl, long privacyId, long userId, Set<Tag> tags)
 			throws VideoException {
 		setName(name);

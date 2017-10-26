@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
 import com.itvideo.model.utils.DBConnection;
 
@@ -14,21 +17,15 @@ import com.itvideo.model.utils.DBConnection;
  * @author HP
  *
  */
-
+@Component
 public class TagDao {
-	private static TagDao instance;
-	private static final Connection con = DBConnection.VIDEOS.getConnection();
 
-	static {
-		instance = new TagDao();
-	}
-
-	private TagDao() {
-	}
-
-	public static TagDao getInstance() {
-		return instance;
-	}
+	private Connection con;
+	
+	@Autowired
+    private void initField() {
+		 con = DBConnection.VIDEOS.getConnection();
+    }
 
 	public boolean existTag(String tag) throws SQLException {
 		String sql = "SELECT tag FROM tags WHERE tag = ?";

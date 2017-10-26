@@ -24,8 +24,8 @@
 				<input type="text" placeholder="Enter tags separated by space" name="tags"><br>
 				<input type="radio" name="privacy" value="1" checked>Public 
 				<input type="radio" name="privacy" value="2">Private<br>
-				<input type="file" name="newVideo"><br>
-			 	<button type="submit">Upload</button>
+				<input type="file" name="newVideo" accept="video/mp4"><br>
+			 	<input type="submit" value="Upload">
 			</fieldset>
 		</div>
 	</form>

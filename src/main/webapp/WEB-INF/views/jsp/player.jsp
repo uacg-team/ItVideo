@@ -36,7 +36,7 @@ div.inline {
 		<h3>Owner: 
 			<a href="viewProfile?username=${requestScope.videoOwner.username}">
 				<c:out value="${requestScope.videoOwner.username }"></c:out>
-				<img src="img?path=${requestScope.videoOwner.avatarUrl }&userId=${requestScope.videoOwner.userId }" width="50px" height="auto"/>
+				<img src="<c:url value="/img/${requestScope.videoOwner.userId}"/>" width="50px" height="auto"/>
 			</a>
 		</h3>
 		<br>
@@ -48,7 +48,7 @@ div.inline {
 		
 		<!-- video player -->
 		<video width="800" height="600" controls preload="auto">
-		  		<source src="video?url=${requestScope.mainVideo.locationUrl}&userId=${mainVideo.userId}" type="video/mp4">
+		  		<source src="<c:url value="/video/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
 		</video>
 		
 		<!-- Like video button -->

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
@@ -23,27 +22,15 @@ import com.itvideo.model.utils.DateTimeConvertor;
 
 @Component
 public class VideoDao {
-	//private static VideoDao instance;
-	
 	private Connection con;
+	
+	@Autowired
+	TagDao td;
 	
 	@Autowired
     private void initField() {
 		 con = DBConnection.VIDEOS.getConnection();
     }
-	
-//	private static Connection con = DBConnection.VIDEOS.getConnection();
-//	
-//	static {
-//		instance = new VideoDao();
-//	}
-//
-//	public static VideoDao getInstance() {
-//		return instance;
-//	}
-
-//	private VideoDao() {
-//	}
 
 	public String getPrivacy(long privacyId) throws SQLException {
 		String result = null;
@@ -91,7 +78,7 @@ public class VideoDao {
 				v.setVideoId(rs.getLong(1));
 			}
 
-			TagDao.getInstance().insertVideoTags(v);
+			td.insertVideoTags(v);
 			con.commit();
 			
 		} catch (SQLException e) {
@@ -123,8 +110,8 @@ public class VideoDao {
 			con.setAutoCommit(false);
 			deleteVideoLikes(videoId);
 			deleteVideosFromPlaylist(videoId);
-//			CommentDao.getInstance().deleteComments(videoId);
-			TagDao.getInstance().delete(videoId);
+//			cd.deleteComments(videoId);
+			td.delete(videoId);
 			String sql = "DELETE FROM videos WHERE video_id = ?;";
 			try (PreparedStatement ps = con.prepareStatement(sql);) {
 				ps.setLong(1, videoId);
@@ -400,10 +387,15 @@ public class VideoDao {
 				while (rs.next()) {
 					videos.add(
 							new Video(
+									rs.getLong("video_id"), 
 									rs.getString("name"), 
-									rs.getString("location_url"), 
-									rs.getLong("privacy_id"),
+									rs.getInt("views"),
+									DateTimeConvertor.sqlToLdt(rs.getString("date")), 
+									rs.getString("location_url"),
 									rs.getLong("user_id"), 
+									rs.getString("thumbnail_url"), 
+									rs.getString("description"),
+									rs.getLong("privacy_id"), 
 									getTags(rs.getLong("video_id"))));
 				}
 				return videos;

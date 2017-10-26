@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.user.UserException;
@@ -19,19 +20,12 @@ import com.itvideo.model.utils.DateTimeConvertor;
 @Component
 public class UserDao {
 
-	private static UserDao instance;
-	private static final Connection con = DBConnection.USERS.getConnection();
+	private Connection con;
 	
-	static {
-		instance = new UserDao();
-	}
-
-	private UserDao() {
-	}
-	
-	public static UserDao getInstance() {
-		return instance;
-	}
+	@Autowired
+    private void initField() {
+		 con = DBConnection.USERS.getConnection();
+    }
 
 	public void createUser(User u) throws SQLException, UserException {
 		String sql = "INSERT INTO users (username, password, email, date_creation, avatar_url) VALUES (?, ?, ?, ?, ?)";
