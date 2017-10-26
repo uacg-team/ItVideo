@@ -15,7 +15,7 @@
 	</c:if>
 	
 	<c:if test="${ sessionScope.user != null }">
-	<form class="modal-content animate" action="upload" method="post"  enctype="multipart/form-data">
+	<form action="<c:url value="/upload"/>" method="post"  enctype="multipart/form-data">
 		<div  class="container">
 			<fieldset>
 				<legend>Upload</legend>
@@ -29,7 +29,11 @@
 			</fieldset>
 		</div>
 	</form>
-	</c:if>
+	</c:if>	
 	
+	<form action="<c:url value="kachi"/>" method="POST" enctype="multipart/form-data">
+		<input type="file" id="file" name="failche" accept="video/*">
+		<input type="submit" value="Upload now">
+	</form>
 </body>
 </html>
