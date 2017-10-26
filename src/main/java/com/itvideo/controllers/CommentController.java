@@ -111,7 +111,7 @@ public class CommentController {
 				e.printStackTrace();
 				return "forward:/player";
 			}
-			return "redirect:/player?url="+url+"&videoId="+videoId;
+			return "redirect:/player/"+videoId;
 		}
 	}
 }
