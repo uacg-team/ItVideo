@@ -10,9 +10,12 @@ import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.model.Picture;
 import org.jcodec.scale.AWTUtil;
+import org.omg.CORBA.PRIVATE_MEMBER;
 
 public class ReadFromVideo {
+	
 
+	
 	public static void main(String[] args) throws IOException, JCodecException {
 		int frameNumber = 50;
 		Picture picture = FrameGrab.getFrameFromFile(new File("C:/res/1/videos/1.mp4"), frameNumber);

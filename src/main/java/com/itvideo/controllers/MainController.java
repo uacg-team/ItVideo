@@ -82,33 +82,43 @@ public class MainController {
 	@RequestMapping(value="/main/sort/{param}", method = RequestMethod.GET)
 	public String sort(HttpSession session, @PathVariable("param") String param) {
 		try {
+			List<Video> videos = null;
 			switch (param) {
 			case "date":
 				session.setAttribute("sort", "date");
-				session.setAttribute("videos", vd.getAllVideoOrderByDate());
-				return "redirect:/main";
+				videos = vd.getAllVideoOrderByDate();
+				break;
 			case "like":
 				session.setAttribute("sort", "like");
-				session.setAttribute("videos", vd.getAllVideoOrderByLikes());
-				return "redirect:/main";
+				videos = vd.getAllVideoOrderByLikes();
+				break;
 			case "view":
 				session.setAttribute("sort", "view");
-				session.setAttribute("videos", vd.getAllVideoOrderByViews());
-				return "redirect:/main";
+				videos = vd.getAllVideoOrderByViews();
+				break;
 			default:
 				session.setAttribute("sort", "date");
-				session.setAttribute("videos", vd.getAllVideoOrderByDate());
-				return "redirect:/main";
+				videos = vd.getAllVideoOrderByDate();
+				break;
 			}
+			
+			for (Video video : videos) {
+				video.setUserName(vd.getUserName(video.getUserId()));
+				video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
+			}
+			
+			session.setAttribute("videos", videos);
+			return "redirect:/main";
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return "redirect:/main";
 	}
 	
+	
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index() {
-		return "forward:/main";
+		return "redirect:/main";
 	}
 
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
@@ -116,8 +126,17 @@ public class MainController {
 		try {
 			String param = (String) session.getAttribute("sort");
 			if (param == null) {
+				
+				List<Video> videos = vd.getAllVideoOrderByDate();
+				if (videos != null) {
+					for (Video video : videos) {
+						video.setUserName(vd.getUserName(video.getUserId()));
+						video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
+					}
+				}
+				
 				session.setAttribute("sort", "date");
-				session.setAttribute("videos", vd.getAllVideoOrderByDate());
+				session.setAttribute("videos", videos);
 				return "main";
 			}
 		} catch (SQLException e) {

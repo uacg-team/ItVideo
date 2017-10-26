@@ -3,6 +3,7 @@ package com.itvideo.controllers;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -30,6 +32,51 @@ public class UserController {
 	
 	@Autowired
 	PlaylistController pc;
+	
+	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.GET)
+	public String updateUserGet() {
+		return "updateUser";
+	}
+	
+	
+	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.POST)
+	public String updateUserPost(HttpSession session, Model model, HttpServletRequest request) {
+		try {
+			User u = (User) session.getAttribute("user");
+			
+			String firstName = request.getParameter("firstName").equals("") ? null : request.getParameter("firstName");
+			String lastName = request.getParameter("lastName").equals("")  ? null : request.getParameter("lastName");
+			String facebook = request.getParameter("facebook").equals("")  ? null : request.getParameter("facebook");
+			String gender = request.getParameter("gender") == "null" ? null : request.getParameter("gender");
+			
+			if (firstName != null) {
+				u.setFirstName(firstName);
+			}
+			if (lastName != null) {
+				u.setLastName(lastName);
+			}
+			if (facebook != null) {
+				u.setFacebook(facebook);
+			}
+
+			u.setGender(gender);
+			
+			ud.updateUser(u);
+		} catch (UserException e) {
+			e.printStackTrace();
+			model.addAttribute("UserException", e.getMessage());
+			return "updateUser";
+		} catch (SQLException e) {
+			e.printStackTrace();
+			model.addAttribute("SQLException", e.getMessage());
+			return "updateUser";
+		} catch (UserNotFoundException e) {
+			e.printStackTrace();
+			model.addAttribute("UserNotFoundException", e.getMessage());
+			return "updateUser";
+		}
+		return "updateUser";
+	}
 	
 	@RequestMapping(value = "/viewProfile/{userId}", method = RequestMethod.GET)
 	public String getVideo(@PathVariable("userId") long userId, Model model, HttpSession session) {

@@ -11,7 +11,7 @@
 	<jsp:include page="header.jsp"></jsp:include>
 	<br>
 	
-	<img src="img?path=${sessionScope.user.avatarUrl}&userId=${sessionScope.user.userId}" width="100px" height="auto" /><br>
+	<img src="<c:url value="/img/${sessionScope.user.userId}"/>" width="100px" height="auto" /><br>
 	
 	<form action="uploadAvatar" method="post" enctype="multipart/form-data">
 		<input type="file" name="avatar"><br>
