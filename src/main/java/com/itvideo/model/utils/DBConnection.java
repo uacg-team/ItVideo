@@ -11,7 +11,7 @@ public enum DBConnection {
 	private final String DB_PORT = "3306";
 	private final String DB_NAME = "youtubedb";
 	private final String DB_USER = "root";
-	private final String DB_PASS = "admin";
+	private final String DB_PASS = "vilio";
 	private final String URL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/" + DB_NAME;
 	
 	private Connection connection;

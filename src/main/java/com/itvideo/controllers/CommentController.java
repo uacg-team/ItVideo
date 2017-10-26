@@ -29,21 +29,8 @@ public class CommentController {
 	CommentDao comment;
 	@Autowired
 	ServletContext context;
-
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String test(Model m) {
-		try {
-			m.addAttribute("comments", comment.getAllComments(1, false));
-		} catch (VideoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "comments";
-	}
-
+	
+	//tested
 	public void loadCommentsForVideo(Model model, long videoId) {
 		// load all info for video comments
 		List<Comment> comments = null;
@@ -81,6 +68,8 @@ public class CommentController {
 
 	}
 
+	
+	//TODO make asinch
 	@RequestMapping(value="/commentLike", method=RequestMethod.POST)
 	public String likeComment(HttpSession session,@RequestParam("commentId") long commentId,
 			@RequestParam("like") int like,@RequestParam("url") String url,@RequestParam("videId") long videoId) {
@@ -111,7 +100,7 @@ public class CommentController {
 				e.printStackTrace();
 				return "forward:/player";
 			}
-			return "redirect:/player?url="+url+"&videoId="+videoId;
+			return "redirect:/player/"+videoId;
 		}
 	}
 }
