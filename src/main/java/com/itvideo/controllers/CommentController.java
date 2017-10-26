@@ -1,14 +1,15 @@
 package com.itvideo.controllers;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +24,7 @@ import com.itvideo.model.User;
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
-
+//sinhronni zaqvki
 @Controller
 @Component
 public class CommentController {
@@ -70,19 +71,49 @@ public class CommentController {
 
 	}
 
+	@RequestMapping(value="/addComment", method= RequestMethod.POST)
+	public String addComment(HttpSession session,HttpServletRequest req){
+		// add new comment or reply
+		long videoId=Long.valueOf(req.getParameter("videoId"));
+		User u = ((User) session.getAttribute("user"));
+		if (u == null) {
+			return "redirect:/login";
+		} else {
+			String text = req.getParameter("newComment");
+			long userId = u.getUserId();
+			long reply;
+			if (req.getParameter("reply") == null) {
+				reply = 0;
+			} else {
+				reply = Long.valueOf(req.getParameter("reply"));
+			}
+			try {
+				Comment addComment = new Comment(text, LocalDateTime.now(), userId, videoId, reply);
+				comment.createComment(addComment);
+			} catch (CommentException e) {
+				//TODO handle
+				e.printStackTrace();
+			} catch (SQLException e) {
+				//TODO handle
+				e.printStackTrace();
+			}
+			return "redirect:/player/"+videoId;
+		}
+	}
+
 	
 	//TODO make asinch
 	@RequestMapping(value="/commentLike", method=RequestMethod.POST)
-	public String likeComment(HttpSession session,@RequestParam("commentId") long commentId,
-			@RequestParam("like") int like,@RequestParam("url") String url,@RequestParam("videId") long videoId) {
-		
+	public String likeComment(HttpSession session,HttpServletRequest req) {
 		User u = ((User)session.getAttribute("user"));
+		long videoId = Long.parseLong(req.getParameter("videoId"));
 		if(u == null) {
 			//TODO view from Party,test
-			ResponseEntity.status(401);
 			return "forward:/login";
 		}else {
 			try {
+				int like = Integer.parseInt(req.getParameter("like"));
+				long commentId = Long.parseLong(req.getParameter("commentId"));
 				//add like or dislike for comment id
 				if(like == 1) {
 					comment.likeComment(commentId, u.getUserId());
@@ -106,7 +137,7 @@ public class CommentController {
 		}
 	}
 	
-	@RequestMapping(value="player/commentLove/{commentId}", method=RequestMethod.POST)
+	@RequestMapping(value="/commentLove/{commentId}", method=RequestMethod.POST)
 	@ResponseBody
 	public void likeCommentTest(HttpServletResponse resp,HttpSession session,@RequestParam("commentId") long commentId) {
 		User u = ((User)session.getAttribute("user"));
@@ -123,6 +154,41 @@ public class CommentController {
 				e.printStackTrace();
 			} catch (UserException e) {
 				//TODO add statusCode
+				e.printStackTrace();
+			}
+		}
+	}
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public String test() {
+		return "asinch_comments";
+	}
+	@ResponseBody
+	@RequestMapping(value = "player/commentLikeTest", method = RequestMethod.POST)
+	public void likeCommentTest(HttpServletRequest req) {
+		System.out.println(req.getParameter("userId"));
+		System.out.println(req.getParameter("commentId"));
+		Long userId = Long.parseLong(req.getParameter("userId"));
+		long commentId = Long.parseLong(req.getParameter("commentId"));
+
+		if (userId == 0) {
+			//status
+		} else {
+			try {
+				int like = Integer.parseInt(req.getParameter("like"));
+				// add like or dislike for comment id
+				if (like == 1) {
+					comment.likeComment(commentId, userId);
+				} else if (like == -1) {
+					comment.dislikeComment(commentId, userId);
+				}
+			} catch (SQLException e) {
+				// TODO add status code
+				e.printStackTrace();
+			} catch (CommentException e) {
+				// TODO add statusCode
+				e.printStackTrace();
+			} catch (UserException e) {
+				// TODO add statusCode
 				e.printStackTrace();
 			}
 		}

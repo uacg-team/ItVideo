@@ -3,15 +3,20 @@ package com.itvideo.controllers;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itvideo.model.Comment;
 import com.itvideo.model.CommentDao;
+import com.itvideo.model.User;
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
@@ -55,7 +60,7 @@ public class CommentsService {
 		}
 		return null;
 	}
-	
+
 	@RequestMapping(value = "/comment/user{userId}", method = RequestMethod.GET)
 	public List<Comment> getCommentsForUser(@PathVariable long userId) {
 		List<Comment> comments = null;
@@ -89,4 +94,6 @@ public class CommentsService {
 		}
 		return null;
 	}
+	
+	
 }
