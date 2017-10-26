@@ -55,6 +55,7 @@ public class CommentsService {
 		}
 		return null;
 	}
+	
 	@RequestMapping(value = "/comment/user{userId}", method = RequestMethod.GET)
 	public List<Comment> getCommentsForUser(@PathVariable long userId) {
 		List<Comment> comments = null;
