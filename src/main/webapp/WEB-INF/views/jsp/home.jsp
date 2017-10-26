@@ -8,7 +8,8 @@
 <title>Demo</title>
 </head>
 <body>
-<p>Hello
+<p>Hello,
+
 	<c:forEach items="${comments}" var="comment">
 		${comment.text}
 	</c:forEach>
