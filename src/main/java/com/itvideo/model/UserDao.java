@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tomcat.util.buf.UDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +20,15 @@ import com.itvideo.model.utils.DateTimeConvertor;
 @Component
 public class UserDao {
 
+	@Autowired
+	CommentDao cd;
+	
+	@Autowired
+	VideoDao vd;
+	
+	@Autowired
+	PlaylistDao pd;
+	
 	private Connection con;
 	
 	@Autowired
@@ -230,14 +238,40 @@ public class UserDao {
 		}
 	}
 
-	public void delete(long userId) {
+	private void deleteFollowers(long userId) throws SQLException {
+		String del = "DELETE FROM users_follow_users WHERE user_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(del);) {
+			ps.setLong(1,userId);
+			ps.executeUpdate();
+		}
+	}
+	
+	private void deleteFollowings(long userId) throws SQLException {
+		String del = "DELETE FROM users_follow_users WHERE follower_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(del);) {
+			ps.setLong(1,userId);
+			ps.executeUpdate();
+		}
+	}
+	
+	public void delete(long userId) throws SQLException {
 		//TODO implement
+		
 		//delete followers
+		deleteFollowers(userId);
+		
 		//delete following
+		deleteFollowings(userId);
+	
 		//delete comment likes
 		//delete comments
+		cd.deleteAllCommentsAndLikesForUser(userId);
+
 		//delete videos
 		//delete video likes
+		vd.deleteVideos(userId);
+		
 		//delete playlists
+		
 	}
 }

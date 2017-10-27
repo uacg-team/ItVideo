@@ -21,7 +21,7 @@
 		<!-- Delete user -->
 		<c:if test="${ not empty sessionScope.user  }">
 			<c:if test="${sessionScope.user.userId == user.userId}">
-				<form action="<c:url value="/updateUser/${sessionScope.user.userId}"/>" method="post">
+				<form action="<c:url value="/updateUser/${sessionScope.user.userId}"/>" method="get">
 					<input type="submit" value="edit user">
 				</form>
 				<form action="<c:url value="/deleteUser/${sessionScope.user.userId}"/>" method="post">
@@ -40,7 +40,7 @@
 			</c:forEach>
 			
 			<c:if test="${contains eq true}">
-				<form action="follow" method="post">
+				<form action="<c:url value="/follow" />" method="post">
 					<input type="hidden" value="${user.userId}" name="following">
 					<input type="hidden" value="${sessionScope.user.userId}" name="follower">
 					<input type="hidden" value="unfollow" name="action">
@@ -49,7 +49,7 @@
 			</c:if>
 			
 			<c:if test="${contains eq false}">
-				<form action="follow" method="post">
+				<form action="<c:url value="/follow" />" method="post">
 					<input type="hidden" value="${user.userId}" name="following">
 					<input type="hidden" value="${sessionScope.user.userId}" name="follower">
 					<input type="hidden" value="follow" name="action">

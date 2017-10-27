@@ -87,10 +87,10 @@ public class VideoDao {
 		}
 	}
 	
-	public void deleteVideoLikes(long videoID) throws SQLException {
+	public void deleteVideoLikes(long videoId) throws SQLException {
 		String sql = "DELETE FROM video_likes WHERE video_id = ?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setLong(1, videoID);
+			ps.setLong(1, videoId);
 			ps.executeUpdate();
 		}
 	}
@@ -316,6 +316,17 @@ public class VideoDao {
 			}
 		}
 		return allUserVideos;
+	}
+	
+	public void deleteAllVideoLikes(long user_id) {
+		
+	}
+	
+	public void deleteVideos(long userId) throws SQLException {
+		List<Video> videos = getVideos(userId);
+		for (Video video : videos) {
+			deleteVideo(video.getVideoId());
+		}
 	}
 	
 	public List<Video> getVideos(long user_id) throws SQLException {

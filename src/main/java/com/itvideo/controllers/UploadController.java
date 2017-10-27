@@ -31,9 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.itvideo.WebInitializer;
 import com.itvideo.model.Tag;
 import com.itvideo.model.User;
+import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
 import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
+import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.utils.Resources;
 
@@ -44,6 +47,48 @@ public class UploadController {
 	@Autowired
 	VideoDao vd;
 	
+	@Autowired
+	UserDao ud;
+	
+	
+	
+	@RequestMapping(value="/uploadAvatar", method = RequestMethod.POST)
+	public String uploadAvatar(HttpSession session,Model model,@RequestParam("avatar") MultipartFile avatar) {
+		
+		User u = (User) session.getAttribute("user");
+		try {
+			
+			if (!avatar.getContentType().equals("image/png")) {
+				model.addAttribute("error", "Wrong File Type");
+				return "updateUser";
+			}
+			
+			File f = new File(
+					WebInitializer.LOCATION + 
+					File.separator + 
+					u.getUserId() + 
+					File.separator + 
+					Resources.IMAGE_URL + 
+					File.separator +
+					avatar.getOriginalFilename());
+			
+			avatar.transferTo(f);
+			
+			u.setAvatarUrl(avatar.getOriginalFilename());
+			ud.updateUser(u);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (UserException e) {
+			e.printStackTrace();
+		} catch (UserNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "redirect:/updateUser/" + u.getUserId();
+	}
 
 	@RequestMapping(value="/uploadVideo", method = RequestMethod.GET)
 	public String uploadVideoGet() {
@@ -75,9 +120,9 @@ public class UploadController {
 				tags.add(new Tag(string));
 			}
 		
-			MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-			MimeType type = allTypes.forName(file.getContentType());
-			String ext = type.getExtension(); // .whatever
+			//MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+			//MimeType type = allTypes.forName(file.getContentType());
+			//String ext = type.getExtension(); // .whatever
 			
 			File f = new File(
 					WebInitializer.LOCATION + 
@@ -128,9 +173,6 @@ public class UploadController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JCodecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MimeTypeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
