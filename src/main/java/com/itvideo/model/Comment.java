@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.itvideo.model.exceptions.comments.CommentException;
 
-
 public class Comment {
 	private long commentId;
 	private String text;
@@ -21,12 +20,14 @@ public class Comment {
 	// likes/dislikes
 	private long likes;
 	private long dislikes;
-	
-	//userInfo
+
+	// userInfo
 	private String username;
 	private String url;
-	
-	
+
+	// myVoteinfo
+	private int vote;
+
 	/**
 	 * get all fields default, use only by CommentDAO
 	 */
@@ -155,5 +156,13 @@ public class Comment {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
+
+	public int getVote() {
+		return vote;
+	}
+
+	public void setVote(int vote) {
+		this.vote = vote;
+	}
+
 }

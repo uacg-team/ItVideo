@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.itvideo.model.CommentDao;
 import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
 import com.itvideo.model.User;
@@ -184,11 +185,15 @@ public class MainController {
 			model.addAttribute("disLikes", disLikes);
 			model.addAttribute("related", related);
 			
-			cc.loadCommentsForVideo(model,videoId);
+//			cc.loadCommentsForVideo(model,videoId);
 			if(session.getAttribute("user")!=null) {
 				User user = (User)session.getAttribute("user");
 				long userId = user.getUserId();
 				pc.loadPlaylistsForUser(model, userId);
+				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
+			}else {
+				//TODO 
+				cc.loadCommentsWithVotesForVideo(model, videoId, 0, CommentDao.ASC_BY_DATE);
 			}
 			return "player";
 		} catch (SQLException e) {
