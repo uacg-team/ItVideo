@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -33,6 +33,37 @@ public class UserController {
 	@Autowired
 	PlaylistController pc;
 	
+	@RequestMapping(value="/follow", method = RequestMethod.POST)
+	public String followPost(
+			HttpSession session,
+			Model model, 
+			@RequestParam("following") long followingId, 
+			@RequestParam("follower") long followerId, 
+			@RequestParam("action") String action) {
+		
+		
+		User follower = (User) session.getAttribute("user");
+		if (follower == null) {
+			return "login";
+		}
+		
+		System.out.println("action = " + action);
+		
+		try {
+			if (action.equals("follow")) {
+				ud.followUser(followingId, followerId);
+
+			}
+			if (action.equals("unfollow")) {
+				ud.unfollowUser(followingId, followerId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return "redirect:/viewProfile/"+followingId;
+	}
+	
 	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.GET)
 	public String updateUserGet() {
 		return "updateUser";
@@ -40,36 +71,45 @@ public class UserController {
 	
 	@RequestMapping(value = "/deleteUser/{userId}", method = RequestMethod.POST)
 	public String deleteUserPost(HttpSession session, @PathVariable("userId") long userId) {
-		User user = (User) session.getAttribute("user");
-		if (user.getUserId() == userId) {
-			ud.delete(user.getUserId());
+		try {
+			User user = (User) session.getAttribute("user");
+			if (user.getUserId() == userId) {
+				ud.delete(user.getUserId());
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return "redirect:/main";
 	}
 	
-	
 	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.POST)
-	public String updateUserPost(HttpSession session, Model model, HttpServletRequest request) {
+	public String updateUserPost(
+			HttpSession session, 
+			Model model, 
+			HttpServletRequest request,
+			@RequestParam("firstName") String firstName,
+			@RequestParam("lastName") String lastName,
+			@RequestParam("facebook") String facebook,
+			@RequestParam("gender") String gender ) {
 		try {
 			User u = (User) session.getAttribute("user");
 			
-			String firstName = request.getParameter("firstName").equals("") ? null : request.getParameter("firstName");
-			String lastName = request.getParameter("lastName").equals("")  ? null : request.getParameter("lastName");
-			String facebook = request.getParameter("facebook").equals("")  ? null : request.getParameter("facebook");
-			String gender = request.getParameter("gender") == "null" ? null : request.getParameter("gender");
-			
-			if (firstName != null) {
+			if (!firstName.equals("")) {
 				u.setFirstName(firstName);
 			}
-			if (lastName != null) {
+			if (!lastName.equals("")) {
 				u.setLastName(lastName);
 			}
-			if (facebook != null) {
+			if (!facebook.equals("")) {
 				u.setFacebook(facebook);
 			}
 
-			u.setGender(gender);
+			if (gender == "null") {
+				gender = null;
+			}
 			
+			u.setGender(gender);
 			ud.updateUser(u);
 		} catch (UserException e) {
 			e.printStackTrace();
@@ -125,5 +165,8 @@ public class UserController {
 			}
 		return "viewProfile";
 	}
+	
+	
+	
 	
 }
