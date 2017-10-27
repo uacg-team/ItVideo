@@ -111,12 +111,15 @@ ${user.userId}
 </div>
 <!-- comments -->
 <c:forEach items="${requestScope.comments}" var="comment">
-
-	
 	<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
 
 		<div class="comment-box">
 			<p class="comment-header"><span>${comment.username}</span></p>
+			
+
+<strong>${comment.commentId}</strong>
+
+	
 			<div class="comment-box-inner"> 
 				<p class="comment-box-inner">${comment.text}</p> <br>
 			</div>
@@ -127,23 +130,39 @@ ${user.userId}
 					<li>
 		 				<p id="likes${comment.commentId}">${comment.likes}</p>
 		 			</li>
-		 			<li>	
-		 				<img alt="like" id="like${comment.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${comment.commentId},${user.userId})">
+		 			<li>
+		 				<c:if test="${comment.vote == 1}">	
+		 					<img alt="liked" id="like${comment.commentId}" src="<c:url value="/pics/liked.png"/>" style="width: 25px; height: auto" onclick="likeComment(${comment.commentId},${user.userId})">
+						</c:if>
+						<c:if test="${comment.vote < 1}">
+							<img alt="like" id="like${comment.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${comment.commentId},${user.userId})">
+						</c:if>
 					</li>
 					<li>	
 						<p id="dislikes${comment.commentId}">${comment.dislikes}</p>
 		 			</li>
 		 			<li>
-		 				<img alt="dislike" id="dislike${comment.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${comment.commentId},${user.userId})">
+		 				<c:if test="${comment.vote > -1}">
+		 					<img alt="dislike" id="dislike${comment.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${comment.commentId},${user.userId})">
+						</c:if>
+						<c:if test="${comment.vote == -1}">
+							<img alt="disliked" id="dislike${comment.commentId}" src="<c:url value="/pics/disliked.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${comment.commentId},${user.userId})">
+						</c:if>
 					</li>
 				</ul>
 			</div>
 		</div>
 	<c:if test="${comment.hasReplies}">
 			<c:forEach items="${comment.replies}" var="reply">
-				<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
+				<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>	
 				<div class="reply-box">
  						<p class="reply-header"><span>${reply.username}</span></p>
+ 						
+ 									
+<strong>${reply.commentId}</strong>
+				
+				
+				
 					<div class="reply-box-inner"> 
    						 <p>${reply.text}</p><br>  
 	 				</div>
@@ -158,13 +177,10 @@ ${user.userId}
 			 				<p id="likes${reply.commentId}">${reply.likes}</p>
 			 			</li>
 			 			<li>
-							<c:if test="${reply.vote}==\"1\""> 
+							<c:if test="${reply.vote == 1}"> 
 								<img alt="liked" id="like${reply.commentId}" src="<c:url value="/pics/liked.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
 							</c:if>
-							<c:if test="${reply.vote}==\"0\""> 
-								<img alt="like" id="like${reply.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
-							</c:if> 
-							<c:if test="${reply.vote}==\"-1\""> 
+							<c:if test="${reply.vote < 1}"> 
 								<img alt="like" id="like${reply.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
 							</c:if> 
 						</li>
@@ -172,14 +188,11 @@ ${user.userId}
 							<p id="dislikes${reply.commentId}">${reply.dislikes}</p>
 			 			</li>
 			 			<li>
-			 				<c:if test="${reply.vote}==1"> 
-							  <img alt="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
-							</c:if>
-							<c:if test="${reply.vote}==0"> 
-							 <img alt="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
-							</c:if> 
-							<c:if test="${reply.vote}==-1"> 
+			 				<c:if test="${reply.vote == -1}"> 
 							  <img alt="disliked" src="<c:url value="/pics/disliked.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+							</c:if>
+							<c:if test="${reply.vote > -1}"> 
+							 <img alt="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
 							</c:if> 
 						</li>
 					</ul>

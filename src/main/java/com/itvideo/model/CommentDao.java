@@ -297,7 +297,7 @@ public class CommentDao {
 				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
 				+ "from comments as c left join comments_likes as l "
 				+ "on(c.comment_id=l.comment_id) "
-				+ "where c.video_id=? group by (c.comment_id);";
+				+ "where c.video_id=? and c.reply_id is null group by (c.comment_id);";
 		List<Comment> comments = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, myUserId);
@@ -312,6 +312,7 @@ public class CommentDao {
 					comment.setLikes(rs.getLong("likes"));
 					comment.setDislikes(rs.getLong("dislikes"));
 					comment.setVote(rs.getInt("my_vote"));
+					loadUserInfo(comment);
 					comments.add(comment);
 				}
 			}
@@ -379,6 +380,7 @@ public class CommentDao {
 					reply.setLikes(rs.getLong("likes"));
 					reply.setDislikes(rs.getLong("dislikes"));
 					reply.setVote(rs.getInt("my_vote"));
+					loadUserInfo(reply);
 					replies.add(reply);
 				}
 			}
