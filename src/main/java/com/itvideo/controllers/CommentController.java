@@ -33,7 +33,8 @@ public class CommentController {
 	@Autowired
 	ServletContext context;
 
-	// tested
+	// tested used before javasript
+	@Deprecated 
 	public void loadCommentsForVideo(Model model, long videoId) {
 		// load all info for video comments
 		List<Comment> comments = null;
@@ -68,6 +69,20 @@ public class CommentController {
 			// TODO
 			e.printStackTrace();
 		}
+	}
+	public void loadCommentsWithVotesForVideo(Model model, long videoId,long myUserId,Comparator<Comment> comparator) {
+		// load all info for video comments
+		List<Comment> comments = null;
+		long countComments = 0;
+		
+		try {
+			comments = comment.getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
+			countComments=comment.getNumberOfCommentsForVideo(videoId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("comments", comments);
+		model.addAttribute("countComments", countComments);
 	}
 
 	@RequestMapping(value = "/addComment", method = RequestMethod.POST)
