@@ -115,11 +115,6 @@ ${user.userId}
 
 		<div class="comment-box">
 			<p class="comment-header"><span>${comment.username}</span></p>
-			
-
-<strong>${comment.commentId}</strong>
-
-	
 			<div class="comment-box-inner"> 
 				<p class="comment-box-inner">${comment.text}</p> <br>
 			</div>
@@ -156,13 +151,7 @@ ${user.userId}
 			<c:forEach items="${comment.replies}" var="reply">
 				<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>	
 				<div class="reply-box">
- 						<p class="reply-header"><span>${reply.username}</span></p>
- 						
- 									
-<strong>${reply.commentId}</strong>
-				
-				
-				
+ 					<p class="reply-header"><span>${reply.username}</span></p>
 					<div class="reply-box-inner"> 
    						 <p>${reply.text}</p><br>  
 	 				</div>
@@ -189,10 +178,10 @@ ${user.userId}
 			 			</li>
 			 			<li>
 			 				<c:if test="${reply.vote == -1}"> 
-							  <img alt="disliked" src="<c:url value="/pics/disliked.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+							  <img alt="disliked" id="dislike${reply.commentId}" src="<c:url value="/pics/disliked.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
 							</c:if>
 							<c:if test="${reply.vote > -1}"> 
-							 <img alt="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+							 <img alt="dislike" id="dislike${reply.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
 							</c:if> 
 						</li>
 					</ul>
