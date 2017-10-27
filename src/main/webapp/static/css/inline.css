@@ -9,5 +9,5 @@ div.inline {
 }
 
 div.err { 
-	background-color: red
+	color: red;
 }

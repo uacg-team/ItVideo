@@ -54,7 +54,7 @@
 		</c:if>
 		
 		<!-- video player -->
-		<video width="800" height="600" controls preload="auto">
+		<video width="800" height="600" controls preload="auto" poster="<c:url value="/thumbnail/${mainVideo.videoId}" />">
 		  		<source src="<c:url value="/video/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
 		</video>
 		

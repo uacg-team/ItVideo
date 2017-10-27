@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ import com.itvideo.model.Video;
 import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
+import com.itvideo.model.utils.Hash;
+import com.itvideo.model.utils.PasswordGenerator;
+import com.itvideo.model.utils.SendEmail;
 
 @Controller
 public class UserController {
@@ -166,7 +170,127 @@ public class UserController {
 		return "viewProfile";
 	}
 	
+	@RequestMapping(value="/login", method = RequestMethod.GET)
+	public String loginForm() {
+		return "login";
+	}
 	
+	@RequestMapping(value="/login", method = RequestMethod.POST)
+	public String login(Model model, HttpSession session, 
+			@RequestParam("username") String username,
+			@RequestParam("password") String password ) {
+		
+		String hashedPass = Hash.getHashPass(password);
+		
+		try {
+			User u = ud.getUser(username);
+			if (hashedPass.equals(u.getPassword())) {
+				session.setMaxInactiveInterval(-1);
+				session.setAttribute("user", u);
+				return "redirect:main";
+			} else {
+				model.addAttribute("username", username);
+				model.addAttribute("passwordError", "Wrong Password");
+				return "login";
+			}
+		} catch (SQLException e) {
+			model.addAttribute("error", e.getMessage());
+			return "login";
+		} catch (UserNotFoundException e) {
+			model.addAttribute("usernameError", e.getMessage());
+			return "login";
+		} catch (UserException e) {
+			model.addAttribute("error", e.getMessage());
+			return "login";
+		} 
+	}
+	
+	@RequestMapping(value="/register", method = RequestMethod.GET)
+	public String registerGet() {
+		return "register";
+	}
+	
+	
+	@RequestMapping(value="/register", method = RequestMethod.POST)
+	public String registerPost(Model model, HttpSession session,
+			@RequestParam("username") String username,
+			@RequestParam("password") String password,
+			@RequestParam("confirmPassword") String confirmPassword,
+			@RequestParam("email") String email ) {
+		User u = null;
+		model.addAttribute("username", username);
+		model.addAttribute("email", email);
+		try {
+			if (ud.existsUser(username)) {
+				model.addAttribute("usernameError", "This username already exist");
+				return "register";
+			}		
+		
+			if (!password.equals(confirmPassword)) {
+				model.addAttribute("passError", "Password differ");
+				return "register";
+			}
+			
+			u = new User(username, password, email);
+			SendEmail.to(u);
+			u.setNewPassword(Hash.getHashPass(password));
+			ud.createUser(u);
+			session.setAttribute("user", u);
+			return "redirect:/main";
+			
+		} catch (SQLException e) {
+			model.addAttribute("userError", "SQLException: " + e.getMessage());
+			return "register";
+		} catch (UserException e) {
+			model.addAttribute("userError", "UserException: " + e.getMessage());
+			return "register";
+		}
+	}
+	
+	
+	@RequestMapping(value="/forgotPassword", method = RequestMethod.GET)
+	public String forgotPasswordGet(@RequestParam("username") String username,Model model) {
+		model.addAttribute("username", username);
+		return "forgotPassword";
+	}
+	
+	@RequestMapping(value="/forgotPassword", method = RequestMethod.POST)
+	public String forgotPasswordPost(
+			Model model,
+			@RequestParam("username") String username,
+			@RequestParam("email") String email) {
+		String newPassword = PasswordGenerator.generate();
+		String newPasswordHashed = Hash.getHashPass(newPassword);
+		try {
+			User u = ud.getUser(username);
+			if (!email.equals(u.getEmail())) {
+				model.addAttribute("emailError", "Email doesn't match to the user");
+				return "forgotPassword";
+			}
+			u.setNewPassword(newPassword);
+			SendEmail.to(u);
+			u.setNewPassword(newPasswordHashed);
+			ud.updateUser(u);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UserNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return "redirect:main";
+	}
+	
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:main";
+	}
 	
 	
 }

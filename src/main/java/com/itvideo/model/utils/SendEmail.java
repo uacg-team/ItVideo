@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -15,7 +14,6 @@ import com.itvideo.model.exceptions.user.UserException;
 
 
 public class SendEmail {
-
 	private static String host = "smtp.gmail.com";
 	private static String port = "465";
 	private static String from = "e@mail.com";
@@ -59,6 +57,9 @@ public class SendEmail {
 			transport.sendMessage(msg, msg.getAllRecipients());
 			transport.close();
 
+			System.out.println(u.getUsername());
+			System.out.println(u.getEmail());
+			System.out.println(u.getPassword());
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}

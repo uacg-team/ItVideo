@@ -49,6 +49,11 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+	         <dependency>
+	             <groupId>com.sun.mail</groupId>
+	             <artifactId>javax.mail</artifactId>
+	             <version>1.6.0</version>
+	         </dependency>
 		<dependency>
 			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
@@ -65,10 +70,6 @@
 		    <artifactId>xuggle-xuggler</artifactId>
 		    <version>5.4</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			</dependency>
 		<dependency>
 			<groupId>
 				org.bouncycastle.bcprov-ext-jdk15on.1.57.org.bouncycastle

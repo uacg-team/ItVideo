@@ -269,14 +269,15 @@ public class VideoDao {
 							rs.getLong("privacy_id"), 
 							getTags(videoId));
 				}
-
-				if (video == null) {
-					throw new VideoNotFoundException(VideoException.NOT_FOUND);
-				} else {
-					con.commit();
-					return video;
-				}
 			}
+
+//			if (video == null) {
+//				throw new VideoNotFoundException(VideoException.NOT_FOUND);
+//			}
+			
+			con.commit();
+			return video;
+			
 		} catch (SQLException e) {
 			con.rollback();
 			throw new SQLException(e);

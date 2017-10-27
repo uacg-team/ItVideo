@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
-import com.itvideo.model.utils.Hash;
 
 @Controller
 public class MainController {
@@ -207,50 +205,5 @@ public class MainController {
 			e.printStackTrace();
 		}
 		return "player";
-	}
-	
-	@RequestMapping(value="/login", method = RequestMethod.GET)
-	public String loginForm() {
-		return "login";
-	}
-	
-	@RequestMapping(value="/login", method = RequestMethod.POST)
-	public String login(HttpServletRequest request, HttpServletResponse response) {
-		String username = request.getParameter("username");
-		String password = Hash.getHashPass(request.getParameter("password"));
-		try {
-			User u = ud.getUser(username);
-			if (password.equals(u.getPassword())) {
-				request.getSession().setMaxInactiveInterval(-1);
-				request.getSession().setAttribute("user", u);
-				return "redirect:main";
-			} else {
-				request.setAttribute("passwordError", "Wrong Password");
-				return "login";
-			}
-		} catch (SQLException e) {
-			request.setAttribute("error", e.getMessage());
-			return "login";
-		} catch (UserNotFoundException e) {
-			request.setAttribute("usernameError", e.getMessage());
-			return "login";
-		} catch (UserException e) {
-			request.setAttribute("error", e.getMessage());
-			return "login";
-		} 
-	}
-
-	
-	@RequestMapping(value="/register", method = RequestMethod.GET)
-	public String register() {
-		return "register";
-	}
-	
-	
-	
-	@RequestMapping(value="/logout", method = RequestMethod.GET)
-	public String logout(HttpSession session) {
-		session.invalidate();
-		return "redirect:main";
 	}
 }

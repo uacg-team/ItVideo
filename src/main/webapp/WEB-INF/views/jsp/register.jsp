@@ -13,17 +13,29 @@
 	<fieldset>
 	<legend>Registration</legend>
   		<form action="register" method = "post">
-	      <input type="text" placeholder="Username" name="username" required><br>
+			<input type="text" value="${username}" placeholder="Username" name="username" required><br>
+      		<!-- Username Error  -->
+			<c:if test="${usernameError != null }">
+				<div class="err">
+					<c:out value="${ usernameError }"></c:out><br>
+				</div>
+			</c:if>
 	      <input type="password" placeholder="Password" name="password" required><br>
-	      <input type="text" placeholder="Email" name="email" required><br>
-	      <c:if test="${requestScope.userError != null }">
-			<div style="color: red">
-				<c:out value="${requestScope.userError }"></c:out><br>
-				<a href="#"> Forgot password?</a>
-			</div>
-	      </c:if>
+	      <input type="password" placeholder="Confirm Password" name="confirmPassword" required><br>
+			<!-- Password Error  -->
+			<c:if test="${passError != null }">
+				<div class="err">
+					<c:out value="${passError}"></c:out><br>
+				</div>
+			</c:if>
+	      <input type="text" placeholder="Email" value="${email}" name="email" required><br>
+	      	<!-- email Error  -->
+			<c:if test="${userError != null }">
+				<div class="err">
+					<c:out value="${userError}"></c:out><br>
+				</div>
+			</c:if>
 	      <button type="submit">Register</button><br>
-	      <input type="checkbox" checked="checked"> Remember me
 		</form>
 	</fieldset>
 
