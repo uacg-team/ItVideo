@@ -74,11 +74,11 @@ public class CommentController {
 		// load all info for video comments
 		List<Comment> comments = null;
 		long countComments = 0;
-		
 		try {
 			comments = comment.getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
 			countComments=comment.getNumberOfCommentsForVideo(videoId);
 		} catch (SQLException e) {
+			//TODO 
 			e.printStackTrace();
 		}
 		model.addAttribute("comments", comments);

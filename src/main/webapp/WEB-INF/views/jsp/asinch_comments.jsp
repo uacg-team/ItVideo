@@ -157,14 +157,30 @@ ${user.userId}
 						<li>
 			 				<p id="likes${reply.commentId}">${reply.likes}</p>
 			 			</li>
-			 			<li>	
-			 				<img alt="like" id="like${reply.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
+			 			<li>
+							<c:if test="${reply.vote}==\"1\""> 
+								<img alt="liked" id="like${reply.commentId}" src="<c:url value="/pics/liked.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
+							</c:if>
+							<c:if test="${reply.vote}==\"0\""> 
+								<img alt="like" id="like${reply.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
+							</c:if> 
+							<c:if test="${reply.vote}==\"-1\""> 
+								<img alt="like" id="like${reply.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
+							</c:if> 
 						</li>
 						<li>	
 							<p id="dislikes${reply.commentId}">${reply.dislikes}</p>
 			 			</li>
 			 			<li>
-			 				<img alt="dislike" id="dislike${reply.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+			 				<c:if test="${reply.vote}==1"> 
+							  <img alt="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+							</c:if>
+							<c:if test="${reply.vote}==0"> 
+							 <img alt="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+							</c:if> 
+							<c:if test="${reply.vote}==-1"> 
+							  <img alt="disliked" src="<c:url value="/pics/disliked.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+							</c:if> 
 						</li>
 					</ul>
 				</div>
