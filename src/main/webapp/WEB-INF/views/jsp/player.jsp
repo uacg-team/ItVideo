@@ -84,8 +84,7 @@
 		<br>
 		<!-- asynchrn comments -->
 		<jsp:include page="asinch_comments.jsp"></jsp:include>
-		<!-- comments -->
-		<!--<jsp:include page="comments.jsp"></jsp:include>-->
+		
 	</div>
 	
 	<!-- related videos -->

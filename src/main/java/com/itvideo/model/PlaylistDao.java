@@ -258,6 +258,9 @@ public class PlaylistDao {
 		}
 		return playslist;
 	}
+	public void deletePlaylistsForUser(long userId) {
+		//TODO
+	}
 
 	public static void main(String[] args) throws UserException, SQLException, PlaylistException {
 //		ApplicationContext context= new AnnotationConfigApplicationContext(PlaylistDao.class);

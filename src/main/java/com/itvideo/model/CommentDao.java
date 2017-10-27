@@ -375,8 +375,41 @@ public class CommentDao {
 			}
 		}
 	}
+	
 	public void deleteAllCommentsAndLikesForUser(long userId) {
-		//TODO
+		//TODO transaction
+	}
+	public List<Comment> getAllCommentsWithVotesByVideo(long videoId,long myUserId,Comparator<Comment> comparator) throws SQLException {
+		//TODO 
+		//get all comment without replies with vote
+		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
+				+ "sum(if(l.isLike = 0, 1, 0)) as dislikes,"
+				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
+				+ "from comments as c left join comments_likes as l "
+				+ "on(c.comment_id=l.comment_id) "
+				+ "where c.video_id=? group by (c.comment_id);";
+		List<Comment> comments = new ArrayList<>();
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setLong(1, myUserId);
+			ps.setLong(2, videoId);
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					Long id = rs.getLong("comment_id");
+					String text = rs.getString("text");
+					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
+					Long userId = rs.getLong("user_id");
+					Comment comment = new Comment(id, text, date, userId, videoId, (long)0);
+					comment.setLikes(rs.getLong("likes"));
+					comment.setDislikes(rs.getLong("dislikes"));
+					comment.setVote(rs.getInt("my_vote"));
+					comments.add(comment);
+				}
+			}
+		}
+		//sort comments by comparator
+		return comments;
+		//get all replies with votes for each comment
+		//flush
 	}
 
 	/**

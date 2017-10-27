@@ -59,7 +59,7 @@
 			};
 			var url = "commentLikeTest";
 			var param1 = "commentId=";
-			var param =param1.concat(commentId,"&like=1","&userId=",userId);
+			var param =param1.concat(commentId,"&like=-1","&userId=",userId);
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			request.send(param);
@@ -104,41 +104,81 @@
 <body>
 <!-- display: inline-block -->
 hello
-
+${user.userId}
 <div>
 	<img alt="like" id="like" src="<c:url value="/pics/like.png"/>" style="width: 50px; height: auto" onclick="likeButton()">
 	<img alt="dislike" id="dislike" src="<c:url value="/pics/dislike.png"/>" style="width: 50px; height: auto" onclick="dislikeButton()">
 </div>
+<!-- comments -->
 <c:forEach items="${requestScope.comments}" var="comment">
 
 	
 	<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
 
-	<div class="comment-box">
+		<div class="comment-box">
 			<p class="comment-header"><span>${comment.username}</span></p>
-		<div class="comment-box-inner"> 
-					 	<p class="comment-box-inner">${comment.text}</p> <br>
+			<div class="comment-box-inner"> 
+				<p class="comment-box-inner">${comment.text}</p> <br>
 			</div>
-			<div class="triangle-comment">
-				</div>
-				<p class="comment-date">${comment.date}</p>
+			<div class="triangle-comment"></div>
+			<p class="comment-date">${comment.date}</p>
 			<div class="like-buttons">
 				<ul>
 					<li>
 		 				<p id="likes${comment.commentId}">${comment.likes}</p>
 		 			</li>
 		 			<li>	
-		 				<img alt="like" id="like${comment.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 50px; height: auto" onclick="likeComment(${comment.commentId},${user.userId})">
+		 				<img alt="like" id="like${comment.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${comment.commentId},${user.userId})">
 					</li>
 					<li>	
 						<p id="dislikes${comment.commentId}">${comment.dislikes}</p>
 		 			</li>
 		 			<li>
-		 				<img alt="dislike" id="dislike${comment.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 50px; height: auto" onclick="dislikeComment(${comment.commentId},${user.userId})">
+		 				<img alt="dislike" id="dislike${comment.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${comment.commentId},${user.userId})">
 					</li>
 				</ul>
 			</div>
-	</div>
+		</div>
+	<c:if test="${comment.hasReplies}">
+			<c:forEach items="${comment.replies}" var="reply">
+				<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
+				<div class="reply-box">
+ 						<p class="reply-header"><span>${reply.username}</span></p>
+					<div class="reply-box-inner"> 
+   						 <p>${reply.text}</p><br>  
+	 				</div>
+	  				<div class="triangle-comment"></div>
+	  				<!-- Neobhodimo e preminavane prez SimpleDateTime-nqma LocalDateTime v JSTL -->
+	  				<%-- <fmt:parseDate value = "${reply.date}" var = "parsedDate" pattern = "dd-mm-yyyy" /> --%>
+	  				<p class="comment-date"><c:out value="${reply.date}"/></p>
+	  			</div>
+			  	<div class="like-buttons">
+					<ul>
+						<li>
+			 				<p id="likes${reply.commentId}">${reply.likes}</p>
+			 			</li>
+			 			<li>	
+			 				<img alt="like" id="like${reply.commentId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeComment(${reply.commentId},${user.userId})">
+						</li>
+						<li>	
+							<p id="dislikes${reply.commentId}">${reply.dislikes}</p>
+			 			</li>
+			 			<li>
+			 				<img alt="dislike" id="dislike${reply.commentId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeComment(${reply.commentId},${user.userId})">
+						</li>
+					</ul>
+				</div>
+	  				
+				<br>
+				<form action="<c:url value="/addComment"/>" method="post">
+					<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId"/>
+					<input type="hidden" value="${comment.commentId}" name="reply"/>
+					New reply<input type="text" placeholder="add reply" name="newComment"/>
+					<input type="submit" value="reply"/>
+				</form>
+				
+			</c:forEach>
+		</c:if>
 </c:forEach>
 </body>
 </html>
