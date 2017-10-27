@@ -375,6 +375,9 @@ public class CommentDao {
 			}
 		}
 	}
+	public void deleteAllCommentsAndLikesForUser(long userId) {
+		//TODO
+	}
 
 	/**
 	 * @param commentId
