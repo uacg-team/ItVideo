@@ -1,22 +1,20 @@
 package com.itvideo.controllers;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itvideo.model.Comment;
 import com.itvideo.model.CommentDao;
-import com.itvideo.model.User;
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
@@ -94,6 +92,38 @@ public class CommentsService {
 		}
 		return null;
 	}
-	
-	
+
+	@RequestMapping(value = "player/getCommentsWithVotes", method = RequestMethod.GET)
+	public List<Comment> getCommentsWithVotesForVideo(HttpServletRequest req) {
+//		Long videoId = Long.parseLong(req.getParameter("videoId"));
+//		Long myUserId = Long.parseLong(req.getParameter("userId"));
+//		String compare = req.getParameter("comparator");
+		
+		
+		long videoId=23;
+		long myUserId=6;
+		String compare = null;
+		
+		
+		
+		if(compare==null) {
+			compare="";
+		}
+		Comparator<Comment> comparator = null;
+		switch (compare) {
+		case "date_asc":
+			comparator = CommentDao.ASC_BY_DATE;
+			break;
+		default:
+			comparator = CommentDao.DESC_BY_DATE;
+		}
+		List<Comment> comments = null;
+		try {
+			comments = comment.getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
+		} catch (SQLException e) {
+			// TODO handle
+			e.printStackTrace();
+		}
+		return comments;
+	}
 }

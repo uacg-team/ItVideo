@@ -77,20 +77,6 @@ public class CommentController {
 		try {
 			comments = comment.getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
 			countComments=comment.getNumberOfCommentsForVideo(videoId);
-			
-			
-			//TODO delete me 
-			for(Comment c:comments) {
-				System.out.println(c.getCommentId());
-				if(c.getHasReplies()) {
-					for(Comment r:c.getReplies()) {
-						System.out.println("\t"+r.getCommentId());
-					}
-				}
-			}
-			
-			
-			
 		} catch (SQLException e) {
 			//TODO 
 			e.printStackTrace();
@@ -128,8 +114,8 @@ public class CommentController {
 			return "redirect:/player/" + videoId;
 		}
 	}
-
-	// TODO make asinch
+	
+	@Deprecated
 	@RequestMapping(value = "/commentLike", method = RequestMethod.POST)
 	public String likeComment(HttpSession session, HttpServletRequest req) {
 		User u = ((User) session.getAttribute("user"));
@@ -229,5 +215,10 @@ public class CommentController {
 				e.printStackTrace();
 			}
 		}
+	}
+	@RequestMapping(value = "/hop", method = RequestMethod.GET)
+	public String testovo() {
+		//tests
+		return "asinh_test";
 	}
 }
