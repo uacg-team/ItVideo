@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class MainController {
 	PlaylistDao pd;
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
-	public String search(HttpServletRequest request, Model model) {
+	public String search(HttpServletRequest request, Model model, HttpServletResponse response) {
 		String search = (String) request.getAttribute("search");
 		List<Video> videos = null;
 		List<User> users = null;
@@ -61,14 +62,17 @@ public class MainController {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (VideoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "VideoException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		model.addAttribute("videos", videos);
 		model.addAttribute("users", users);
@@ -77,7 +81,7 @@ public class MainController {
 	}
 	
 	@RequestMapping(value="/main/sort/{param}", method = RequestMethod.GET)
-	public String sort(HttpSession session, @PathVariable("param") String param) {
+	public String sort(HttpSession session, Model model, @PathVariable("param") String param) {
 		try {
 			List<Video> videos = null;
 			switch (param) {
@@ -107,9 +111,10 @@ public class MainController {
 			session.setAttribute("videos", videos);
 			return "redirect:/main";
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
-		return "redirect:/main";
 	}
 	
 	
@@ -119,7 +124,7 @@ public class MainController {
 	}
 
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public String main(HttpSession session) {
+	public String main(HttpSession session, Model model) {
 		try {
 			String param = (String) session.getAttribute("sort");
 			List<Video> videos = null;
@@ -160,11 +165,12 @@ public class MainController {
 					video.setUserName(vd.getUserName(video.getUserId()));
 					video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
 				}
-				
 				session.setAttribute("videos", videos);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "main";
 	}
@@ -197,18 +203,21 @@ public class MainController {
 			}
 			return "player";
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (VideoNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "VideoNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
-		return "player";
 	}
 }

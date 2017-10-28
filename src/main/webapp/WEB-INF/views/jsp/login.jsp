@@ -17,6 +17,8 @@
 	      <c:if test="${requestScope.usernameError != null }">
 			<div class="err">
 				<c:out value="${requestScope.usernameError }"></c:out>
+				<br>
+				<a href="<c:url value="/register" />"><button type="button" formmethod="get">register</button></a>
 			</div>
 	      </c:if>
 	      <input type="password" placeholder="Enter Password" name="password" required><br>
@@ -35,7 +37,6 @@
 				<input type="submit" value="Forgot password?">
 			</form>
 		</c:if>
-			      
   		
 </fieldset>
 <br>

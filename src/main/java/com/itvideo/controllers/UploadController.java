@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -130,9 +131,11 @@ public class UploadController {
 					u.getUserId() + 
 					File.separator + 
 					Resources.VIDEO_URL + 
-					File.separator +
+					File.separator,
 					file.getOriginalFilename());
-			
+
+			f.getParentFile().mkdirs(); 
+			f.createNewFile();
 			file.transferTo(f);
 			
 			int frameNumber = 40;
@@ -155,6 +158,7 @@ public class UploadController {
 			
 			Video v = new Video(name, file.getOriginalFilename() , privacy, u.getUserId(), tags);
 			v.setThumbnailUrl(file.getOriginalFilename() + ".png");
+			
 			vd.createVideo(v);
 			
 		} catch (IllegalStateException e) {
@@ -176,8 +180,9 @@ public class UploadController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return "redirect:/main";
+		//was this way but when redirected to main video is not uploaded
+//		return "redirect:/main";
+		return "redirect:main";
 	}
 	
 	public static BufferedImage resize(BufferedImage img, int newW, int newH) { 

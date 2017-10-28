@@ -1,19 +1,25 @@
 package com.itvideo.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.support.ServletContextResource;
 
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -23,7 +29,9 @@ import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
 import com.itvideo.model.utils.PasswordGenerator;
+import com.itvideo.model.utils.Resources;
 import com.itvideo.model.utils.SendEmail;
+import com.mysql.fabric.Response;
 
 @Controller
 public class UserController {
@@ -69,7 +77,14 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.GET)
-	public String updateUserGet() {
+	public String updateUserGet(HttpSession session, @PathVariable("userId") long userId) {
+		User u = (User) session.getAttribute("user");
+		if (u == null) {
+			return "redirect:/login";
+		}
+		if (u.getUserId() != userId) {
+			return "redirect:/viewProfile/"+userId;
+		}
 		return "updateUser";
 	}
 	
@@ -92,6 +107,11 @@ public class UserController {
 			HttpSession session, 
 			Model model, 
 			HttpServletRequest request,
+			@RequestParam("username") String username,
+			@RequestParam("newPassword") String newPassword,
+			@RequestParam("newPasswordConfirm") String newPasswordConfirm,
+			@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("email") String email,
 			@RequestParam("firstName") String firstName,
 			@RequestParam("lastName") String lastName,
 			@RequestParam("facebook") String facebook,
@@ -176,12 +196,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/login", method = RequestMethod.POST)
-	public String login(Model model, HttpSession session, 
+	public String login(Model model, HttpSession session, HttpServletResponse response,
 			@RequestParam("username") String username,
 			@RequestParam("password") String password ) {
 		
 		String hashedPass = Hash.getHashPass(password);
-		
 		try {
 			User u = ud.getUser(username);
 			if (hashedPass.equals(u.getPassword())) {
@@ -189,17 +208,21 @@ public class UserController {
 				session.setAttribute("user", u);
 				return "redirect:main";
 			} else {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				model.addAttribute("username", username);
 				model.addAttribute("passwordError", "Wrong Password");
 				return "login";
 			}
 		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			model.addAttribute("error", e.getMessage());
 			return "login";
 		} catch (UserNotFoundException e) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			model.addAttribute("usernameError", e.getMessage());
 			return "login";
 		} catch (UserException e) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			model.addAttribute("error", e.getMessage());
 			return "login";
 		} 
@@ -232,17 +255,26 @@ public class UserController {
 			}
 			
 			u = new User(username, password, email);
+			u.setAvatarUrl("avatar.png");
+			
 			SendEmail.to(u);
-			u.setNewPassword(Hash.getHashPass(password));
+			
+			u.setPasswordNoValidation(Hash.getHashPass(password));
 			ud.createUser(u);
 			session.setAttribute("user", u);
-			return "redirect:/main";
 			
+			InputStream in = session.getServletContext().getResourceAsStream("/static/img/avatar.png");
+			Resources.initAvatar(u,in);
+			
+			return "redirect:/main";
 		} catch (SQLException e) {
 			model.addAttribute("userError", "SQLException: " + e.getMessage());
 			return "register";
 		} catch (UserException e) {
 			model.addAttribute("userError", "UserException: " + e.getMessage());
+			return "register";
+		} catch (IOException e) {
+			model.addAttribute("userError", "IOException: " + e.getMessage());
 			return "register";
 		}
 	}
@@ -260,16 +292,15 @@ public class UserController {
 			@RequestParam("username") String username,
 			@RequestParam("email") String email) {
 		String newPassword = PasswordGenerator.generate();
-		String newPasswordHashed = Hash.getHashPass(newPassword);
 		try {
 			User u = ud.getUser(username);
 			if (!email.equals(u.getEmail())) {
 				model.addAttribute("emailError", "Email doesn't match to the user");
 				return "forgotPassword";
 			}
-			u.setNewPassword(newPassword);
+			u.setPasswordNoValidation(newPassword);
 			SendEmail.to(u);
-			u.setNewPassword(newPasswordHashed);
+			u.setPasswordNoValidation(Hash.getHashPass(newPassword));
 			ud.updateUser(u);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -281,8 +312,6 @@ public class UserController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 		return "redirect:main";
 	}
 	
@@ -291,6 +320,4 @@ public class UserController {
 		session.invalidate();
 		return "redirect:main";
 	}
-	
-	
 }

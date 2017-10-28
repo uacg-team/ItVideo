@@ -12,14 +12,17 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.model.Picture;
+import org.jcodec.containers.y4m.Y4MDemuxer;
 import org.jcodec.scale.AWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
 import com.itvideo.model.User;
 import com.itvideo.model.Video;
@@ -134,5 +137,17 @@ public abstract class Resources {
 		
 		video.delete();
 		thumbnail.delete();
+	}
+
+	public static void initAvatar(User u, InputStream is) throws IOException {
+ 		//InputStream	in = new ClassPathResource("/static/img/avatar.png").getInputStream();
+		String absolutePath = Resources.ROOT + File.separator + u.getUserId() + File.separator + Resources.IMAGE_URL
+				+ File.separator + "avatar.png";
+		File myFile = new File(absolutePath);
+		myFile.mkdirs();
+		myFile.createNewFile();
+		
+		Files.copy(is, myFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		
 	}
 }

@@ -78,7 +78,7 @@ public class VideoDao {
 
 			td.insertVideoTags(v);
 			con.commit();
-			
+			System.out.println("======In the base======");
 		} catch (SQLException e) {
 			con.rollback();
 			throw new SQLException(e);
