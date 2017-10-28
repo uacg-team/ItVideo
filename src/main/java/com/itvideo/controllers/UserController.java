@@ -77,7 +77,14 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.GET)
-	public String updateUserGet() {
+	public String updateUserGet(HttpSession session, @PathVariable("userId") long userId) {
+		User u = (User) session.getAttribute("user");
+		if (u == null) {
+			return "redirect:/login";
+		}
+		if (u.getUserId() != userId) {
+			return "redirect:/viewProfile/"+userId;
+		}
 		return "updateUser";
 	}
 	
@@ -100,6 +107,11 @@ public class UserController {
 			HttpSession session, 
 			Model model, 
 			HttpServletRequest request,
+			@RequestParam("username") String username,
+			@RequestParam("newPassword") String newPassword,
+			@RequestParam("newPasswordConfirm") String newPasswordConfirm,
+			@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("email") String email,
 			@RequestParam("firstName") String firstName,
 			@RequestParam("lastName") String lastName,
 			@RequestParam("facebook") String facebook,

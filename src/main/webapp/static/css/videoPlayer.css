@@ -1,0 +1,139 @@
+@charset "UTF-8";
+
+/* ______________________________ GENERAL-SETTINGS ______________________________ */
+
+*{margin: 0px; padding: 0px;}
+
+.container {
+  position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: #E0E1E4;
+
+	display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.container-inner {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+}
+
+.video-player-container{
+	width: 648px;
+	height: 350px;
+	z-index: 2;
+}
+
+.video-container {
+	height: 310px;
+	background-color: black;
+}
+
+#media-video {
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+
+
+.player-container {
+	height: 40px;
+	background-color: #f6f6f6;
+}
+
+.play-control, .volume-control {
+	width: 40px;
+	height: 40px;
+	display: table;
+	border-right: 1px solid #dddddd;
+	cursor: pointer;
+	float: left;
+}
+
+.play-button, .volume-button-mute {
+	vertical-align: middle;
+	text-align: center;
+	display: none;
+}
+
+.pause-button, .volume-button {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.play-control .fa {
+	font-size: 0.2em;
+}
+
+.volume-control .fa {
+	font-size: 0.8em;
+}
+
+.indicator {
+	width: 100px;
+	height: 40px;
+	border-right: 1px solid #dddddd;
+	font-family: "Open Sans", Arial, Helvetica, sans-serif;
+	font-size: 11px;
+    text-align: center;
+    float: left;
+    line-height: 40px;
+}
+
+.progress {
+	width: 425px;
+	height: 40px;
+	float: left;
+}
+
+.progress-background {
+	position: absolute;
+    width: 385px;
+    height: 1px;
+    background-color: black;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.progress-over {
+	position: absolute;
+    width: 160px;
+    height: 1px;
+    background-color: #5e9f62;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.progress-hidden {
+	position: absolute;
+    width: 385px;
+    height: 40px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.fullscreen-button {
+	width: 40px;
+	height: 40px;
+	float: right;
+	display: table;
+	cursor: pointer;
+}
+
+.fullscreen-button i {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+	border-left: 1px solid #dddddd;
+}
