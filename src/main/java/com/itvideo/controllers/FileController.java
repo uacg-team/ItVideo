@@ -28,7 +28,7 @@ public class FileController {
 	
 	@Autowired
 	UserDao ud;
-	
+		
 	@RequestMapping(value = "/video/{videoId}", method = RequestMethod.GET)
 	public  void getVideo(@PathVariable("videoId") Long videoId, HttpServletResponse response) {
 		try {

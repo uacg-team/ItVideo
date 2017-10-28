@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import com.itvideo.model.utils.Hash;
 import com.itvideo.model.utils.PasswordGenerator;
 import com.itvideo.model.utils.Resources;
 import com.itvideo.model.utils.SendEmail;
+import com.mysql.fabric.Response;
 
 @Controller
 public class UserController {
@@ -182,12 +184,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/login", method = RequestMethod.POST)
-	public String login(Model model, HttpSession session, 
+	public String login(Model model, HttpSession session, HttpServletResponse response,
 			@RequestParam("username") String username,
 			@RequestParam("password") String password ) {
 		
 		String hashedPass = Hash.getHashPass(password);
-		
 		try {
 			User u = ud.getUser(username);
 			if (hashedPass.equals(u.getPassword())) {
@@ -195,17 +196,21 @@ public class UserController {
 				session.setAttribute("user", u);
 				return "redirect:main";
 			} else {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				model.addAttribute("username", username);
 				model.addAttribute("passwordError", "Wrong Password");
 				return "login";
 			}
 		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			model.addAttribute("error", e.getMessage());
 			return "login";
 		} catch (UserNotFoundException e) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			model.addAttribute("usernameError", e.getMessage());
 			return "login";
 		} catch (UserException e) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			model.addAttribute("error", e.getMessage());
 			return "login";
 		} 
