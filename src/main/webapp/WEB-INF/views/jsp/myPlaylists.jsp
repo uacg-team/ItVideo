@@ -14,24 +14,31 @@
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
-				//add mark alredy in list
+				var add = document.getElementById("playlist".concat(playlistId));
+				if(add.alt==="notInPlaylist"){
+					add.alt="inPlaylist";
+					add.src="<c:url value="/pics/ok.png"/>";
+				}else{
+					add.alt="notInPlaylist";
+					add.src="<c:url value="/pics/not_ok.png"/>";
+				}
 			};
 			var url = "addToPlaylist";
 			var param1 = "playlistId=";
-			var param =param1.concat(playlistId,"&userId=",userId);
+			var param = param1.concat(playlistId,"&videoId=",videoId);
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			request.send(param);
 		}
 		/* When the user clicks on the button, 
 		toggle between hiding and showing the dropdown content */
-		function myFunction() {
-		    document.getElementById("myDropdown").classList.toggle("show");
+		function showMyPlaylists() {
+		    document.getElementById("dropPlaylists").classList.toggle("show");
 		}
 
 		// Close the dropdown if the user clicks outside of it
 		window.onclick = function(event) {
-		  if (!event.target.matches('.dropbtn')) {
+		  if (!event.target.matches('.dropbtnplaylists')) {
 		    var dropdowns = document.getElementsByClassName("dropdown-content");
 		    var i;
 		    for (i = 0; i < dropdowns.length; i++) {
@@ -44,8 +51,8 @@
 		}
 </script>
 <style>
-.dropbtn {
-    background-color: #00bfff;
+.dropbtnplaylists {
+    background-color: #999966;
     color: black;
     padding: 8px;
     font-size: 16px;
@@ -54,7 +61,7 @@
 }
 
 .dropbtn:hover, .dropbtn:focus {
-    background-color: #0086b3;
+    background-color: #4d4d33;
 }
 
 .dropdown {
@@ -85,21 +92,20 @@
 </style>
 </head>
 <body>
-<b>add to playlist</b>
-<select name="addToPlaylist" onchange="location = this.value;">
-	<c:forEach items="${requestScope.myPlaylists}" var="playlist">
-		 <option value="with ajax send post to playlist?playlistName=${playlist.playlistName}">${playlist.playlistName}</option>
-	</c:forEach>
-</select>
+<!-- show my playlist while watching  -->
 <div class="dropdown">
-<button onclick="myFunction()" class="dropbtn">myPlaylists</button>
-  <div id="myDropdown" class="dropdown-content">
-  	<ul>
+<button onclick="showMyPlaylists()" class="dropbtnplaylists">add to playlist</button>
+  <div id="dropPlaylists" class="dropdown-content">
 	  	<c:forEach items="${requestScope.myPlaylists}" var="playlist">
-	    		<img alt="notIn" id="like${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 25px; height: auto" onclick="addToPlaylist(${playlist.playlistId},${user.userId},${requestScope.mainVideo.videoId})">
-	    		<p>${playlist.playlistName}</p>
+  			<ul onclick="addToPlaylist(${playlist.playlistId},${user.userId},${requestScope.mainVideo.videoId})">
+	  			<li>
+	    			<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >
+    			</li>
+    			<li>
+	    			<p>${playlist.playlistName}</p>
+	    		</li>
+   			 </ul>
 	    </c:forEach>
-    </ul>
   </div>
 </div>
 </body>

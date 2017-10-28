@@ -8,16 +8,19 @@
 <title>Insert title here</title>
 </head>
 <body>
+<!-- show my playlist in my profile -->
 	<c:forEach items="${requestScope.myPlaylists}" var="playlist">
 		<p><b>${playlist.playlistName}</b>
-			<a href="playlist?v=loadVideos&playlistName=${playlist.playlistName}">
+			<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${user.userId}"/>>
 			<button>view</button>
 			</a>
 	</c:forEach>
-	
-	<form action="playlist?m=createPlaylist" method="post">
-	New playlist<input type="text" placeholder="add name" name="newPlaylist"/>
-	<input type="submit" value="create"/>
-	</form>
+	<c:if test="${sessionScope.user.userId == user.userId}">
+		<form action=<c:url value="/createPlaylist"/> method="post">
+		<input type="hidden" value="${sessionScope.user.userId}" name="userId">
+		New playlist<input type="text" placeholder="add name" name="newPlaylist"/>
+		<input type="submit" value="create"/>
+		</form>
+	</c:if>
 </body>
 </html>

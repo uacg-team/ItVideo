@@ -5,16 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-div.inline { 
-	float:left; 
-	margin:5px;
-	padding: 5px;
-	border-style: solid; 
-	border-color: black; 
-	border-width: 1px;
-}
-</style>
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css"/>" />
 <title>videos</title>
 </head>
 <body>
@@ -31,9 +22,9 @@ div.inline {
 				<c:out value="#${tag.tag} "></c:out>
 		</c:forEach>
 		<br>
-		<a href="<c:url value="/player/${video.videoId}"/>">	
-			<video width="320" height="240" preload="none">
-		  		<source src="<c:url value="/video/${video.userId}"/>" type="video/mp4">
+		<a href="<c:url value="/player/${video.videoId}" />">	
+			<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />">
+		  		<source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 			</video>
 		</a><br>
 	</div>
