@@ -108,7 +108,6 @@ public class Playlist {
 		if (videos.contains(video)) {
 			throw new PlaylistException(PlaylistException.VIDEO_ALREADY_EXIST);
 		}
-		//TODO add only public video
 		videos.add(video);
 	}
 

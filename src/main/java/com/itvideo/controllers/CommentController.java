@@ -204,8 +204,6 @@ public class CommentController {
 	@ResponseBody
 	@RequestMapping(value = "player/commentLikeTest", method = RequestMethod.POST)
 	public void likeCommentTest(HttpServletRequest req) {
-		System.out.println(req.getParameter("userId"));
-		System.out.println(req.getParameter("commentId"));
 		Long userId = Long.parseLong(req.getParameter("userId"));
 		long commentId = Long.parseLong(req.getParameter("commentId"));
 

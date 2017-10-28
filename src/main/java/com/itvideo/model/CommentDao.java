@@ -25,20 +25,14 @@ public class CommentDao {
 	public static final Comparator<Comment> ASC_BY_DATE = (o1, o2) -> o1.getDate().compareTo(o2.getDate());
 	
 	public static final Comparator<Comment> DESC_BY_DATE = (o1, o2) -> o2.getDate().compareTo(o1.getDate());
-	
 	//local tests
 	public static void main(String[] args) throws SQLException, CommentException {
-		// // generating comments
-		// for (int i = 0; i < 15; i++) {
-		// CommentDao.getInstance().createComment(new Comment("comment" + i,
-		// LocalDateTime.now(), 1, 1, 0));
-		// }
-		// // replies
-		// for (int i = 0; i < 15; i++) {
-		// CommentDao.getInstance()
-		// .createComment(new Comment("reply" + i, LocalDateTime.now(), 1, 1, 1
-		// + new Random().nextInt(15)));
-		// }
+//		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+//	    ctx.register(SpringWebConfig.class);
+//	    ctx.refresh();
+//	    CommentDao comment = ctx.getBean(CommentDao.class);
+//		System.out.println(comment.getNumberOfCommentsForVideo(23));
+//		ctx.close();
 	}
 	private Connection con;
 	private CommentDao() {
@@ -73,9 +67,56 @@ public class CommentDao {
 			}
 		}
 	}
-
-	public void deleteAllCommentsAndLikesForUser(long userId) {
-		//TODO transaction
+	/**
+	 * delete all likes/dislikes for replies to comment with author user,
+	 * delete all likes/dislikes from user
+	 * delete all replies to comment with author user
+	 * delete all comments with author user;
+	 * @param userId
+	 * @throws SQLException
+	 */
+	public void deleteAllCommentsAndLikesForUser(long userId) throws SQLException {
+		//delete likes/dislikes for replies to user id:
+		String sql1 = "delete from comments_likes where comment_id in "
+				+ "(select * from (select r.comment_id from comments as c "
+				+ "inner join comments as r on (r.reply_id = c.comment_id) where c.user_id=?) as d);";
+		//delete likes/dislikes for comments by user_id;
+		String sql2 = "delete from comments_likes where user_id=?";
+		//delete all replies to comments from user_id;
+		String sql3 =  "delete from comments where comment_id in "
+				+ "(select * from (select r.comment_id from comments as c "
+				+ "inner join comments as r on (r.reply_id = c.comment_id) where c.user_id=?) as d);";
+		//delete all comments to user_id;
+		String sql4 = "delete from comments where user_id=?";
+		@SuppressWarnings("unused")
+		int count = 0;
+		synchronized (con) {
+			try {
+				con.setAutoCommit(false);
+				try (PreparedStatement ps = con.prepareStatement(sql1)) {
+					ps.setLong(1, userId);
+					count += ps.executeUpdate();
+				}
+				try (PreparedStatement ps = con.prepareStatement(sql2)) {
+					ps.setLong(1, userId);
+					count += ps.executeUpdate();
+				}
+				try (PreparedStatement ps = con.prepareStatement(sql3)) {
+					ps.setLong(1, userId);
+					count += ps.executeUpdate();
+				}
+				try (PreparedStatement ps = con.prepareStatement(sql4)) {
+					ps.setLong(1, userId);
+					count += ps.executeUpdate();
+				}
+				con.commit();
+			} catch (SQLException e) {
+				con.rollback();
+				throw new SQLException(e);
+			} finally {
+				con.setAutoCommit(true);
+			}
+		}
 	}
 
 	// use in transaction!
@@ -218,8 +259,16 @@ public class CommentDao {
 		}
 	}
 	public long getNumberOfCommentsForVideo(long videoId) throws SQLException{
-		//TODO
-		return 0;
+		String sql = "select count(*) from comments where video_id=?;";
+		int count=0;
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setLong(1, videoId);
+			try (ResultSet rs = ps.executeQuery()) {
+				rs.next();
+				count = rs.getInt(1);
+			}
+		}
+		return count;
 	}
 
 	/**

@@ -8,10 +8,10 @@
 <title>Insert title here</title>
 <link type="text/css" rel="stylesheet" href="<c:url value="/css/comments.css"/>"/>
 <script type="text/javascript">
-
 		function likeComment(commentId,userId) {
 			if (typeof userId === 'undefined') {
 			    alert("First login!");
+			    return;
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
@@ -57,6 +57,7 @@
 		function dislikeComment(commentId,userId) {
 			if (typeof userId === 'undefined') {
 			    alert("First login!");
+			    return;
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {

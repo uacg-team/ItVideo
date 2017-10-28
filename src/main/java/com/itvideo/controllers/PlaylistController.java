@@ -3,10 +3,15 @@ package com.itvideo.controllers;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
@@ -33,5 +38,16 @@ public class PlaylistController {
 			return;
 		}
 	}
-	//TODO loadPlaylistForUserByName(Model model,long userId,...)
+	@ResponseBody
+	@RequestMapping(value = "player/addToPlaylist", method = RequestMethod.POST)
+	public void addToPlaylists(HttpServletRequest req) {
+		long videoId=Long.parseLong(req.getParameter("userId"));
+		long playlistId=Long.parseLong(req.getParameter("playlistId"));
+		try {
+			playlist.addVideo(playlistId, videoId);
+		} catch (SQLException e) {
+			// TODO handle
+			e.printStackTrace();
+		}
+	}
 }
