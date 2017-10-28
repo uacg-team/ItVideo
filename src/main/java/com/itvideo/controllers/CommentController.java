@@ -77,6 +77,20 @@ public class CommentController {
 		try {
 			comments = comment.getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
 			countComments=comment.getNumberOfCommentsForVideo(videoId);
+			
+			
+			//TODO delete me 
+			for(Comment c:comments) {
+				System.out.println(c.getCommentId());
+				if(c.getHasReplies()) {
+					for(Comment r:c.getReplies()) {
+						System.out.println("\t"+r.getCommentId());
+					}
+				}
+			}
+			
+			
+			
 		} catch (SQLException e) {
 			//TODO 
 			e.printStackTrace();
