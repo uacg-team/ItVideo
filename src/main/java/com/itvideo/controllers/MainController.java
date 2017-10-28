@@ -42,10 +42,11 @@ public class MainController {
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
 	public String search(HttpServletRequest request, Model model, HttpServletResponse response) {
-		String search = (String) request.getAttribute("search");
+		String search = (String) request.getParameter("search");
 		List<Video> videos = null;
 		List<User> users = null;
 		List<Playlist> playlists = null;
+		System.out.println(search);
 		try {
 			if (search != null) {
 				videos = vd.searchVideo(search);
@@ -57,6 +58,7 @@ public class MainController {
 					users = null;
 				}
 				playlists = pd.searchPlaylist(search);
+				
 				if (playlists.size() == 0) {
 					playlists = null;
 				}
