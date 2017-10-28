@@ -267,7 +267,7 @@ public class PlaylistDao {
 	}
 
 	public List<Playlist> searchPlaylist(String searchPlaylistName) throws SQLException {
-		List<Playlist> playslist = new ArrayList<>();
+		List<Playlist> playlist = new ArrayList<>();
 		String sql = "select * from playlists where playlist_name like ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setString(1, "%" + searchPlaylistName.toLowerCase().trim() + "%");
@@ -275,11 +275,11 @@ public class PlaylistDao {
 				while (rs.next()) {
 					Playlist p = new Playlist(rs.getLong("playlist_id"), rs.getString("playlist_name"),
 							rs.getLong("user_id"));
-					playslist.add(p);
+					playlist.add(p);
 				}
 			}
 		}
-		return playslist;
+		return playlist;
 	}
 	
 	public void deletePlaylistsForUser(long userId) throws SQLException {

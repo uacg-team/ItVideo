@@ -8,6 +8,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-
+<div class="show">
+<button onclick="showMyPlaylists()" class="dropbtnplaylists">my playlist</button>
+</div>
 </body>
 </html>
