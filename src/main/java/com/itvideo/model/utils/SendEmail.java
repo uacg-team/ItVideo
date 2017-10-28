@@ -16,8 +16,8 @@ import com.itvideo.model.exceptions.user.UserException;
 public class SendEmail {
 	private static String host = "smtp.gmail.com";
 	private static String port = "465";
-	private static String from = "e@mail.com";
-	private static String pass = "xxx";
+	private static String from = "noreply.itvideo@gmail.com";
+	private static String pass = "itvideo12345";
 
 	private static String subject = "Wellcome to www.itvideo.com";
 
@@ -45,9 +45,11 @@ public class SendEmail {
 			msg.setRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
 			msg.setSubject(subject);
 			
-			String emailText = String.format("%s, wellcome to <strong>www.itvideo.com</strong><br>"
+			String emailText = String.format("Wellcome to <strong>www.itvideo.com</strong><br>"
+					+ "Your username is <strong>%s</strong><br>"
 					+ "Your email is <strong>%s</strong><br>"
-					+ "Your hashed password is <strong>%s</strong>",
+					+ "Your password is <strong>%s</strong>"
+					+ "<br><br><br><a href=\"www.itvideo.com\">www.itvideo.com</a> ",
 					u.getUsername(),u.getEmail(), u.getPassword());
 			
 			msg.setContent(emailText, "text/html; charset=utf-8");
