@@ -10,10 +10,16 @@
 <body>
 <!-- show my playlist in my profile -->
 	<c:forEach items="${requestScope.myPlaylists}" var="playlist">
-		<p><b>${playlist.playlistName}</b>
-			<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${user.userId}"/>>
-			<button>view</button>
-			</a>
+		<ul>
+			<li>
+				<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${user.userId}"/>>
+					<button>view</button>
+				</a>
+			</li>
+			<li>
+				<p><b>${playlist.playlistName}</b>
+			</li>
+		</ul>
 	</c:forEach>
 	<c:if test="${sessionScope.user.userId == user.userId}">
 		<form action=<c:url value="/createPlaylist"/> method="post">

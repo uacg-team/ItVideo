@@ -131,6 +131,27 @@ public class PlaylistDao {
 			}
 		}
 	}
+	
+	public List<Playlist> getPlaylistForUserWithStatus(long userId,long videoId) throws UserException, SQLException {
+		List<Playlist> playlists = new ArrayList<>();
+		String sql = "select p.*,sum(if(v.video_id = ?, 1, 0)) as video_status "
+				+ "from playlists as p left join playlists_has_videos v "
+				+ "on (p.playlist_id=v.playlist_id)  where user_id=? group by p.playlist_id;";
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setLong(1, videoId);
+			ps.setLong(2, userId);
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					long playlist_id = rs.getLong("playlist_id");
+					String playlist_name = rs.getString("playlist_name");
+					Playlist playlist = new Playlist(playlist_id, playlist_name, userId);
+					playlist.setVideoStatus(rs.getInt("video_status"));
+					playlists.add(playlist);
+				}
+				return playlists;
+			}
+		}
+	}
 
 	/**
 	 * @param user_id

@@ -31,9 +31,26 @@ public class PlaylistController {
 	private UserDao ud;
 	
 	public void loadPlaylistsForUser(Model model, long userId) {
+		//get for this videostatus
 		List<Playlist> playlists = null;
 		try {
 			playlists=playlist.getPlaylistForUser(userId);
+			model.addAttribute("myPlaylists", playlists);
+		} catch (UserException e) {
+			// TODO handle
+			e.printStackTrace();
+			return;
+		} catch (SQLException e) {
+			// TODO handle
+			e.printStackTrace();
+			return;
+		}
+	}
+	public void loadPlaylistsForUserWithStatus(Model model, long userId,long videoId) {
+		//get for this videostatus
+		List<Playlist> playlists = null;
+		try {
+			playlists=playlist.getPlaylistForUserWithStatus(userId,videoId);
 			model.addAttribute("myPlaylists", playlists);
 		} catch (UserException e) {
 			// TODO handle
@@ -96,6 +113,7 @@ public class PlaylistController {
 				v.setUserName(videoOwner.getUsername());
 			}
 			req.setAttribute("videos", videos);
+			req.setAttribute("playlistName", playlistName);
 		} catch (UserException e) {
 			// TODO handle
 			e.printStackTrace();

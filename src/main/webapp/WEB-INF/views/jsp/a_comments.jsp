@@ -42,7 +42,7 @@ function getComparator(){
 	</ul>
 </div>
 <br>
-
+<hr>
 <div id="comments">
 <ul>
 	<li>

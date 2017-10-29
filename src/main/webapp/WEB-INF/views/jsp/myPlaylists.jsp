@@ -14,18 +14,19 @@
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
-				var add = document.getElementById("playlist".concat(playlistId));
-				if(add.alt==="notInPlaylist"){
-					add.alt="inPlaylist";
-					add.src="<c:url value="/pics/ok.png"/>";
-				}else{
-					add.alt="notInPlaylist";
-					add.src="<c:url value="/pics/not_ok.png"/>";
+				if (this.readyState == 4 && this.status == 200) {
+					var add = document.getElementById("playlist".concat(playlistId));
+					if(add.alt==="notInPlaylist"){
+						add.alt="inPlaylist";
+						add.src="<c:url value="/pics/ok.png"/>";
+					}else{
+						add.alt="notInPlaylist";
+						add.src="<c:url value="/pics/not_ok.png"/>";
+					}
 				}
 			};
 			var url = "addToPlaylist";
-			var param1 = "playlistId=";
-			var param = param1.concat(playlistId,"&videoId=",videoId);
+			var param = "playlistId="+playlistId+"&videoId="+videoId;
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			request.send(param);
@@ -99,7 +100,12 @@
 	  	<c:forEach items="${requestScope.myPlaylists}" var="playlist">
   			<ul onclick="addToPlaylist(${playlist.playlistId},${user.userId},${requestScope.mainVideo.videoId})">
 	  			<li>
-	    			<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >
+	  				<c:if test="${playlist.videoStatus == 1}">
+	    				<img alt="inPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/ok.png"/>" style="width: 22px; height: auto" >
+    				</c:if>
+    				<c:if test="${playlist.videoStatus != 1}">
+	    				<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >
+    				</c:if>
     			</li>
     			<li>
 	    			<p>${playlist.playlistName}</p>

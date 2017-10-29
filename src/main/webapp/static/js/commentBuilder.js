@@ -77,7 +77,8 @@ function comments(myUserId, video_id, comparator, part, commentsPerClick, allCom
  * @returns html for one comment
  */
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
-	var htmlOneComment='<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>';
+	var htmlOneComment="";
+	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner">');
