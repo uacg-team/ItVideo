@@ -98,6 +98,40 @@
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			request.send(param);
 		}
+		function likeButton(){
+		    var like = document.getElementById("like");
+		    var dislike = document.getElementById("dislike");
+		    if(like.alt==="like" && dislike.alt==="dislike"){
+		        like.alt="liked";
+		        like.src="<c:url value="/pics/liked.png"/>";
+		    }else if(like.alt==="like" && dislike.alt==="disliked"){
+		    	like.alt="liked";
+		    	like.src="<c:url value="/pics/liked.png"/>";
+		    	dislike.alt="dislike";
+		    	dislike.src="<c:url value="/pics/dislike.png"/>";
+		    }else{
+		        //like.alt=="liked"
+		        like.alt="like";
+		        like.src="<c:url value="/pics/like.png"/>";
+		    }
+		}
+		function dislikeButton(){
+			var like = document.getElementById("like");
+			var dislike = document.getElementById("dislike");
+			if(like.alt==="like" && dislike.alt==="dislike"){
+				dislike.alt="disliked";
+				dislike.src="<c:url value="/pics/disliked.png"/>";
+			}else if(dislike.alt==="dislike" && like.alt==="liked"){
+				dislike.alt="disliked";
+				dislike.src="<c:url value="/pics/disliked.png"/>";
+				like.alt="like";
+				like.src="<c:url value="/pics/like.png"/>";
+			}else{
+				//dislike.alt=="disliked"
+				dislike.alt="dislike";
+				dislike.src="<c:url value="/pics/dislike.png"/>";
+			}
+		}
 	</script>
 </head>
 <body>
