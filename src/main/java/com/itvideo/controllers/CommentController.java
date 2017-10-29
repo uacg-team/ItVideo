@@ -194,7 +194,7 @@ public class CommentController {
 		long commentId = Long.parseLong(req.getParameter("commentId"));
 
 		if (userId == 0) {
-			// status
+			//TODO status
 		} else {
 			try {
 				int like = Integer.parseInt(req.getParameter("like"));

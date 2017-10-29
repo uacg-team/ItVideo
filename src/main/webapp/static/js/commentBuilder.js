@@ -1,5 +1,5 @@
 /**
- * 
+ * AJAX call for videoId,myUserId comments
  * @param myUserId - for likes dislikes
  * @param allCommentsNumber - for show more button 
  * @param part - commentsPerClick*part starting point in search
@@ -8,8 +8,9 @@
  * @param startFrom -append html for div with this id
  * @returns 
  */
-function comments(myUserId, allCommentsNumber, part, commentsPerClick,video_id,startFrom){
+function comments(myUserId, video_id, comparator, part, commentsPerClick, allCommentsNumber){
 	//TODO add button show more if comments showed<all comments
+	//if startFrom!=undefined append to last comment
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -36,16 +37,24 @@ function comments(myUserId, allCommentsNumber, part, commentsPerClick,video_id,s
 				var url=comment.url;
 				// myVoteinfo
 				var vote=comment.vote;
-
-				htmlComments=htmlComments.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,myUserId));
+				var numberReplies=comment.numberReplies;
+				htmlComments=htmlComments.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId));
 				//if more comments show button show more
 			}
 			var videoComments = document.getElementById("comments");
 			videoComments.innerHTML =htmlComments;
 		}
 	}
-	var url="player/getCommentsWithVotes/"+video_id+"/"+part+"/"+commentsPerClick;
-	request.open("GET", "player/getCommentsWithVotes", true);
+	if (typeof myUserId === 'undefined') {
+	    myUserId = 0;
+	}
+	if (typeof comparator === 'undefined') {
+		comparator = 0;
+	}
+	//TODO delete player
+	//player/getCommentsWithVotes/{videoId}/{myUserId}/{compare}/{part}/{countReplies}
+	var url="getCommentsWithVotes/" + video_id + "/" + myUserId + "/"+comparator+"/" + part + "/" + commentsPerClick;
+	request.open("GET", url, true);
 	request.send();
 }
 /**
@@ -63,10 +72,11 @@ function comments(myUserId, allCommentsNumber, part, commentsPerClick,video_id,s
  * @param url
  * @param vote
  * @param date
+ * @param numberReplies
  * @param myUserId-depends from viewer
  * @returns html for one comment
  */
-function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,myUserId){
+function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
 	var htmlOneComment='<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>';
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
@@ -103,18 +113,114 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<br>');
+	htmlOneComment=htmlOneComment.concat('<br>');
 	//if hasReplies -add button show replies
+	if(numberReplies>0){
+		htmlOneComment=htmlOneComment.concat('<div id="viewReplies' + commentId + '">');
+			htmlOneComment=htmlOneComment.concat('<button onclick="showReplies(' + commentId + ',' + myUserId + ',' + comparator + ')">show replies('+numberReplies+')</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
 	//add button reply
 	return htmlOneComment;
 }
 
-function buildReply(commentId, text, userId, videoId, replyId, replies, hasReplies, likes, dislikes, username, url, vote, date, myUserId){
+function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId){
 	//build html for comment
+	var htmlOneComment='<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>';
+	htmlOneComment=htmlOneComment.concat('<div class="reply-box">');
+	htmlOneComment=htmlOneComment.concat('<p class="reply-header"><span>' + username + '</span></p>');
+	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner">');
+	htmlOneComment=htmlOneComment.concat('<p>' + text + '</p><br>');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
+	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="like-buttons">');
+	htmlOneComment=htmlOneComment.concat('<ul>');
+	htmlOneComment=htmlOneComment.concat('<li>');
+	htmlOneComment=htmlOneComment.concat('<p id="likes'+ commentId + '">' + likes + '</p>');
+	htmlOneComment=htmlOneComment.concat('</li>');
+	htmlOneComment=htmlOneComment.concat('<li>');
+	if(vote === 1){
+		htmlOneComment=htmlOneComment.concat('<img alt="liked" id="like' + commentId + '" src="/ItVideo/pics/liked.png" style="width: 25px; height: auto" onclick="likeComment(' + commentId + ',' + myUserId + ')">');
+	}else{
+		htmlOneComment=htmlOneComment.concat('<img alt="like" id="like' + commentId + '" src="/ItVideo/pics/like.png" style="width: 25px; height: auto" onclick="likeComment(' + commentId + ',' + myUserId + ')">');
+	}
+	htmlOneComment=htmlOneComment.concat('</li>');
+	htmlOneComment=htmlOneComment.concat('<li>');
+	htmlOneComment=htmlOneComment.concat('<p id="dislikes' + commentId + '">' + dislikes + '</p>');
+	htmlOneComment=htmlOneComment.concat('</li>');
+	htmlOneComment=htmlOneComment.concat('<li>');
+	if(vote === -1){
+		htmlOneComment=htmlOneComment.concat('<img alt="disliked" id="dislike' + commentId + '" src="/ItVideo/pics/disliked.png" style="width: 25px; height: auto" onclick="dislikeComment(' + commentId + ',' + myUserId + ')">');
+	}else{
+		htmlOneComment=htmlOneComment.concat('<img alt="dislike" id="dislike' + commentId + '" src="/ItVideo/pics/dislike.png" style="width: 25px; height: auto" onclick="dislikeComment(' + commentId + ',' + myUserId + ')">');
+	}
+	htmlOneComment=htmlOneComment.concat('</li>');
+	htmlOneComment=htmlOneComment.concat('</ul>');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<br>');
+	
+	return htmlOneComment;
+}
+//AJAX get replies and post after comment
+function showReplies(commentId, myUserId, comparator){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var listComments = JSON.parse(this.responseText);
+			var commentsCount = listComments.length;
+			var htmlComments="";
+			for (var i = 0; i < commentsCount; i++) {
+				var comment = listComments[i];;
+				//parsing one comment
+				var rcommentId=comment.commentId;
+				var text = comment.text;
+				var userId=comment.userId;
+				var videoId=comment.videoId;
+				var replyId=comment.replyId;
+				var date = comment.date;
+				//replies
+				var replies=comment.replies;
+				var hasReplies=comment.hasReplies;
+				// likes/dislikes
+				var likes=comment.likes;
+				var dislikes=comment.dislikes;
+				// userInfo
+				var username=comment.username;
+				var url=comment.url;
+				// myVoteinfo
+				var vote=comment.vote;
+				var numberReplies=comment.numberReplies;
+				htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
+				
+			}
+		var div = document.getElementById('viewReplies'+commentId);
+	    div.innerHTML=htmlComments;
+		}
+	}
+	if (typeof myUserId === 'undefined') {
+	    myUserId=0;
+	}
+	if (typeof comparator === 'undefined') {
+		comparator=0;
+	}
+	//TODO delete player
+	var url="getRepliesWithVotes/"+commentId+"/"+myUserId+"/"+comparator;
+	request.open("GET", url, true);
+	request.send();
+	//show all replies for comment
 }
 
-function htmlShowMoreComments(){
-	
+function htmlShowMoreComments(commentsShow,allCommentsNumber){
+	//show button if there is more comments
 }
-function htmlShowReplies(){
-	
+
+function showButton(insertionDivName,deleteDivElement,html){
+	//remove button with name deleteDivElement
+	var elem = document.getElementById(deleteDivElement);
+    elem.parentNode.removeChild(elem);
+	//add html in div with name insertionDivName
+    var testDiv = document.getElementById(insertionDivName);
+    testDiv.insertAdjacentHTML('beforeend', html);
 }

@@ -533,7 +533,8 @@
 		</c:if>
 		<br>
 		<!-- asynchrn comments -->
-		<jsp:include page="asinch_comments.jsp"></jsp:include>
+<%-- 		<jsp:include page="asinch_comments.jsp"></jsp:include> --%>
+		<jsp:include page="a_comments.jsp"></jsp:include>
 		
 	
 	

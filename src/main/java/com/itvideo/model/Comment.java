@@ -14,6 +14,7 @@ public class Comment {
 	private long replyId;
 
 	// replies
+	@Deprecated
 	private List<Comment> replies;
 	private boolean hasReplies;
 
@@ -27,7 +28,9 @@ public class Comment {
 
 	// myVoteinfo
 	private int vote;
-
+	
+	//number replies
+	private long numberReplies;
 	/**
 	 * get all fields default, use only by CommentDAO
 	 */
@@ -164,5 +167,12 @@ public class Comment {
 	public void setVote(int vote) {
 		this.vote = vote;
 	}
-
+	
+	public long getNumberReplies() {
+		return numberReplies;
+	}
+	
+	public void setNumberReplies(long numberReplies) {
+		this.numberReplies = numberReplies;
+	}
 }
