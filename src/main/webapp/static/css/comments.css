@@ -112,3 +112,11 @@ margin: 5px 0;
 	float: left;
 	display: inline;
 }
+.like-buttons li{
+	float: left;
+	display: inline;
+}
+.like-buttons ul{
+	float: left;
+	display: inline;
+}

@@ -275,7 +275,7 @@ public class PlaylistDao {
 				while (rs.next()) {
 					Playlist p = new Playlist(rs.getLong("playlist_id"), rs.getString("playlist_name"),
 							rs.getLong("user_id"));
-					playslist.add(p);
+					playlist.add(p);
 				}
 			}
 		}

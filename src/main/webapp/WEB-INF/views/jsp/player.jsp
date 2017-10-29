@@ -79,7 +79,9 @@
 		
 		<br>
 		<!-- myPlaylists -->
-		<jsp:include page="myPlaylists.jsp"></jsp:include>
+		<c:if test="${not empty sessionScope.user}">
+			<jsp:include page="myPlaylists.jsp"></jsp:include>
+		</c:if>
 		<br>
 		<!-- asynchrn comments -->
 		<jsp:include page="asinch_comments.jsp"></jsp:include>
