@@ -461,18 +461,8 @@
   				poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" data-setup="{}">
 		  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
 		</video>
-			
-		<br>
+
 		
-		
-		<%-- 	
-		<!-- normal video player -->
-		<video poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" width="800" height="600" controls="controls" preload="auto" >
-		  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
-		</video>
-		 --%>
-		
-		<br>
 		<%-- 
 		<!-- Like video button -->
 		<form action="<c:url value="/videoLike" />" method="post">
@@ -522,10 +512,9 @@
 				</li>
 			</ul>
 		</div>
-		<br>
-		
 		</div>
-		 			
+		
+	<div class="inline">		
 		<br>
 		<!-- myPlaylists -->
 		<c:if test="${not empty sessionScope.user}">
@@ -533,27 +522,27 @@
 		</c:if>
 		<br>
 		<!-- asynchrn comments -->
-<%-- 		<jsp:include page="asinch_comments.jsp"></jsp:include> --%>
+		<%-- <jsp:include page="asinch_comments.jsp"></jsp:include> --%>
 		<jsp:include page="a_comments.jsp"></jsp:include>
 		
+	</div> 	
 	
-	
-
-	<!-- related videos -->
-	<h1>RELATED</h1>
-	<c:forEach items="${requestScope.related}" var="relVideo">	
-	<div class="inline">
-		Name: <c:out value="${relVideo.name }"></c:out><br>
-		<a href="<c:url value= "/player/${relVideo.videoId}" />">	
-			<video width="320" height="240">
-		  		<source src="/video/${relVideo.userId}" type="video/mp4">
-			</video>
-		</a><br>	
-		Tags: <c:forEach items="${relVideo.tags}" var="tag">	
-			<c:out value="#${tag.tag } "></c:out>
+	<div class="inline">	
+		<!-- related videos -->
+		<h1>RELATED</h1>
+		<c:forEach items="${requestScope.related}" var="relVideo">	
+		<div class="inline">
+			Name: <c:out value="${relVideo.name }"></c:out><br>
+			<a href="<c:url value= "/player/${relVideo.videoId}" />">	
+				<video width="320" height="240">
+			  		<source src="/video/${relVideo.userId}" type="video/mp4">
+				</video>
+			</a><br>	
+			Tags: <c:forEach items="${relVideo.tags}" var="tag">	
+				<c:out value="#${tag.tag } "></c:out>
+			</c:forEach>
+		</div>
 		</c:forEach>
-	</div>
-	</c:forEach>
-
+	</div> 	
 </body>
 </html>
