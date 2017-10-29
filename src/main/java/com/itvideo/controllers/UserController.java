@@ -5,21 +5,17 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.support.ServletContextResource;
 
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -31,7 +27,6 @@ import com.itvideo.model.utils.Hash;
 import com.itvideo.model.utils.PasswordGenerator;
 import com.itvideo.model.utils.Resources;
 import com.itvideo.model.utils.SendEmail;
-import com.mysql.fabric.Response;
 
 @Controller
 public class UserController {
@@ -77,14 +72,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/updateUser/{userId}", method = RequestMethod.GET)
-	public String updateUserGet(HttpSession session, @PathVariable("userId") long userId) {
-		User u = (User) session.getAttribute("user");
-		if (u == null) {
-			return "redirect:/login";
-		}
-		if (u.getUserId() != userId) {
-			return "redirect:/viewProfile/"+userId;
-		}
+	public String updateUserGet() {
 		return "updateUser";
 	}
 	
@@ -118,6 +106,19 @@ public class UserController {
 			@RequestParam("gender") String gender ) {
 		try {
 			User u = (User) session.getAttribute("user");
+		
+			if (!username.equals("")) {
+				if (ud.existsUser(username)) {
+					model.addAttribute("error", username + " is not available");
+					return "updateUser";
+				} 
+			}
+			
+			if (!email.equals("")) {
+				if (ud.existsEmail(email)) {
+					throw new UserException(email + " already exist");
+				}
+			}
 			
 			if (!firstName.equals("")) {
 				u.setFirstName(firstName);
@@ -133,6 +134,8 @@ public class UserController {
 				gender = null;
 			}
 			
+			u.setEmail(email);
+			u.setUsername(username);
 			u.setGender(gender);
 			ud.updateUser(u);
 		} catch (UserException e) {

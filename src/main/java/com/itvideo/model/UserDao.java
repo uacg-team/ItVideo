@@ -78,16 +78,18 @@ public class UserDao {
 	}
 
 	public void updateUser(User u) throws SQLException, UserException, UserNotFoundException {
-		String sql = "UPDATE users SET facebook = ?, password = ?, email = ?, first_name = ?, last_name = ?, avatar_url = ?, gender = ? WHERE user_id = ? ;";
+		String sql = "UPDATE users SET username = ?, password = ?, facebook = ?, password = ?, email = ?, first_name = ?, last_name = ?, avatar_url = ?, gender = ? WHERE user_id = ? ;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setString(1, u.getFacebook());
+			ps.setString(1, u.getUsername());
 			ps.setString(2, u.getPassword());
-			ps.setString(3, u.getEmail());
-			ps.setString(4, u.getFirstName());
-			ps.setString(5, u.getLastName());
-			ps.setString(6, u.getAvatarUrl());
-			ps.setString(7, u.getGender());
-			ps.setLong(8, u.getUserId());
+			ps.setString(3, u.getFacebook());
+			ps.setString(4, u.getPassword());
+			ps.setString(5, u.getEmail());
+			ps.setString(6, u.getFirstName());
+			ps.setString(7, u.getLastName());
+			ps.setString(8, u.getAvatarUrl());
+			ps.setString(9, u.getGender());
+			ps.setLong(10, u.getUserId());
 			int affectedRows = ps.executeUpdate();
 			if (affectedRows == 0) {
 				throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
@@ -108,6 +110,19 @@ public class UserDao {
 		}
 	}
 	
+	public boolean existsEmail(String email) throws SQLException {
+		String sql = "SELECT * FROM users WHERE email = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, email);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return true;
+				}
+				return false;
+			}
+		}
+	}
+
 	public User getUser(String username) throws SQLException, UserNotFoundException, UserException {
 		String sql = "SELECT * FROM users WHERE username = ?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {

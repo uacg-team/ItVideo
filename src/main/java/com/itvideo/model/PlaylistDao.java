@@ -268,7 +268,6 @@ public class PlaylistDao {
 
 	public List<Playlist> searchPlaylist(String searchPlaylistName) throws SQLException {
 		List<Playlist> playslist = new ArrayList<>();
-		System.out.println(searchPlaylistName);
 		String sql = "select * from playlists where playlist_name like ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setString(1, "%" + searchPlaylistName.toLowerCase().trim() + "%");
@@ -280,7 +279,6 @@ public class PlaylistDao {
 				}
 			}
 		}
-		System.out.println(playslist);
 		return playslist;
 	}
 	

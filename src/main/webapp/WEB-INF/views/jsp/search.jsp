@@ -73,7 +73,7 @@
 					<h1>Playlist found</h1>
 					<div class="inline">
 						<c:forEach items="${playlists}" var="playlist">
-							<c:out value="${playlist.playlistName}"></c:out>
+							<c:out value="${playlist.playlistName}6"></c:out>
 							<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${playlist.userId}"/>>
 								<button>View</button>
 							</a>

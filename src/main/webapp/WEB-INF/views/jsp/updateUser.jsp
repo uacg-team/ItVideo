@@ -22,9 +22,25 @@
 	
 	<!-- update user -->
 	<form action="updateUser" method="post">
-	 	username: <input type="text" value="${sessionScope.user.username }" name="username"><br>
-	 	email: <input type="text" value="${sessionScope.user.email }" name="email"><br>
-
+	 	username: <input type="text" placeholder="${sessionScope.user.username }" name="username"><br>
+	 	
+	 	  <c:if test="${usernameError != null }">
+			<div class="err">
+				<c:out value="${usernameError}"></c:out><br>
+			</div>
+	      </c:if>
+	 	
+	 	
+	 	email: <input type="text" placeholder="${sessionScope.user.email }" name="email"><br>
+	 	
+	 	  <c:if test="${emailError != null }">
+			<div class="err">
+				<c:out value="${emailError}"></c:out><br>
+			</div>
+	      </c:if>
+	 	newPassword: <input type="text" name="newPassword"><br>
+	 	newPasswordConfirm: <input type="text" name="newPasswordConfirm"><br>
+	 	
 	 	facebook<input type="text" placeholder="${sessionScope.user.facebook }" name="facebook"><br>
 	 	First Name<input type="text" placeholder="${sessionScope.user.firstName }" name="firstName"><br>
 	 	Last Name<input type="text" placeholder="${sessionScope.user.lastName }" name="lastName"><br>
@@ -37,8 +53,6 @@
 		  <option <c:if test="${sessionScope.user.gender == \"Custom\" }"> selected </c:if> value="Custom">Custom</option>
 		</select>
 		<br>
-	 	newPassword: <input type="text" name="newPassword"><br>
-	 	newPasswordConfirm: <input type="text" name="newPasswordConfirm"><br>
 	 	currentPassword: <input type="text" name="oldPassword" required="required"><br>
  		<input type="submit" value="Update">
 	</form>

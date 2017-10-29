@@ -46,7 +46,6 @@ public class MainController {
 		List<Video> videos = null;
 		List<User> users = null;
 		List<Playlist> playlists = null;
-		System.out.println(search);
 		try {
 			if (search != null) {
 				videos = vd.searchVideo(search);
