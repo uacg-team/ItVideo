@@ -107,25 +107,50 @@ public class UserController {
 		try {
 			User u = (User) session.getAttribute("user");
 		
+			if (!Hash.getHashPass(oldPassword).equals(u.getPassword())) {
+				model.addAttribute("errorPassword", "wrong password");
+				return "updateUser";
+			}
+			
 			if (!username.equals("")) {
 				if (ud.existsUser(username)) {
-					model.addAttribute("error", username + " is not available");
+					model.addAttribute("errorUsername", username + " is not available");
 					return "updateUser";
 				} 
 			}
 			
 			if (!email.equals("")) {
 				if (ud.existsEmail(email)) {
-					throw new UserException(email + " already exist");
+					model.addAttribute("errorEmail", email + " already exist");
+					return "updateUser";
 				}
 			}
 			
+			if (!newPassword.equals(newPasswordConfirm)) {
+				model.addAttribute("errorNewPassword", "new passwords differs");
+				return "updateUser";
+			}
+
+			if (!username.equals("")) {
+				u.setUsername(username);
+			}
+			
+			if (!email.equals("")) {
+				u.setEmail(email);
+			}
+			
+			if (!newPassword.equals("")) {
+				u.setPasswordNoValidation(Hash.getHashPass(newPassword));
+			}
+
 			if (!firstName.equals("")) {
 				u.setFirstName(firstName);
 			}
+			
 			if (!lastName.equals("")) {
 				u.setLastName(lastName);
 			}
+			
 			if (!facebook.equals("")) {
 				u.setFacebook(facebook);
 			}
@@ -134,8 +159,6 @@ public class UserController {
 				gender = null;
 			}
 			
-			u.setEmail(email);
-			u.setUsername(username);
 			u.setGender(gender);
 			ud.updateUser(u);
 		} catch (UserException e) {

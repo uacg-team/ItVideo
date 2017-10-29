@@ -24,22 +24,28 @@
 	<form action="updateUser" method="post">
 	 	username: <input type="text" placeholder="${sessionScope.user.username }" name="username"><br>
 	 	
-	 	  <c:if test="${usernameError != null }">
+	 	  <c:if test="${errorUsername != null }">
 			<div class="err">
-				<c:out value="${usernameError}"></c:out><br>
+				<c:out value="${errorUsername}"></c:out><br>
 			</div>
 	      </c:if>
 	 	
 	 	
 	 	email: <input type="text" placeholder="${sessionScope.user.email }" name="email"><br>
 	 	
-	 	  <c:if test="${emailError != null }">
+	 	  <c:if test="${errorEmail != null }">
 			<div class="err">
-				<c:out value="${emailError}"></c:out><br>
+				<c:out value="${errorEmail}"></c:out><br>
 			</div>
 	      </c:if>
 	 	newPassword: <input type="text" name="newPassword"><br>
 	 	newPasswordConfirm: <input type="text" name="newPasswordConfirm"><br>
+	 	  <c:if test="${errorNewPassword != null }">
+			<div class="err">
+				<c:out value="${errorNewPassword}"></c:out><br>
+			</div>
+	      </c:if>
+	 	
 	 	
 	 	facebook<input type="text" placeholder="${sessionScope.user.facebook }" name="facebook"><br>
 	 	First Name<input type="text" placeholder="${sessionScope.user.firstName }" name="firstName"><br>
@@ -54,6 +60,11 @@
 		</select>
 		<br>
 	 	currentPassword: <input type="text" name="oldPassword" required="required"><br>
+	 	  <c:if test="${errorPassword != null }">
+			<div class="err">
+				<c:out value="${errorPassword}"></c:out><br>
+			</div>
+	      </c:if>
  		<input type="submit" value="Update">
 	</form>
 	
