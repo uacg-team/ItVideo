@@ -49,6 +49,7 @@ public class FileController {
 					Resources.VIDEO_URL + 
 					File.separator + 
 					video.getLocationUrl());
+			
 			final InputStream videoFileStream = new FileInputStream(videoFile);
 			return (os) -> {
 				readAndWrite(videoFileStream, os);

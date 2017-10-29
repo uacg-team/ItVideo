@@ -29,7 +29,7 @@ public class VideoController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/player/videoAsyncLike", method = RequestMethod.POST)
-	public void videoAsyncLike(HttpSession session,
+	public void videoAsyncLike(HttpSession session, Model model,
 			@RequestParam("like") int like,
 			@RequestParam("videoId") int videoId,
 			@RequestParam("userId") int userId) {
@@ -43,13 +43,13 @@ public class VideoController {
 					vd.disLike(videoId, userId);
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
 	@RequestMapping(value = "/videoLike", method = RequestMethod.POST)
+	@Deprecated
 	public String likeVideo(HttpSession session, HttpServletRequest request) {
 		User u = (User) session.getAttribute("user");
 		if (u == null) {
@@ -86,15 +86,19 @@ public class VideoController {
 			model.addAttribute("username", user.getUsername());
 			model.addAttribute("userId", user.getUserId());
 		} catch (VideoNotFoundException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "VideoNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "editVideo";
 	}
 	
 	@RequestMapping(value = "/editVideo/{videoId}", method = RequestMethod.POST)
-	public String editVideoPost( 
+	public String editVideoPost( Model model,
 			@PathVariable("videoId") long videoId,
 			@RequestParam("name") String newName, 
 			@RequestParam("description") String newDesc, 
@@ -112,11 +116,17 @@ public class VideoController {
 			v.setPrivacyId(newPrivacy);
 			vd.updateVideo(v);
 		} catch (VideoNotFoundException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "VideoNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (VideoException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "VideoException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "redirect:/player/"+videoId;
 	}
@@ -124,9 +134,7 @@ public class VideoController {
 	@RequestMapping(value = "/deleteVideo", method = RequestMethod.POST)
 	public String deleteVideoPost(@RequestParam("videoId") long videoId) {
 		try {
-			//TODO: delete from file system
 			Resources.deleteVideo(vd.getVideo(videoId));
-			
 			vd.deleteVideo(videoId);
 		} catch (SQLException e) {
 			e.printStackTrace();

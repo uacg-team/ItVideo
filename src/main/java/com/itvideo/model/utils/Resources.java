@@ -1,5 +1,7 @@
 package com.itvideo.model.utils;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,23 +14,20 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.model.Picture;
-import org.jcodec.containers.y4m.Y4MDemuxer;
 import org.jcodec.scale.AWTUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 
 import com.itvideo.model.User;
 import com.itvideo.model.Video;
-import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
+import com.itvideo.model.exceptions.video.VideoException;
 
 
 public abstract class Resources {
@@ -64,32 +63,26 @@ public abstract class Resources {
 	public static void writeFile(String absolutePath, InputStream inStream) throws IOException {
 		File myFile = new File(absolutePath);
 		if (!myFile.exists()) {
-			System.out.println(absolutePath);
 			myFile.createNewFile();
 		}
 		Files.copy(inStream, myFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
+		inStream.close();
 	}
 
 	public static void writeAvatar(User u, Part image) throws IOException, SQLException, UserException, UserNotFoundException {
 		String fileName = Paths.get(image.getSubmittedFileName()).getFileName().toString();
 		String absolutePath = Resources.ROOT + File.separator + u.getUserId()+ File.separator + Resources.IMAGE_URL+ File.separator + fileName;
-		System.out.println("Resources:writeImage:absolutePath:"+absolutePath);
+//		System.out.println("Resources:writeImage:absolutePath:"+absolutePath);
 		write(image, absolutePath);
 	}
 	
 	public static void writeVideo(User u, Part file) throws IOException {
 		String fileName = Paths.get(file.getSubmittedFileName()).getFileName().toString();
 		String absolutePath = Resources.ROOT + File.separator + u.getUserId()+ File.separator + Resources.VIDEO_URL+ File.separator + fileName;
-		System.out.println("Resources:writeVideo:absolutePath:"+absolutePath);
+//		System.out.println("Resources:writeVideo:absolutePath:"+absolutePath);
 		write(file, absolutePath);
 		//String path = Resources.ROOT + File.separator + u.getUserId()+ File.separator + Resources.VIDEO_URL+ File.separator;
 		//generateThumbnail(fileName, path);
-	}
-
-	public static void generateThumbnail(String fileName, String path) throws IOException, JCodecException {
-		Picture picture = FrameGrab.getFrameFromFile(new File(path+fileName), FRAME_NUMBER);
-		BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
-		ImageIO.write(bufferedImage, "png", new File(path+fileName.substring(fileName.length()-3, fileName.length())));
 	}
 	
 	private static void write(Part file, String absolutePath) throws IOException {
@@ -101,6 +94,8 @@ public abstract class Resources {
 		}
 		Files.copy(inputStream, myFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
 		inputStream.close();
+		inputStream = null;
+		System.gc();
 	}
 	
 	private static void read(String absolutePath, Long userId, HttpServletResponse response) {
@@ -118,36 +113,51 @@ public abstract class Resources {
 	public static void readAvatar(String filename, Long userId, HttpServletResponse response) throws IOException {
 		String absolutePath = Resources.ROOT + File.separator + userId + File.separator + Resources.IMAGE_URL
 				+ File.separator + filename;
-		System.out.println("Resources:readImage:absolutePath:"+absolutePath);
+//		System.out.println("Resources:readImage:absolutePath:"+absolutePath);
 		read(absolutePath, userId, response);
 	}
 
 	public static void readVideo(String url, Long userId, HttpServletResponse response) throws IOException {
 		String absolutePath = Resources.ROOT + File.separator + userId + File.separator + Resources.VIDEO_URL+ File.separator + url;
-		System.out.println("Resources:readVideo:absolutePath:"+absolutePath);
+//		System.out.println("Resources:readVideo:absolutePath:"+absolutePath);
 		read(absolutePath, userId, response);
+	}
+	
+	public static void main(String[] args) throws VideoException {
+		Video v = new Video("name", "SampleVideo_1280x720_10mb.mp4", 1, 1, null);
+		deleteVideo(v);
 	}
 
 	public static void deleteVideo(Video v) {
 		String absoluteVideoPath = Resources.ROOT + File.separator +v.getUserId() + File.separator + Resources.VIDEO_URL+ File.separator + v.getLocationUrl();
 		String absoluteThumbnailPath = Resources.ROOT + File.separator +v.getUserId() + File.separator + Resources.VIDEO_URL+ File.separator + v.getThumbnailUrl();
-	
+		
 		File video = new File(absoluteVideoPath);
 		File thumbnail = new File(absoluteThumbnailPath);
 		
-		video.delete();
+		try {
+			video.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		thumbnail.delete();
+		video.delete();
 	}
 
-	public static void initAvatar(User u, InputStream is) throws IOException {
- 		//InputStream	in = new ClassPathResource("/static/img/avatar.png").getInputStream();
+	public static void initAvatar(User u, HttpSession session) throws IOException {
+		InputStream in = session.getServletContext().getResourceAsStream("/static/img/avatar.png");
 		String absolutePath = Resources.ROOT + File.separator + u.getUserId() + File.separator + Resources.IMAGE_URL
 				+ File.separator + "avatar.png";
 		File myFile = new File(absolutePath);
-		myFile.mkdirs();
+		
+		myFile.getParentFile().mkdirs(); 
 		myFile.createNewFile();
 		
-		Files.copy(is, myFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		
+		Files.copy(in, myFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		in.close();
+		in = null;
+		System.gc();
 	}
 }

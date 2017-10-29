@@ -289,8 +289,7 @@ public class UserController {
 			ud.createUser(u);
 			session.setAttribute("user", u);
 			
-			InputStream in = session.getServletContext().getResourceAsStream("/static/img/avatar.png");
-			Resources.initAvatar(u,in);
+			Resources.initAvatar(u,session);
 			
 			return "redirect:/main";
 		} catch (SQLException e) {
