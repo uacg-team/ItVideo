@@ -107,12 +107,15 @@ public class VideoController {
 		
 		try {
 			Video v = vd.getVideo(videoId);
-			if (newName != null) {
+			
+			if (!newName.equals("")) {
 				v.setName(newName);
 			}
-			if (newDesc != null) {
+			
+			if (!newDesc.equals("")) {
 				v.setDescription(newDesc);
 			}
+			
 			v.setPrivacyId(newPrivacy);
 			vd.updateVideo(v);
 		} catch (VideoNotFoundException e) {
