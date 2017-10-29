@@ -3,47 +3,53 @@
  * @param userId-depends from viewer id
  * @returns
  */
-function likeComment(commentId,userId) {
-	if (typeof userId === 'undefined') {
+function likeComment(commentId,myUserId) {
+	if (typeof myUserId === 'undefined') {
+	    alert("First login!");
+	    return;
+	}
+	if (myUserId === 0) {
 	    alert("First login!");
 	    return;
 	}
 	var request = new XMLHttpRequest();
 	request.onreadystatechange =  function() {
-		var like = document.getElementById("like".concat(commentId));
-	    var dislike = document.getElementById("dislike".concat(commentId));
-	   
-	    var likes = document.getElementById("likes".concat(commentId));
-	    var countLikes = likes.innerHTML;
-	    var dislikes = document.getElementById("dislikes".concat(commentId));
-	    var countDislikes = dislikes.innerHTML;
-	    
-	    if(like.alt==="like" && dislike.alt==="dislike"){
-	    	
-	    	countLikes++;
-	    	likes.innerHTML=countLikes;
-	        like.alt="liked";
-	        like.src="/ItVideo/pics/liked.png";
-	    }else if(like.alt==="like" && dislike.alt==="disliked"){
-	    	countLikes++;
-	    	likes.innerHTML=countLikes;
-	    	countDislikes--;
-	    	dislikes.innerHTML=countDislikes;
-	    	like.alt="liked";
-	    	like.src="/ItVideo/pics/liked.png";
-	    	dislike.alt="dislike";
-	    	dislike.src="/ItVideo/pics/dislike.png";
-	    }else{
-	        //like.alt=="liked"
-	        countLikes--;
-	        likes.innerHTML=countLikes;
-	        like.alt="like";
-	        like.src="/ItVideo/pics/like.png";
-	    }
+		if (this.readyState == 4 && this.status == 200) {
+			var like = document.getElementById("like".concat(commentId));
+		    var dislike = document.getElementById("dislike".concat(commentId));
+		   
+		    var likes = document.getElementById("likes".concat(commentId));
+		    var countLikes = likes.innerHTML;
+		    var dislikes = document.getElementById("dislikes".concat(commentId));
+		    var countDislikes = dislikes.innerHTML;
+		    
+		    if(like.alt==="like" && dislike.alt==="dislike"){
+		    	
+		    	countLikes++;
+		    	likes.innerHTML=countLikes;
+		        like.alt="liked";
+		        like.src="/ItVideo/pics/liked.png";
+		    }else if(like.alt==="like" && dislike.alt==="disliked"){
+		    	countLikes++;
+		    	likes.innerHTML=countLikes;
+		    	countDislikes--;
+		    	dislikes.innerHTML=countDislikes;
+		    	like.alt="liked";
+		    	like.src="/ItVideo/pics/liked.png";
+		    	dislike.alt="dislike";
+		    	dislike.src="/ItVideo/pics/dislike.png";
+		    }else{
+		        //like.alt=="liked"
+		        countLikes--;
+		        likes.innerHTML=countLikes;
+		        like.alt="like";
+		        like.src="/ItVideo/pics/like.png";
+		    }
+		}
 	};
 	var url = "/ItVideo/player/commentLikeTest";
 	var param1 = "commentId=";
-	var param =param1.concat(commentId,"&like=1","&userId=",userId);
+	var param =param1.concat(commentId,"&like=1","&userId=",myUserId);
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
@@ -53,8 +59,12 @@ function likeComment(commentId,userId) {
  * @param userId-depends from viewer id
  * @returns
  */
-function dislikeComment(commentId,userId) {
-	if (typeof userId === 'undefined') {
+function dislikeComment(commentId,myUserId) {
+	if (typeof myUserId === 'undefined') {
+	    alert("First login!");
+	    return;
+	}
+	if (myUserId === 0) {
 	    alert("First login!");
 	    return;
 	}
@@ -92,7 +102,7 @@ function dislikeComment(commentId,userId) {
 	};
 	var url = "/ItVideo/player/commentLikeTest";
 	var param1 = "commentId=";
-	var param =param1.concat(commentId,"&like=-1","&userId=",userId);
+	var param =param1.concat(commentId,"&like=-1","&userId=",myUserId);
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);

@@ -4,13 +4,12 @@ import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itvideo.model.Comment;
@@ -92,20 +91,11 @@ public class CommentsService {
 		}
 		return null;
 	}
-
-	@RequestMapping(value = "player/getCommentsWithVotes", method = RequestMethod.GET)
-	public List<Comment> getCommentsWithVotesForVideo(HttpServletRequest req) {
-//		Long videoId = Long.parseLong(req.getParameter("videoId"));
-//		Long myUserId = Long.parseLong(req.getParameter("userId"));
-//		String compare = req.getParameter("comparator");
-		
-		
-		long videoId=23;
-		long myUserId=6;
-		String compare = null;
-		
-		
-		
+	
+	@ResponseBody
+	@RequestMapping(value = "player/getCommentsWithVotes/{videoId}/{myUserId}/{compare}/{part}/{countReplies}", method = RequestMethod.GET)
+	public List<Comment> getCommentsWithVotesForVideo(@PathVariable Long videoId,@PathVariable Long myUserId,@PathVariable String compare,@PathVariable Integer part,@PathVariable Integer countReplies) {
+		//TODO work with part,compare,...
 		if(compare==null) {
 			compare="";
 		}
@@ -128,19 +118,10 @@ public class CommentsService {
 		return comments;
 	}
 	//tested
-	@RequestMapping(value = "player/getRepliesWithVotes", method = RequestMethod.GET)
-	public List<Comment> getRepliesWithVotesForComment(HttpServletRequest req) {
-//		Long videoId = Long.parseLong(req.getParameter("videoId"));
-//		Long myUserId = Long.parseLong(req.getParameter("userId"));
-//		String compare = req.getParameter("comparator");
-		
-		
-		long commentId=46;
-		long myUserId=6;
-		String compare = null;
-		
-		
-		
+	@ResponseBody
+	@RequestMapping(value = "player/getRepliesWithVotes/{commentId}/{myUserId}/{compare}", method = RequestMethod.GET)
+	public List<Comment> getRepliesWithVotesForComment(@PathVariable Long commentId,@PathVariable Long myUserId,@PathVariable String compare) {
+
 		if(compare==null) {
 			compare="";
 		}

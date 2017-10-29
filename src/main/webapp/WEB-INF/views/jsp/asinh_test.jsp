@@ -23,7 +23,7 @@ always on top for new comment! will be added in this section after comment
 </div>
 show all comments
 <div id="comments">
-<button onclick="comments(6)">info</button>
+<button onclick="comments(6,23,'comp',1,2,50)">info</button>
 </div>
 <div id="test">
 oppp
