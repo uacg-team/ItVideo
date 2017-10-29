@@ -27,8 +27,14 @@ public class Video implements Serializable {
 	private String userName;
 	private String privacy;
 	
-	private Set<Tag> tags = new HashSet<>();
+	private int likes;
+	private int dislikes;
+	private User owner; 
 	
+	private int vote;
+
+	private Set<Tag> tags = new HashSet<>();
+
 	Video(long videoId, String name, int views, LocalDateTime date, String locationUrl, long userId,
 			String thumbnailUrl, String description, long privacyId, Set<Tag> tags) {
 		this.videoId = videoId;
@@ -54,7 +60,7 @@ public class Video implements Serializable {
 		this.date = LocalDateTime.now();
 		this.views = 0;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -68,35 +74,47 @@ public class Video implements Serializable {
 			return false;
 		return true;
 	}
-	
+
 	public LocalDateTime getDate() {
 		return this.date;
 	}
-	
+
 	public String getDescription() {
 		return this.description;
 	}
 
+	public int getDislikes() {
+		return dislikes;
+	}
+
+	public int getLikes() {
+		return likes;
+	}
 
 	public String getLocationUrl() {
 		return locationUrl;
 	}
-
+	
 	public String getName() {
 		return this.name;
 	}
-
+	
+	public User getOwner() {
+		return owner;
+	}
+	
 	public String getPrivacy() {
 		return privacy;
 	}
-
+	
 	public long getPrivacyId() {
 		return this.privacyId;
 	}
-
+	
 	public Set<Tag> getTags() {
 		return this.tags;
 	}
+
 
 	public String getThumbnailUrl() {
 		return this.thumbnailUrl;
@@ -116,6 +134,10 @@ public class Video implements Serializable {
 
 	public int getViews() {
 		return this.views;
+	}
+
+	public int getVote() {
+		return vote;
 	}
 
 	@Override
@@ -141,6 +163,14 @@ public class Video implements Serializable {
 		this.description = description;
 	}
 
+	public void setDislikes(int dislikes) {
+		this.dislikes = dislikes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
 	public void setLocationUrl(String locationUrl) throws VideoException {
 		if (name == null || name.isEmpty()) {
 			throw new VideoException(VideoException.INVALID_LOCATION);
@@ -157,7 +187,11 @@ public class Video implements Serializable {
 		}
 		this.name = name;
 	}
-	
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
 	public void setPrivacy(String privacy) {
 		this.privacy = privacy;
 	}
@@ -168,7 +202,7 @@ public class Video implements Serializable {
 		}
 		this.privacyId = privacyId;
 	}
-
+	
 	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
@@ -190,13 +224,17 @@ public class Video implements Serializable {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
+
 	public void setVideoId(long videoId) {
 		this.videoId = videoId;
 	}
-
+	
 	public void setViews(int views) {
 		this.views = views;
+	}
+
+	public void setVote(int vote) {
+		this.vote = vote;
 	}
 
 	@Override

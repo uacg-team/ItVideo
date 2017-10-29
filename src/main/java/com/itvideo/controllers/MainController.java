@@ -1,5 +1,8 @@
 package com.itvideo.controllers;
 
+import static org.mockito.Mockito.reset;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.httpclient.HttpClientError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +30,8 @@ import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
+import com.mysql.fabric.Response;
+import com.sun.jna.platform.win32.VerRsrc.VS_FIXEDFILEINFO;
 
 @Controller
 public class MainController {
@@ -176,26 +182,33 @@ public class MainController {
 		return "main";
 	}
 	
-	@RequestMapping(value="/player/{number}", method = RequestMethod.GET)
-	public String player(Model model, @PathVariable("number") long videoId, HttpSession session) {
+	@RequestMapping(value="/player/{videoId}", method = RequestMethod.GET)
+	public String player(Model model, @PathVariable("videoId") long videoId, HttpSession session, HttpServletResponse response) {
 		try {
-			vd.increaseViews(videoId);
-			Video video = vd.getVideo(videoId);
-			User videoOwner =  ud.getUser(video.getUserId());
-			int likes = vd.getLikes(videoId);
-			int disLikes = vd.getDisLikes(videoId);
+			if (!vd.existsVideo(videoId)) {
+				model.addAttribute("exception", "VideoNotFoundException");
+				model.addAttribute("getMessage", "Video Not Found");
+				return "error";
+			}
+			
+			User user = (User) session.getAttribute("user");
+			long userId = 0;
+			if (user != null) {
+				userId = user.getUserId();
+			}
+			
+			
+			Video video = vd.getVideoForPlayer(videoId, userId);
+
 			Set<Video> related = vd.getRelatedVideos(videoId);
 			
+			vd.increaseViews(videoId);
+			
 			model.addAttribute("mainVideo", video);
-			model.addAttribute("videoOwner", videoOwner);
-			model.addAttribute("likes", likes);
-			model.addAttribute("disLikes", disLikes);
 			model.addAttribute("related", related);
 			
 //			cc.loadCommentsForVideo(model,videoId);
 			if(session.getAttribute("user")!=null) {
-				User user = (User)session.getAttribute("user");
-				long userId = user.getUserId();
 				pc.loadPlaylistsForUser(model, userId);
 				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
 			}else {
@@ -209,14 +222,6 @@ public class MainController {
 			return "error";
 		} catch (VideoNotFoundException e) {
 			model.addAttribute("exception", "VideoNotFoundException");
-			model.addAttribute("getMessage", e.getMessage());
-			return "error";
-		} catch (UserNotFoundException e) {
-			model.addAttribute("exception", "UserNotFoundException");
-			model.addAttribute("getMessage", e.getMessage());
-			return "error";
-		} catch (UserException e) {
-			model.addAttribute("exception", "UserException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}

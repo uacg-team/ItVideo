@@ -1,5 +1,7 @@
 package com.itvideo.model;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -149,7 +151,7 @@ public class VideoDao {
 	}
 
 	public boolean existsVideo(long video_id) throws SQLException {
-		String sql = "SELECT COUNT(*) FROM videos WHERE video_id=?;";
+		String sql = "SELECT * FROM videos WHERE video_id=?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, video_id);
 			try(ResultSet rs = ps.executeQuery();){
@@ -489,5 +491,36 @@ public class VideoDao {
 			}
 		}
 		return count;
+	}
+
+	public Video getVideoForPlayer(long videoId, long userId) throws SQLException, VideoNotFoundException {
+		String sql = "SELECT v.*, SUM(IF(vl.isLike = 1, 1, 0)) AS likes, SUM(IF(vl.isLike = 0, 1, 0)) AS dislikes, SUM(IF(vl.user_id = ?, IF(vl.isLike = 1, 1, - 1), 0)) AS current_user_vote, u.username AS video_owner_username FROM videos AS v LEFT JOIN video_likes AS vl ON (v.video_id = vl.video_id) JOIN users AS u ON (u.user_id = v.user_id) WHERE v.video_id = ? GROUP BY (v.video_id);";
+		Video video = null;
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, userId);
+			ps.setLong(2, videoId);
+			try (ResultSet rs = ps.executeQuery();){
+				if (rs.next()) {
+					video = new Video(
+							rs.getLong("video_id"), 
+							rs.getString("name"), 
+							rs.getInt("views"),
+							DateTimeConvertor.sqlToLdt(rs.getString("date")), 
+							rs.getString("location_url"),
+							rs.getLong("user_id"), 
+							rs.getString("thumbnail_url"), 
+							rs.getString("description"),
+							rs.getLong("privacy_id"), 
+							getTags(rs.getLong("video_id")));
+					video.setLikes(rs.getInt("likes"));
+					video.setDislikes(rs.getInt("dislikes"));
+					video.setUserName(rs.getString("video_owner_username"));
+					video.setVote(rs.getInt("current_user_vote"));
+				} else {
+					throw new VideoNotFoundException(VideoNotFoundException.NOT_FOUND);
+				}
+			}
+		}
+		return video;
 	}
 }
