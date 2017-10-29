@@ -8,9 +8,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,11 +38,14 @@ public class FileController {
 	
 	@Autowired
 	UserDao ud;
+	 
 	
 	//start streaming
-	
 	@RequestMapping(value = "/videoStream/{videoId}", method = RequestMethod.GET)
-	public StreamingResponseBody getStreamingVideo(@PathVariable("videoId") Long videoId, HttpServletResponse response) {
+	public StreamingResponseBody getStreamingVideo(
+			@PathVariable("videoId") Long videoId, 
+			HttpServletResponse response, 
+			HttpServletRequest request) {
 		try {
 			Video video = vd.getVideo(videoId);
 			File videoFile = new File(
@@ -77,7 +84,8 @@ public class FileController {
 		os.flush();
 	}
 	
-	//end streaming
+	//end streaming	
+	
 	
 	@RequestMapping(value = "/video/{videoId}", method = RequestMethod.GET)
 	public void getVideo(@PathVariable("videoId") Long videoId, HttpServletResponse response) {
