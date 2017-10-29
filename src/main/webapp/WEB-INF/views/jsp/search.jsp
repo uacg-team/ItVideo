@@ -11,10 +11,10 @@
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
 		<div>
-			<c:if test="${requestScope.videos != null }">
+			<c:if test="${videos != null }">
 				<div class="inline">
 				<h1>Videos found</h1>
-					<c:forEach items="${requestScope.videos}" var="video">	
+					<c:forEach items="${videos}" var="video">	
 					<div class="inline">
 						<c:out value="Name: ${video.name}"></c:out><br>
 						<c:out value="Description: ${video.description}"></c:out><br>
@@ -37,16 +37,16 @@
 				</div>
 			</c:if>
 			
-			<c:if test="${requestScope.videos == null }">
+			<c:if test="${videos == null }">
 				<div class="inline">
 					<h1>videos not found</h1>
 				</div>
 			</c:if>
 				
-			<c:if test="${requestScope.users != null }">
+			<c:if test="${users != null }">
 				<div class="inline">
 				<h1>Users found</h1>
-					<c:forEach items="${requestScope.users}" var="userFound">
+					<c:forEach items="${users}" var="userFound">
 						<div class="inline">
 						
 							<a href="<c:url value="/viewProfile/${userFound.userId}" />">
@@ -60,7 +60,7 @@
 			
 			<br>
 			
-			<c:if test="${requestScope.users == null }">
+			<c:if test="${users == null }">
 				<div class="inline">
 					<h1>users not found</h1>
 				</div>
@@ -68,17 +68,15 @@
 				
 			<br>
 				
-			<c:if test="${requestScope.playlists != null }">
+			<c:if test="${playlists != null }">
 				<div class="inline">
 					<h1>Playlist found</h1>
 					<div class="inline">
-						<c:forEach items="${requestScope.playlists}" var="playlistFound">
-							<c:out value="${playlistFound.playlistName}"></c:out>
-							<%-- 
-							<a href="xxxxx?xxxxx=${playlistFound.xxxxxxx}">
-								<c:out value="${playlistFound.name}"></c:out>
+						<c:forEach items="${playlists}" var="playlist">
+							<c:out value="${playlist.playlistName}"></c:out>
+							<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${playlist.userId}"/>>
+								<button>View</button>
 							</a>
-							 --%>
 						</c:forEach>
 					</div>
 				</div>
@@ -86,7 +84,7 @@
 			
 			<br>	
 			
-			<c:if test="${requestScope.playlists == null }">
+			<c:if test="${playlists == null }">
 				<div class="inline">
 					<h1>playlists not found</h1>
 				</div>
