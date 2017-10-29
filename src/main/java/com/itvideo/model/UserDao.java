@@ -289,4 +289,20 @@ public class UserDao {
 		//delete playlists
 		
 	}
+
+	public int getVote(long videoId, long userId) throws SQLException {
+		String sql = "SELECT isLike FROM video_likes WHERE video_id = ? AND user_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, videoId);
+			ps.setLong(2, userId);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getInt("isLike");
+				}else {
+					return 0;
+				}
+				
+			}
+		}
+	}
 }

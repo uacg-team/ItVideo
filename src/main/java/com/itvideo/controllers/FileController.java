@@ -3,7 +3,6 @@ package com.itvideo.controllers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.itvideo.model.User;
@@ -41,20 +38,32 @@ public class FileController {
 	//start streaming
 	
 	@RequestMapping(value = "/videoStream/{videoId}", method = RequestMethod.GET)
-	public StreamingResponseBody getStreamingVideo(@PathVariable("videoId") Long videoId, HttpServletResponse response) throws VideoNotFoundException, SQLException, FileNotFoundException {
-		Video video = vd.getVideo(videoId);
-		File videoFile = new File(
-				Resources.ROOT + 
-				File.separator + 
-				video.getUserId() + 
-				File.separator + 
-				Resources.VIDEO_URL + 
-				File.separator + 
-				video.getLocationUrl());
-		final InputStream videoFileStream = new FileInputStream(videoFile);
-		return (os) -> {
-			readAndWrite(videoFileStream, os);
-		};
+	public StreamingResponseBody getStreamingVideo(@PathVariable("videoId") Long videoId, HttpServletResponse response) {
+		try {
+			Video video = vd.getVideo(videoId);
+			File videoFile = new File(
+					Resources.ROOT + 
+					File.separator + 
+					video.getUserId() + 
+					File.separator + 
+					Resources.VIDEO_URL + 
+					File.separator + 
+					video.getLocationUrl());
+			final InputStream videoFileStream = new FileInputStream(videoFile);
+			return (os) -> {
+				readAndWrite(videoFileStream, os);
+			};
+		} catch (VideoNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	private void readAndWrite(final InputStream is, OutputStream os)

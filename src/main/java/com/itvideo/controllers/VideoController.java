@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.itvideo.model.User;
 import com.itvideo.model.Video;
@@ -25,6 +26,28 @@ public class VideoController {
 
 	@Autowired
 	VideoDao vd;
+	
+	@ResponseBody
+	@RequestMapping(value = "/player/videoAsyncLike", method = RequestMethod.POST)
+	public void videoAsyncLike(HttpSession session,
+			@RequestParam("like") int like,
+			@RequestParam("videoId") int videoId,
+			@RequestParam("userId") int userId) {
+		User u = (User) session.getAttribute("user");
+		if (u != null) {
+			try {
+				if (like == 1) {
+					vd.like(videoId, userId);
+				}
+				if (like == -1) {
+					vd.disLike(videoId, userId);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	@RequestMapping(value = "/videoLike", method = RequestMethod.POST)
 	public String likeVideo(HttpSession session, HttpServletRequest request) {
