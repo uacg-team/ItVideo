@@ -119,7 +119,42 @@ public class CommentsService {
 		}
 		List<Comment> comments = null;
 		try {
-			comments = comment.getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
+			//TODO replace with original getAllCommentsWithVotesByVideo(videoId, myUserId, comparator);
+			comments = comment.getAllCommentWithVotesByVideoWithoutReplies(videoId, myUserId, comparator);
+		} catch (SQLException e) {
+			// TODO handle
+			e.printStackTrace();
+		}
+		return comments;
+	}
+	//tested
+	@RequestMapping(value = "player/getRepliesWithVotes", method = RequestMethod.GET)
+	public List<Comment> getRepliesWithVotesForComment(HttpServletRequest req) {
+//		Long videoId = Long.parseLong(req.getParameter("videoId"));
+//		Long myUserId = Long.parseLong(req.getParameter("userId"));
+//		String compare = req.getParameter("comparator");
+		
+		
+		long commentId=46;
+		long myUserId=6;
+		String compare = null;
+		
+		
+		
+		if(compare==null) {
+			compare="";
+		}
+		Comparator<Comment> comparator = null;
+		switch (compare) {
+		case "date_asc":
+			comparator = CommentDao.ASC_BY_DATE;
+			break;
+		default:
+			comparator = CommentDao.DESC_BY_DATE;
+		}
+		List<Comment> comments = null;
+		try {
+			comments = comment.getAllRepliesWithVotesForComment(commentId, myUserId, comparator);
 		} catch (SQLException e) {
 			// TODO handle
 			e.printStackTrace();

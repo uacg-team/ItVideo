@@ -1,5 +1,4 @@
 /**
- * 
  * @param myUserId - for likes dislikes
  * @param allCommentsNumber - for show more button 
  * @param part - commentsPerClick*part starting point in search
@@ -10,6 +9,7 @@
  */
 function comments(myUserId, allCommentsNumber, part, commentsPerClick,video_id,startFrom){
 	//TODO add button show more if comments showed<all comments
+	//if startFrom!=undefined append to last comment
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -108,13 +108,26 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	return htmlOneComment;
 }
 
-function buildReply(commentId, text, userId, videoId, replyId, replies, hasReplies, likes, dislikes, username, url, vote, date, myUserId){
+function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId){
 	//build html for comment
 }
-
-function htmlShowMoreComments(){
-	
+function showReplies(commentId,myUserId){
+	//show all replies for comment
 }
-function htmlShowReplies(){
-	
+function htmlShowMoreComments(commentsShow,allCommentsNumber){
+	//show button if there is more comments
+}
+function htmlShowReplies(hasReplies,commentId){
+	//apend button show replies if has replies
+	var html = "";
+	if(hasReplies){
+		html="";
+		/*
+		 <div id="replies'+commentId+'">
+		<button onclick="comments(6)">show replies</button>
+		</div>
+		*/
+
+	}
+	return html;
 }

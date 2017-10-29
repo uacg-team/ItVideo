@@ -338,7 +338,57 @@ public class CommentDao {
 			}
 		}
 	}
-
+	/**
+	 * @param videoId
+	 * @param myUserId
+	 * @param comparator
+	 * @return all comments for video without replies,sorted by comparator
+	 * @throws SQLException
+	 */
+	//TODO make it with part and number from DB and set number of replies
+	public List<Comment> getAllCommentWithVotesByVideoWithoutReplies(long videoId,long myUserId,Comparator<Comment> comparator) throws SQLException {
+		//get all comments without replies with vote
+		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
+				+ "sum(if(l.isLike = 0, 1, 0)) as dislikes,"
+				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
+				+ "from comments as c left join comments_likes as l "
+				+ "on(c.comment_id=l.comment_id) "
+				+ "where c.video_id=? and c.reply_id is null group by (c.comment_id);";
+		String repNumber="select count(*) from comments where reply_id=?;";
+		List<Comment> comments = new ArrayList<>();
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setLong(1, myUserId);
+			ps.setLong(2, videoId);
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					Long id = rs.getLong("comment_id");
+					String text = rs.getString("text");
+					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
+					Long userId = rs.getLong("user_id");
+					Comment comment = new Comment(id, text, date, userId, videoId, (long)0);
+					comment.setLikes(rs.getLong("likes"));
+					comment.setDislikes(rs.getLong("dislikes"));
+					comment.setVote(rs.getInt("my_vote"));
+					loadUserInfo(comment);
+					comments.add(comment);
+				}
+			}
+		}
+		//TODO replace this code with one querry
+		for(Comment c:comments) {
+			try (PreparedStatement ps = con.prepareStatement(repNumber)) {
+				ps.setLong(1, c.getCommentId());
+				try(ResultSet rs =ps.executeQuery()) {
+					rs.next();
+					c.setNumberReplies(rs.getLong(1));
+				}
+			}
+		}
+		//sort by comparator
+		Collections.sort(comments, comparator);
+		return comments;
+	}
+	
 	public List<Comment> getAllCommentsWithVotesByVideo(long videoId,long myUserId,Comparator<Comment> comparator) throws SQLException {
 		//get all comments without replies with vote
 		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
@@ -405,8 +455,15 @@ public class CommentDao {
 			}
 		}
 	}
-	
-	private List<Comment> getAllRepliesWithVotesForComment (long commentId,long myUserId,Comparator<Comment> comparator) throws SQLException{
+	/**
+	 * 
+	 * @param commentId
+	 * @param myUserId
+	 * @param comparator
+	 * @return all replies for comment with comparator
+	 * @throws SQLException
+	 */
+	public List<Comment> getAllRepliesWithVotesForComment (long commentId,long myUserId,Comparator<Comment> comparator) throws SQLException{
 		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
 				+ "sum(if(l.isLike = 0, 1, 0)) as dislikes,"
 				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
