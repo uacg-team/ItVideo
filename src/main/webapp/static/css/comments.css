@@ -1,22 +1,5 @@
 @CHARSET "UTF-8";
-#comment {
-	width: 300px;
-    margin: auto;
-    border: 1px solid red;
-    margin-top: 100px;
-    margin-bottom: 100px;
-    margin-right: 150px;
-    margin-left: 80px;
-}
-#reply {
-	 width: 300px;
-    margin: auto;
-    border: 1px solid red;
-    margin-top: 100px;
-    margin-bottom: 100px;
-    margin-right: 150px;
-    margin-left: 80px;
-}
+
 body{
 font-family:Helvetica,Arial,sans-serif; 
 }
