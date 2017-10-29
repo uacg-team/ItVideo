@@ -209,11 +209,8 @@ public class MainController {
 			
 //			cc.loadCommentsForVideo(model,videoId);
 			if(session.getAttribute("user")!=null) {
-				pc.loadPlaylistsForUser(model, userId);
-				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
-			}else {
-				//TODO 
-				cc.loadCommentsWithVotesForVideo(model, videoId, 0, CommentDao.ASC_BY_DATE);
+				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
+//				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
 			}
 			return "player";
 		} catch (SQLException e) {

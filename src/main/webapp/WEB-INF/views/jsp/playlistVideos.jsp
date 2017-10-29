@@ -19,6 +19,7 @@ div.inline {
 </head>
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
+	<b>Playlist:${requestScope.playlistName}</b><br>
 	<c:forEach items="${requestScope.videos}" var="video">
 	<div class="inline">
 				<c:out value="Name: ${video.name}"></c:out><br>

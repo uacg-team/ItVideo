@@ -21,7 +21,8 @@ public class Playlist {
 	private boolean isLoaded;
 
 	private List<Video> videos;
-
+	
+	private int videoStatus;
 	/**
 	 * get from DB , for loading videos use PlaylistDAO -loadVideosInPlaylist
 	 */
@@ -161,5 +162,10 @@ public class Playlist {
 			return false;
 		return true;
 	}
-
+	public void setVideoStatus(int videoStatus) {
+		this.videoStatus = videoStatus;
+	}
+	public int getVideoStatus() {
+		return videoStatus;
+	}
 }

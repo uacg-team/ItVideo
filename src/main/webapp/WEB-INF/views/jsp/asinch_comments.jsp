@@ -142,7 +142,7 @@
 </div>
 <!-- comments -->
 <c:forEach items="${requestScope.comments}" var="comment">
-	<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
+		<img src="<c:url value="/img/${comment.userId}"/>" width="50px" height="auto"/>
 
 		<div class="comment-box">
 			<p class="comment-header"><span>${comment.username}</span></p>
