@@ -20,11 +20,11 @@ function comments(myUserId){
 				var comment = listComments[i];;
 				//parsing one comment
 				var commentId=comment.commentId;
-				console.log(commentId)
 				var text = comment.text;
 				var userId=comment.userId;
 				var videoId=comment.videoId;
 				var replyId=comment.replyId;
+				var date = comment.date;
 				//replies
 				var replies=comment.replies;
 				var hasReplies=comment.hasReplies;
@@ -37,7 +37,7 @@ function comments(myUserId){
 				// myVoteinfo
 				var vote=comment.vote;
 
-				htmlOneComment=htmlOneComment.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,myUserId));
+				htmlOneComment=htmlOneComment.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,myUserId));
 			}
 			var videoComments = document.getElementById("comments");
 			videoComments.innerHTML =htmlOneComment;
@@ -46,7 +46,8 @@ function comments(myUserId){
 	request.open("GET", "player/getCommentsWithVotes", true);
 	request.send();
 }
-function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,myUserId){
+
+function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,myUserId){
 	var htmlOneComment='<img src="<c:url value="/img/' + userId + '"/>" width="50px" height="auto"/>';
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
@@ -54,8 +55,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('<p class="comment-box-inner">' + text + '</p> <br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
-	htmlOneComment=htmlOneComment.concat('<p class="comment-date">still no date</p>');
-	
+	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + date.hour + ':' + date.minute + ':' + date.second + '</p>');
 	
 	htmlOneComment=htmlOneComment.concat('<div class="like-buttons">');
 	htmlOneComment=htmlOneComment.concat('<ul>');
@@ -89,6 +89,10 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 
 function buildReply(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,myUserId){
 	
+}
+function dateParse(date){
+	var time = date.hour + ':' + date.minute + ':' + date.second;
+	return time;
 }
 
 function testHtml(){
