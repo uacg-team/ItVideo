@@ -18,28 +18,28 @@ function dateParse(date){
 	        month = 4;
 	        break;
 	 case 'MAY':
-	        month = 4;
+	        month = 5;
 	        break;
 	 case 'JUNE':
-	        month = 4;
+	        month = 6;
 	        break;
 	 case 'JULY':
-	        month = 4;
+	        month = 7;
 	        break;
 	 case 'AUGUST':
-	        month = 4;
+	        month = 8;
 	        break;
 	 case 'SEPTEMBER':
-	        month = 4;
+	        month = 9;
 	        break;
 	 case 'OCTOBER':
-	        month = 4;
+	        month = 10;
 	        break;
 	 case 'NOVEMBER':
-	        month = 4;
+	        month = 11;
 	        break;
 	 case 'DECEMBER':
-	        month = 4;
+	        month = 12;
 	        break;
     default:
         month = 0;

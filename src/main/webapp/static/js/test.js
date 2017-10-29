@@ -11,3 +11,14 @@ function test(){
 	testDiv.insertAdjacentHTML('beforeend', '<p>1</p><div id="showmore"><button onclick="test()">testing</button></div>');
 	//
 }
+//function test(){
+//	showButton('test', 'showmore', 'hello')
+//}
+//function showButton(insertionDivName,deleteDivElement,html){
+//	//remove button with name deleteDivElement
+//	var elem = document.getElementById(deleteDivElement);
+//    elem.parentNode.removeChild(elem);
+//	//add html in div with name insertionDivName
+//    var testDiv = document.getElementById(insertionDivName);
+//    testDiv.insertAdjacentHTML('beforeend', html);
+//}

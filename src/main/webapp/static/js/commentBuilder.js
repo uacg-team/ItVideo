@@ -1,4 +1,5 @@
 /**
+ * AJAX call for videoId,myUserId comments
  * @param myUserId - for likes dislikes
  * @param allCommentsNumber - for show more button 
  * @param part - commentsPerClick*part starting point in search
@@ -36,8 +37,8 @@ function comments(myUserId, allCommentsNumber, part, commentsPerClick,video_id,s
 				var url=comment.url;
 				// myVoteinfo
 				var vote=comment.vote;
-
-				htmlComments=htmlComments.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,myUserId));
+				var numberReplies=comment.numberReplies;
+				htmlComments=htmlComments.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId));
 				//if more comments show button show more
 			}
 			var videoComments = document.getElementById("comments");
@@ -63,10 +64,11 @@ function comments(myUserId, allCommentsNumber, part, commentsPerClick,video_id,s
  * @param url
  * @param vote
  * @param date
+ * @param numberReplies
  * @param myUserId-depends from viewer
  * @returns html for one comment
  */
-function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,myUserId){
+function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId){
 	var htmlOneComment='<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>';
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
@@ -104,20 +106,68 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<br>');
 	//if hasReplies -add button show replies
+	if(numberReplies>0){
+		htmlOneComment=htmlOneComment.concat('<div id="viewReplies' + commentId + '">');
+			htmlOneComment=htmlOneComment.concat('<button onclick="showReplies(' + commentId + ',' + 6 + ')">show replies('+numberReplies+')</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
 	//add button reply
 	return htmlOneComment;
 }
 
 function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId){
 	//build html for comment
+	/*
+	 
+	 
+	 
+	 
+	 */
+	return '<br><p>nov komentar</p>';
 }
-function showReplies(commentId,myUserId){
+//AJAX get replies and post after comment
+function showReplies(commentId,myUserId,comparator){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		var listComments = JSON.parse(this.responseText);
+		var commentsCount = listComments.length;
+		var htmlComments="";
+		for (var i = 0; i < commentsCount; i++) {
+			var comment = listComments[i];;
+			//parsing one comment
+			var rcommentId=comment.commentId;
+			var text = comment.text;
+			var userId=comment.userId;
+			var videoId=comment.videoId;
+			var replyId=comment.replyId;
+			var date = comment.date;
+			//replies
+			var replies=comment.replies;
+			var hasReplies=comment.hasReplies;
+			// likes/dislikes
+			var likes=comment.likes;
+			var dislikes=comment.dislikes;
+			// userInfo
+			var username=comment.username;
+			var url=comment.url;
+			// myVoteinfo
+			var vote=comment.vote;
+			var numberReplies=comment.numberReplies;
+			htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
+		}
+		var div = document.getElementById('viewReplies'+commentId);
+	    div.innerHTML=htmlComments;
+	}
+	var url="player/getRepliesWithVotes/"+commentId+"/"+myUserId+"/"+comparator;
+	request.open("GET", "player/getRepliesWithVotes", true);
+	request.send();
 	//show all replies for comment
 }
 function htmlShowMoreComments(commentsShow,allCommentsNumber){
 	//show button if there is more comments
 }
-function htmlShowReplies(hasReplies,commentId){
+
+function htmlShowReplies(commentId,numberReplies){
 	//apend button show replies if has replies
 	var html = "";
 	if(hasReplies){
@@ -130,4 +180,12 @@ function htmlShowReplies(hasReplies,commentId){
 
 	}
 	return html;
+}
+function showButton(insertionDivName,deleteDivElement,html){
+	//remove button with name deleteDivElement
+	var elem = document.getElementById(deleteDivElement);
+    elem.parentNode.removeChild(elem);
+	//add html in div with name insertionDivName
+    var testDiv = document.getElementById(insertionDivName);
+    testDiv.insertAdjacentHTML('beforeend', html);
 }
