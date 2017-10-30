@@ -129,9 +129,4 @@ public class PlaylistController {
 		}
 		return "playlistVideos";
 	}
-	
-	@RequestMapping(value = "/test", method = RequestMethod.GET)
-	public String show() {
-		return "asinh_test";
-	}
 }

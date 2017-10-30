@@ -51,6 +51,7 @@ function getSelected(){
 <!-- insert new Comments -->
 </div>
 <div id="initialComments">
+<b><c:out value="Comments: ${requestScope.countComments}"></c:out></b>
 <!-- insert new Comments -->
 <!-- show first 5 comments if more -show button show more-->
 </div>
