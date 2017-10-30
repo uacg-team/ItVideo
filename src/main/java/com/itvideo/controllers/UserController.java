@@ -1,5 +1,7 @@
 package com.itvideo.controllers;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -50,14 +52,6 @@ public class UserController {
 			@RequestParam("follower") int followerId, 
 			@RequestParam("action") String action) {
 		
-		
-		User follower = (User) session.getAttribute("user");
-		if (follower == null) {
-			
-		}
-		
-		System.out.println("action = " + action);
-		
 		try {
 			if (action.equals("follow")) {
 				ud.followUser(followingId, followerId);
@@ -70,10 +64,9 @@ public class UserController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		//return "redirect:/viewProfile/"+followingId;
 	}
 	
+	@Deprecated
 	@RequestMapping(value="/follow", method = RequestMethod.POST)
 	public String followPost(
 			HttpSession session,
@@ -87,8 +80,6 @@ public class UserController {
 		if (follower == null) {
 			return "login";
 		}
-		
-		System.out.println("action = " + action);
 		
 		try {
 			if (action.equals("follow")) {
@@ -212,7 +203,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/viewProfile/{userId}", method = RequestMethod.GET)
-	public String getVideo(@PathVariable("userId") long userId, Model model, HttpSession session) {
+	public String viewProfile(@PathVariable("userId") long userId, Model model, HttpSession session) {
 		User loggedUser = (User) session.getAttribute("user");
 		try {
 				User u = ud.getUser(userId);

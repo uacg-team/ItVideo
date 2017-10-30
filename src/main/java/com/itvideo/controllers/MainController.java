@@ -59,13 +59,13 @@ public class MainController {
 		try {
 			switch (searchParam) {
 			case "users":
-				model.addAttribute("searchResult", ud.searchUser(search));
+				request.setAttribute("searchResult", ud.searchUser(search));
 				return "search";
 			case "videos":
-				model.addAttribute("searchResult", vd.searchVideo(search));
+				request.setAttribute("videos", vd.searchVideo(search));
 				return "search";
 			case "playlists":
-				model.addAttribute("searchResult", pd.searchPlaylist(search));
+				request.setAttribute("searchResult", pd.searchPlaylist(search));
 				return "search";
 			default:
 				return "/main";
@@ -129,7 +129,7 @@ public class MainController {
 	}
 
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public String main(HttpSession session, Model model) {
+	public String main(HttpSession session, Model model, HttpServletRequest request) {
 		try {
 			String param = (String) session.getAttribute("sort");
 			List<Video> videos = null;
@@ -144,7 +144,7 @@ public class MainController {
 				}
 				
 				session.setAttribute("sort", "date");
-				session.setAttribute("videos", videos);
+				request.setAttribute("videos", videos);
 				return "main";
 			}else {
 				switch (param) {
@@ -170,7 +170,7 @@ public class MainController {
 					video.setUserName(vd.getUserName(video.getUserId()));
 					video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
 				}
-				session.setAttribute("videos", videos);
+				request.setAttribute("videos", videos);
 			}
 		} catch (SQLException e) {
 			model.addAttribute("exception", "SQLException");
@@ -195,13 +195,15 @@ public class MainController {
 				userId = user.getUserId();
 			}
 			
-			
 			Video video = vd.getVideoForPlayer(videoId, userId);
 
-			//userId - logged user aka me
+			//userId - logged user a.k.a. me
 			//video.getUserId() - videoOwnerId 
-			boolean follow = ud.isFollowing(userId, video.getUserId());
-			model.addAttribute("follow", follow);
+			if (user != null) {
+				boolean follow = ud.isFollowing(userId, video.getUserId());
+				System.out.println(follow);
+				model.addAttribute("follow", follow);
+			}
 			
 			Set<Video> related = vd.getRelatedVideos(videoId);
 			
