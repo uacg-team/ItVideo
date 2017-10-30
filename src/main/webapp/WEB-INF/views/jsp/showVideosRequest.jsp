@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +14,15 @@
 	<div class="inline">
 		<c:out value="Name: ${video.name}"></c:out><br>
 		<c:out value="Description: ${video.description}"></c:out><br>
-		<c:out value="Owner: ${video.userName}"></c:out><br>
+				
+		<a href="<c:url value="/viewProfile/${video.userId}" />">
+			<c:out value="Owner: ${video.userName}"></c:out>
+			<img src="<c:url value="/img/${video.userId}"/>" width="50px" height="auto"/>
+		</a><br>
+		
+		<fmt:parseDate value="${ cleanedDateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+		<fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" />
+
 		<c:out value="Published: ${video.date}"></c:out><br>
 		<c:out value="Views: ${video.views}"></c:out><br>
 		<c:out value="Privacy: ${video.privacy}"></c:out><br>
