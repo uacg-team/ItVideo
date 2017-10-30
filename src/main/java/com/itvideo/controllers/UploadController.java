@@ -5,7 +5,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,9 +13,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpSession;
 
-import org.apache.tika.mime.MimeType;
-import org.apache.tika.mime.MimeTypeException;
-import org.apache.tika.mime.MimeTypes;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.model.Picture;
@@ -45,13 +41,13 @@ import com.itvideo.model.utils.Resources;
 @MultipartConfig
 public class UploadController {
 
+	private static final int THUMBNAIL_WIDTH = 800;
+	
 	@Autowired
 	VideoDao vd;
 	
 	@Autowired
 	UserDao ud;
-	
-	
 	
 	@RequestMapping(value="/uploadAvatar", method = RequestMethod.POST)
 	public String uploadAvatar(HttpSession session,Model model,@RequestParam("avatar") MultipartFile avatar) {
@@ -140,10 +136,9 @@ public class UploadController {
 			
 			int frameNumber = 40;
 			Picture picture = FrameGrab.getFrameFromFile(f, frameNumber);
-		
 			BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
 			
-			bufferedImage = resize(bufferedImage, 320, 240);
+			bufferedImage = resize(bufferedImage);
 				
 			ImageIO.write(bufferedImage, "png", new File(
 					WebInitializer.LOCATION + 
@@ -185,7 +180,10 @@ public class UploadController {
 		return "redirect:main";
 	}
 	
-	public static BufferedImage resize(BufferedImage img, int newW, int newH) { 
+	public static BufferedImage resize(BufferedImage img) {
+		double ratio = img.getWidth() * 1.0 / img.getHeight();
+		int newW = THUMBNAIL_WIDTH;
+		int newH = (int)(newW / ratio);
 	    Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
 	    BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
 

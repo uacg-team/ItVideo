@@ -190,12 +190,12 @@
 		<!-- ajax follow/unfollow -->
 		<c:if test="${sessionScope.user.userId != null}">	
 			<c:if test="${sessionScope.user.userId != mainVideo.userId}">	
-					<c:if test="${follow eq true}">
-						<input type="button" value="follow"   id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
-					</c:if>
-					<c:if test="${follow eq false}">
-						<input type="button" value="unfollow" id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
-					</c:if>
+				<c:if test="${follow == \"false\"}">
+					<input type="button" value="follow"   id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+				</c:if>
+				<c:if test="${follow == \"true\"}">
+					<input type="button" value="unfollow" id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+				</c:if>
 			</c:if>
 		</c:if>
 		<br>

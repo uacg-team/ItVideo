@@ -30,6 +30,7 @@
 			</c:if>
 		</c:if>
 		
+		<%-- old implementation now is async with ajax	
 		<!-- follow/unfollow logic  -->
 		<c:if test="${sessionScope.user.userId != user.userId}">
 			<c:set var="contains" value="false" />
@@ -57,6 +58,8 @@
 				</form>
 			</c:if>
 		</c:if>
+		 --%>
+		
 	</div>
 	
 	<!-- followers -->
@@ -86,7 +89,7 @@
 	</div>
 	<div class="inline">
 	<h3>Videos</h3>
-		<jsp:include page="showVideos.jsp"></jsp:include><br>
+		<jsp:include page="showVideosRequest.jsp"></jsp:include><br>
 	</div>
 	<div class="inline">
 	<h3>Playlists</h3>
