@@ -53,6 +53,12 @@ li a:hover {
 	
 	<li>
 		<form action="<c:url value="/search" />" method="get">
+			 <!--  onchange="location = this.value;"  -->
+			<select name="searchParam">
+				 <option value="users" <c:if test="${sessionScope.searchParam eq \"users\" }"> selected </c:if>>users</option>
+				 <option value="videos" <c:if test="${sessionScope.searchParam eq \"videos\" }"> selected </c:if>>videos</option>
+				 <option value="playlists" <c:if test="${sessionScope.searchParam eq \"playlists\" }"> selected </c:if>>playlists</option>
+			</select>
 			<input type="search" name="search" placeholder="Search..">
 		</form>
 	</li>
