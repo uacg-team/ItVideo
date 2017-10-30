@@ -11,9 +11,9 @@
 <script type="text/javascript" src="<c:url value="/js/commentLikes.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/dateParser.js"/>"></script>
 <script type="text/javascript">
-//obtain selected option from menu
-function getComparator(){
-	
+function getSelected(){
+	var e=document.getElementById("choiseCompareComments");	
+	return e.options[e.selectedIndex].value;
 }
 </script>
 </head>
@@ -41,22 +41,39 @@ function getComparator(){
 	</li>
 	</ul>
 </div>
+asinhronno
 <br>
+	<div>
+		<c:if test="${sessionScope.user!=null}">
+		<img src="<c:url value="/img/${sessionScope.user.userId}"/>" height="50px" width="auto" />
+		<textarea rows="3" cols="80" id="novComentar"></textarea>
+		<button onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
+		</c:if>
+	</div>
 <hr>
+<div id="newComments" title="0" >
+<!-- insert new Comments -->
+</div>
+<div id="initialComments">
+<!-- insert new Comments -->
+<!-- show first 5 comments if more -show button show more-->
+</div>
 <div id="comments">
 <ul>
 	<li>
 		<select id="choiseCompareComments" name="compare">
-		  <option value="latest" selected="selected">Latest</option>
+		  <option value="newest" selected="selected">Newest</option>
 		  <option value="oldest">Oldest</option>
+		  <option value="mostLiked">Most liked</option>
+		  <option value="mostDisliked">Most disliked</option>
 		</select>
 	</li>
 	<li>
 	<c:if test="${sessionScope.user!=null}">
-	<button onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},'comp',1,2,50)">Show comments</button>
+	<button onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
 	</c:if>
 	<c:if test="${sessionScope.user==null}">
-	<button onclick="comments(0,${requestScope.mainVideo.videoId},'comp',1,2,50)">Show comments</button>
+	<button onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
 	</c:if>
 	</li>
 </ul>

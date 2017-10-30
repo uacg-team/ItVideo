@@ -58,6 +58,60 @@ function comments(myUserId, video_id, comparator, part, commentsPerClick, allCom
 	request.send();
 }
 /**
+ * AJAX call for commentId, myUserId, comparator replies
+ * @param commentId
+ * @param myUserId
+ * @param comparator
+ * @returns
+ */
+function showReplies(commentId, myUserId, comparator){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var listComments = JSON.parse(this.responseText);
+			var commentsCount = listComments.length;
+			var htmlComments="";
+			for (var i = 0; i < commentsCount; i++) {
+				var comment = listComments[i];;
+				//parsing one comment
+				var rcommentId=comment.commentId;
+				var text = comment.text;
+				var userId=comment.userId;
+				var videoId=comment.videoId;
+				var replyId=comment.replyId;
+				var date = comment.date;
+				//replies
+				var replies=comment.replies;
+				var hasReplies=comment.hasReplies;
+				// likes/dislikes
+				var likes=comment.likes;
+				var dislikes=comment.dislikes;
+				// userInfo
+				var username=comment.username;
+				var url=comment.url;
+				// myVoteinfo
+				var vote=comment.vote;
+				var numberReplies=comment.numberReplies;
+				htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
+				
+			}
+		var div = document.getElementById('viewReplies'+commentId);
+	    div.innerHTML=htmlComments;
+		}
+	}
+	if (typeof myUserId === 'undefined') {
+	    myUserId=0;
+	}
+	if (typeof comparator === 'undefined') {
+		comparator=0;
+	}
+	//TODO delete reply
+	var url="getRepliesWithVotes/"+commentId+"/"+myUserId+"/"+comparator;
+	request.open("GET", url, true);
+	request.send();
+	//show all replies for comment
+}
+/**
  * Build one comment
  * @param commentId
  * @param text
@@ -164,54 +218,52 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	
 	return htmlOneComment;
 }
-//AJAX get replies and post after comment
-function showReplies(commentId, myUserId, comparator){
+
+function postComment(myUserId,videoId,replyId,username) {
+	//String text, LocalDateTime date, long userId, long videoId, long replyId
+	if (typeof myUserId === 'undefined') {
+	    alert("First login!");
+	    return;
+	}
+	var text = document.getElementById("novComentar").value
+	var url = "/ItVideo/player/addComment";
+	var param = "videoId=" + videoId + "&myUserId=" + myUserId + "&text=" + text+ "&replyId=" + replyId;
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			var listComments = JSON.parse(this.responseText);
-			var commentsCount = listComments.length;
-			var htmlComments="";
-			for (var i = 0; i < commentsCount; i++) {
-				var comment = listComments[i];;
-				//parsing one comment
-				var rcommentId=comment.commentId;
-				var text = comment.text;
-				var userId=comment.userId;
-				var videoId=comment.videoId;
-				var replyId=comment.replyId;
-				var date = comment.date;
-				//replies
-				var replies=comment.replies;
-				var hasReplies=comment.hasReplies;
-				// likes/dislikes
-				var likes=comment.likes;
-				var dislikes=comment.dislikes;
-				// userInfo
-				var username=comment.username;
-				var url=comment.url;
-				// myVoteinfo
-				var vote=comment.vote;
-				var numberReplies=comment.numberReplies;
-				htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
-				
+			//clear text field
+			document.getElementById("novComentar").value="";
+			var lastComment = JSON.parse(this.responseText);
+			
+			//parsing one comment
+			var commentId=lastComment.commentId;
+			var text = lastComment.text;
+			var userId=lastComment.userId;
+			var videoId=lastComment.videoId;
+			var date = lastComment.date;
+			
+			var htmlComment=buildComment(commentId,text,userId,videoId,0,null,false,0,0,username,' ',0,date,0,myUserId);
+			var insertion=document.getElementById("newComments");
+			if(insertion.title == 0){
+				insertion.innerHTML=htmlComment;
+				insertion.title="1";
+			}else{
+				insertion.insertAdjacentHTML('beforeend', htmlComment);
 			}
-		var div = document.getElementById('viewReplies'+commentId);
-	    div.innerHTML=htmlComments;
 		}
 	}
-	if (typeof myUserId === 'undefined') {
-	    myUserId=0;
-	}
-	if (typeof comparator === 'undefined') {
-		comparator=0;
-	}
-	//TODO delete player
-	var url="getRepliesWithVotes/"+commentId+"/"+myUserId+"/"+comparator;
-	request.open("GET", url, true);
-	request.send();
-	//show all replies for comment
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
 }
+function deleteComment(commentId){
+	//post delete comment from db
+	//delete comment div
+}
+function postReply(){
+	
+}
+
 
 function htmlShowMoreComments(commentsShow,allCommentsNumber){
 	//show button if there is more comments

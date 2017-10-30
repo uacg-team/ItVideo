@@ -19,10 +19,13 @@ import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
+import com.mysql.jdbc.Statement;
 
 @Component
 public class CommentDao {
 	public static final Comparator<Comment> ASC_BY_DATE = (o1, o2) -> o1.getDate().compareTo(o2.getDate());
+	public static final Comparator<Comment> DESC_BY_LIKES = (o1, o2) -> (int)(o2.getLikes()-o1.getLikes());
+	public static final Comparator<Comment> DESC_BY_DISLIKES = (o1, o2) -> (int)(o2.getDislikes()-o1.getDislikes());
 	
 	public static final Comparator<Comment> DESC_BY_DATE = (o1, o2) -> o2.getDate().compareTo(o1.getDate());
 	//local tests
@@ -49,7 +52,7 @@ public class CommentDao {
 	 */
 	public void createComment(Comment comment) throws SQLException, CommentException {
 		String sql = "insert into comments (text, date,video_id, user_id, reply_id) values(?,?,?,?,?)";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
+		try (PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, comment.getText());
 			ps.setString(2, DateTimeConvertor.ldtToSql(comment.getDate()));
 			ps.setLong(3, comment.getVideoId());
@@ -626,4 +629,23 @@ public class CommentDao {
 			}
 		}
 	}
+
+//	public Comment getLastCommentForUserId(Long userId) {
+//		String sql = "select * from comments where user_id=? order by date desc limit 1;";
+//		try (PreparedStatement ps = con.prepareStatement(sql)) {
+//			ps.setLong(1, userId);
+//			try (ResultSet rs = ps.executeQuery()) {
+//				if (rs.next()) {
+//					Long id = rs.getLong("comment_id");
+//					String text = rs.getString("text");
+//					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
+//					Long userId = rs.getLong("user_id");
+//					Long replyId = rs.getLong("reply_id");
+//					Comment reply = new Comment(id, text, date, userId, videoId, replyId);
+//					return comments;
+//				}
+//			}
+//		}
+//		return null;
+//	}
 }

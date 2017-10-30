@@ -1,8 +1,12 @@
 package com.itvideo.controllers;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -95,14 +99,23 @@ public class CommentsService {
 	@ResponseBody
 	@RequestMapping(value = "player/getCommentsWithVotes/{videoId}/{myUserId}/{compare}/{part}/{countReplies}", method = RequestMethod.GET)
 	public List<Comment> getCommentsWithVotesForVideo(@PathVariable Long videoId,@PathVariable Long myUserId,@PathVariable String compare,@PathVariable Integer part,@PathVariable Integer countReplies) {
-		//TODO work with part,compare,...
+		System.out.println(compare);
 		if(compare==null) {
 			compare="";
 		}
 		Comparator<Comment> comparator = null;
 		switch (compare) {
-		case "date_asc":
+		case "newest":
+			comparator = CommentDao.DESC_BY_DATE;
+			break;
+		case "oldest":
 			comparator = CommentDao.ASC_BY_DATE;
+			break;
+		case "mostLiked":
+			comparator = CommentDao.DESC_BY_LIKES;
+			break;
+		case "mostDisliked":
+			comparator = CommentDao.DESC_BY_DISLIKES;
 			break;
 		default:
 			comparator = CommentDao.DESC_BY_DATE;
@@ -121,14 +134,17 @@ public class CommentsService {
 	@ResponseBody
 	@RequestMapping(value = "player/getRepliesWithVotes/{commentId}/{myUserId}/{compare}", method = RequestMethod.GET)
 	public List<Comment> getRepliesWithVotesForComment(@PathVariable Long commentId,@PathVariable Long myUserId,@PathVariable String compare) {
-
+		System.out.println(compare);
 		if(compare==null) {
 			compare="";
 		}
 		Comparator<Comment> comparator = null;
 		switch (compare) {
-		case "date_asc":
+		case "latest":
 			comparator = CommentDao.ASC_BY_DATE;
+			break;
+		case "oldest":
+			comparator = CommentDao.DESC_BY_DATE;
 			break;
 		default:
 			comparator = CommentDao.DESC_BY_DATE;
@@ -141,5 +157,25 @@ public class CommentsService {
 			e.printStackTrace();
 		}
 		return comments;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/player/addComment", method = RequestMethod.POST)
+	public Comment addComment(HttpServletRequest req,HttpServletResponse resp) {
+		String text =req.getParameter("text");
+		Long videoId = Long.parseLong(req.getParameter("videoId"));
+		Long userId = Long.parseLong(req.getParameter("myUserId"));
+		Long replyId = Long.parseLong(req.getParameter("replyId"));
+		System.out.println(text+videoId+userId);
+		Comment newComment=null;
+		try {
+			newComment = new Comment(text, LocalDateTime.now(), userId, videoId, replyId);
+			comment.createComment(newComment);
+		} catch (CommentException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(newComment.getCommentId());
+		return newComment;
 	}
 }
