@@ -1,7 +1,6 @@
 package com.itvideo.controllers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -26,7 +25,8 @@ import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
 import com.itvideo.model.utils.PasswordGenerator;
 import com.itvideo.model.utils.Resources;
-import com.itvideo.model.utils.SendEmail;
+import com.itvideo.model.utils.Send;
+import com.itvideo.model.utils.TockenGenerator;
 
 @Controller
 public class UserController {
@@ -217,18 +217,24 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/login", method = RequestMethod.GET)
-	public String loginForm() {
+	public String loginGet() {
 		return "login";
 	}
 	
 	@RequestMapping(value="/login", method = RequestMethod.POST)
-	public String login(Model model, HttpSession session, HttpServletResponse response,
+	public String loginPost(Model model, HttpSession session, HttpServletResponse response,
 			@RequestParam("username") String username,
 			@RequestParam("password") String password ) {
-		
 		String hashedPass = Hash.getHashPass(password);
 		try {
 			User u = ud.getUser(username);
+			if (!u.isActivated()) {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				model.addAttribute("username", username);
+				model.addAttribute("usernameError", "Please Activate Your Account");
+				return "login";
+			}
+			
 			if (hashedPass.equals(u.getPassword())) {
 				session.setMaxInactiveInterval(-1);
 				session.setAttribute("user", u);
@@ -283,12 +289,11 @@ public class UserController {
 			u = new User(username, password, email);
 			u.setAvatarUrl("avatar.png");
 			
-			SendEmail.to(u);
-			
+			String token = new TockenGenerator().generate();
+			u.setActivationToken(token);
 			u.setPasswordNoValidation(Hash.getHashPass(password));
 			ud.createUser(u);
-			session.setAttribute("user", u);
-			
+			Send.welcomeMail(u);
 			Resources.initAvatar(u,session);
 			
 			return "redirect:/main";
@@ -304,6 +309,33 @@ public class UserController {
 		}
 	}
 	
+	
+	
+	// http://localhost:8080/ItVideo/activate/"+u.getUserId()+"/"+u.getActivationToken()
+	@RequestMapping(value="/activate/{userId}/{token}", method = RequestMethod.GET)
+	public String activateUser(
+			@PathVariable("userId") long userId,
+			@PathVariable("token") String token,
+			Model model, HttpSession session) {
+		try {
+			User u = ud.getUser(userId);
+			if (u.getActivationToken().equals(token)) {
+				u.setActivated(true);
+				ud.activateUser(userId);
+				session.setAttribute("user", u);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UserNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "redirect:/main";
+	}
 	
 	@RequestMapping(value="/forgotPassword", method = RequestMethod.GET)
 	public String forgotPasswordGet(@RequestParam("username") String username,Model model) {
@@ -324,7 +356,7 @@ public class UserController {
 				return "forgotPassword";
 			}
 			u.setPasswordNoValidation(newPassword);
-			SendEmail.to(u);
+			Send.welcomeMail(u);
 			u.setPasswordNoValidation(Hash.getHashPass(newPassword));
 			ud.updateUser(u);
 		} catch (SQLException e) {

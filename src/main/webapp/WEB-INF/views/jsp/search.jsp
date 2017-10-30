@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,11 +11,15 @@
 </head>
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
-		<div>
-			<c:if test="${videos != null }">
+	<div>
+		<c:if test="${sessionScope.searchParam == \"videos\" }">
+			<c:if test="${fn:length(searchResult) eq 0}">
+				<h1>Sorry, no videos found</h1>
+			</c:if>
+			<c:if test="${fn:length(searchResult) gt 0}">
 				<div class="inline">
 				<h1>Videos found</h1>
-					<c:forEach items="${videos}" var="video">	
+					<c:forEach items="${searchResult}" var="video">	
 					<div class="inline">
 						<c:out value="Name: ${video.name}"></c:out><br>
 						<c:out value="Description: ${video.description}"></c:out><br>
@@ -36,17 +41,16 @@
 					</c:forEach>
 				</div>
 			</c:if>
-			
-			<c:if test="${videos == null }">
-				<div class="inline">
-					<h1>videos not found</h1>
-				</div>
+		</c:if>
+
+		<c:if test="${sessionScope.searchParam == \"users\" }">
+			<c:if test="${fn:length(searchResult) eq 0}">
+				<h1>Sorry, no users found</h1>
 			</c:if>
-				
-			<c:if test="${users != null }">
+			<c:if test="${fn:length(searchResult) gt 1}">
 				<div class="inline">
 				<h1>Users found</h1>
-					<c:forEach items="${users}" var="userFound">
+					<c:forEach items="${searchResult}" var="userFound">
 						<div class="inline">
 						
 							<a href="<c:url value="/viewProfile/${userFound.userId}" />">
@@ -57,23 +61,20 @@
 					</c:forEach>
 				</div>
 			</c:if>
+		</c:if>
+		
+		<br>
 			
-			<br>
-			
-			<c:if test="${users == null }">
-				<div class="inline">
-					<h1>users not found</h1>
-				</div>
+		<c:if test="${sessionScope.searchParam == \"playlists\" }">
+			<c:if test="${fn:length(searchResult) eq 0}">
+				<h1>Sorry, no playlists found</h1>
 			</c:if>
-				
-			<br>
-				
-			<c:if test="${playlists != null }">
+			<c:if test="${fn:length(searchResult) gt 0}">
 				<div class="inline">
 					<h1>Playlist found</h1>
 					<div class="inline">
-						<c:forEach items="${playlists}" var="playlist">
-							<c:out value="${playlist.playlistName}6"></c:out>
+						<c:forEach items="${searchResult}" var="playlist">
+							<c:out value="${playlist.playlistName}"></c:out>
 							<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${playlist.userId}"/>>
 								<button>View</button>
 							</a>
@@ -81,14 +82,7 @@
 					</div>
 				</div>
 			</c:if>
-			
-			<br>	
-			
-			<c:if test="${playlists == null }">
-				<div class="inline">
-					<h1>playlists not found</h1>
-				</div>
-			</c:if>
-		</div>
+		</c:if>
+	</div>
 </body>
 </html>

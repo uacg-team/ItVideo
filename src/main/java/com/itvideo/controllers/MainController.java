@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.itvideo.model.CommentDao;
 import com.itvideo.model.Playlist;
@@ -47,26 +48,27 @@ public class MainController {
 	PlaylistDao pd;
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
-	public String search(HttpServletRequest request, Model model, HttpServletResponse response) {
-		String search = (String) request.getParameter("search");
-		List<Video> videos = null;
-		List<User> users = null;
-		List<Playlist> playlists = null;
+	public String search(
+			@RequestParam("search") String search,
+			@RequestParam("searchParam") String searchParam,
+			HttpServletRequest request, 
+			HttpSession session, 
+			Model model) {
+		
+		session.setAttribute("searchParam", searchParam);
 		try {
-			if (search != null) {
-				videos = vd.searchVideo(search);
-				if (videos.size() == 0) {
-					videos = null;
-				}
-				users = ud.searchUser(search);
-				if (users.size() == 0) {
-					users = null;
-				}
-				playlists = pd.searchPlaylist(search);
-				
-				if (playlists.size() == 0) {
-					playlists = null;
-				}
+			switch (searchParam) {
+			case "users":
+				model.addAttribute("searchResult", ud.searchUser(search));
+				return "search";
+			case "videos":
+				model.addAttribute("searchResult", vd.searchVideo(search));
+				return "search";
+			case "playlists":
+				model.addAttribute("searchResult", pd.searchPlaylist(search));
+				return "search";
+			default:
+				return "/main";
 			}
 		} catch (SQLException e) {
 			model.addAttribute("exception", "SQLException");
@@ -81,10 +83,6 @@ public class MainController {
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}
-		model.addAttribute("videos", videos);
-		model.addAttribute("users", users);
-		model.addAttribute("playlists", playlists);
-		return "search";
 	}
 	
 	@RequestMapping(value="/main/sort/{param}", method = RequestMethod.GET)

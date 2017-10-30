@@ -35,9 +35,15 @@
 					<c:out value="${userError}"></c:out><br>
 				</div>
 			</c:if>
-	      <button type="submit">Register</button><br>
+	      <button onclick="activeteMessage()" type="submit">Register</button><br>
 		</form>
 	</fieldset>
+	
+	<script>
+		function activeteMessage() {
+		    alert("Thank You! Please check your email to activate your account");
+		}
+	</script>
 
 </body>
 </html>
