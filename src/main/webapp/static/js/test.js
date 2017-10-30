@@ -22,3 +22,4 @@ function test(){
 //    var testDiv = document.getElementById(insertionDivName);
 //    testDiv.insertAdjacentHTML('beforeend', html);
 //}
+//console.log(htmlComment);

@@ -44,6 +44,26 @@ function dateParse(date){
     default:
         month = 0;
 	}
-	var time = date.dayOfMonth + '/' + month + '/' + date.year +" "+ date.hour + ':' + date.minute + ':' + date.second;
+	var hour=""
+	if(date.hour<10){
+		hour+="0"+date.hour;
+	}else{
+		hour+=date.hour;
+	}
+	
+	var minute=""
+	if(date.minute<10){
+		minute+="0"+date.minute;
+	}else{
+		minute+=date.minute;
+	}
+	
+	var second=""
+		if(date.second<10){
+			second+="0"+date.second;
+		}else{
+			second+=date.second;
+		}
+	var time = date.dayOfMonth + '/' + month + '/' + date.year +" "+hour + ':' + minute + ':' + second;
 	return time;
 }
