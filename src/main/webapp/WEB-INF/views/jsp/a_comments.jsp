@@ -21,6 +21,10 @@ function getSelected(){
 <div id="addNewComment">
 	<strong>Leave comment</strong><br>
 	<strong>${sessionScope.user.username}</strong>
+	<c:if test="${sessionScope.user==null}">
+			<a href="<c:url value="/login"/>">First login</a>
+			
+	</c:if>
 	<ul>
 	<li>
 		<c:if test="${sessionScope.user!=null}">
@@ -31,25 +35,17 @@ function getSelected(){
 		</c:if>
 	</li>
 	<li>
-	<form action="<c:url value="/addComment"/>" method="post">
-		<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId"/>
-		<!-- New Comment<input type="text" placeholder="add comment" name="newComment"/>
-		<br> -->
-		<textarea rows="3" cols="80" name="newComment"></textarea>
-		<input type="submit" value="comment"/>
-	</form>
+		<c:if test="${sessionScope.user!=null}">
+			<textarea rows="3" cols="80" id="novComentar"></textarea>
+			<button onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
+		</c:if>
+		<c:if test="${sessionScope.user==null}">
+			<textarea rows="3" cols="80" id="novComentar"></textarea>
+			<button>addComment</button>
+		</c:if>
 	</li>
 	</ul>
 </div>
-asinhronno
-<br>
-	<div>
-		<c:if test="${sessionScope.user!=null}">
-		<img src="<c:url value="/img/${sessionScope.user.userId}"/>" height="50px" width="auto" />
-		<textarea rows="3" cols="80" id="novComentar"></textarea>
-		<button onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
-		</c:if>
-	</div>
 <hr>
 <div id="newComments" title="0" >
 <!-- insert new Comments -->

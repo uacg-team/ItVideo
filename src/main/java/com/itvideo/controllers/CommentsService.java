@@ -27,7 +27,8 @@ import com.itvideo.model.exceptions.video.VideoException;
 public class CommentsService {
 	@Autowired
 	CommentDao comment;
-
+	
+	@Deprecated
 	@RequestMapping(value = "/comment/video{videoId}", method = RequestMethod.GET)
 	public List<Comment> getCommentsForVideo(@PathVariable long videoId) {
 		List<Comment> comments = null;
@@ -61,7 +62,7 @@ public class CommentsService {
 		}
 		return null;
 	}
-
+	@Deprecated
 	@RequestMapping(value = "/comment/user{userId}", method = RequestMethod.GET)
 	public List<Comment> getCommentsForUser(@PathVariable long userId) {
 		List<Comment> comments = null;
@@ -178,4 +179,5 @@ public class CommentsService {
 		System.out.println(newComment.getCommentId());
 		return newComment;
 	}
+
 }
