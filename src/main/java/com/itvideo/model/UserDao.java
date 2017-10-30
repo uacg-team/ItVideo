@@ -37,13 +37,14 @@ public class UserDao {
     }
 
 	public void createUser(User u) throws SQLException, UserException {
-		String sql = "INSERT INTO users (username, password, email, date_creation, avatar_url) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO users (username, password, email, date_creation, avatar_url, activation_token) VALUES (?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
 			ps.setString(1, u.getUsername());
 			ps.setString(2, u.getPassword());
 			ps.setString(3, u.getEmail());
 			ps.setString(4, DateTimeConvertor.ldtToSql(u.getDateCreation()));
 			ps.setString(5, u.getAvatarUrl());
+			ps.setString(6, u.getActivationToken());
 			ps.executeUpdate();
 			try (ResultSet rs = ps.getGeneratedKeys();) {
 				rs.next();
@@ -70,7 +71,9 @@ public class UserDao {
 									rs.getString("first_name"),
 									rs.getString("last_name"),
 									rs.getString("avatar_url"),
-									rs.getString("gender")));
+									rs.getString("gender"),
+									rs.getString("activation_token"),
+									rs.getBoolean("activated")));
 				}
 				return users;
 			}
@@ -139,7 +142,9 @@ public class UserDao {
 							rs.getString("first_name"),
 							rs.getString("last_name"),
 							rs.getString("avatar_url"),
-							rs.getString("gender"));
+							rs.getString("gender"),
+							rs.getString("activation_token"),
+							rs.getBoolean("activated"));
 				} else {
 					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
 				}
@@ -163,7 +168,9 @@ public class UserDao {
 							rs.getString("first_name"),
 							rs.getString("last_name"),
 							rs.getString("avatar_url"),
-							rs.getString("gender"));
+							rs.getString("gender"),
+							rs.getString("activation_token"),
+							rs.getBoolean("activated"));
 				} else {
 					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
 				}
@@ -221,7 +228,9 @@ public class UserDao {
 									rs.getString("first_name"),
 									rs.getString("last_name"),
 									rs.getString("avatar_url"),
-									rs.getString("gender")));
+									rs.getString("gender"),
+									rs.getString("activation_token"),
+									rs.getBoolean("activated")));
 				}
 				return followers;
 			}
@@ -246,7 +255,9 @@ public class UserDao {
 									rs.getString("first_name"),
 									rs.getString("last_name"),
 									rs.getString("avatar_url"),
-									rs.getString("gender")));
+									rs.getString("gender"),
+									rs.getString("activation_token"),
+									rs.getBoolean("activated")));
 				}
 				return following;
 			}
@@ -303,6 +314,14 @@ public class UserDao {
 				}
 				
 			}
+		}
+	}
+
+	public void activateUser(long userId) throws SQLException {
+		String sql = "UPDATE users SET activated = 1 WHERE user_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, userId);
+			ps.executeUpdate();
 		}
 	}
 }

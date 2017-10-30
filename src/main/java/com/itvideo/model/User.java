@@ -22,12 +22,15 @@ public class User {
 	private String lastName;
 	private String avatarUrl;
 	private String gender;
+	private String activationToken;
+	private boolean activated;
 
 	private List<User> followers = new ArrayList<>();
+
 	private List<User> following = new ArrayList<>();
 
 	User(long userId, String username, String password, String facebook, String email, LocalDateTime dateCreation,
-			String firstName, String lastName, String avatarUrl, String gender) throws UserException {
+			String firstName, String lastName, String avatarUrl, String gender, String activationToken ,boolean activated) throws UserException {
 		this.userId = userId;
 		this.username = username;
 		this.password = password;
@@ -38,27 +41,31 @@ public class User {
 		this.lastName = lastName;
 		this.avatarUrl = avatarUrl;
 		this.gender = gender;
+		this.activationToken = activationToken;
+		this.activated = activated;
 	}
-
 	public User(String username, String password, String email) throws UserException {
 		setUsername(username);
 		setPassword(password);
 		setEmail(email);
 		this.dateCreation = LocalDateTime.now();
 	}
-	
 
 	public void addFollower(User u) {
 		this.followers.add(u);
 	}
-
 	public void addFollowing(User u) {
 		this.following.add(u);
 	}
-	
+
+	public String getActivationToken() {
+		return activationToken;
+	}
+
 	public String getAvatarUrl() {
 		return avatarUrl;
 	}
+	
 
 	public LocalDateTime getDateCreation() {
 		return dateCreation;
@@ -67,7 +74,7 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
-
+	
 	public String getFacebook() {
 		return facebook;
 	}
@@ -104,6 +111,10 @@ public class User {
 		return username;
 	}
 
+	public boolean isActivated() {
+		return activated;
+	}
+
 	private boolean passwordIsStrong(String password) {
 		if (password.matches(STRONG_PASSWORD_PATTERN)) {
 			return true;
@@ -117,6 +128,14 @@ public class User {
 
 	public void removeFollowing(User u) {
 		this.following.remove(u);
+	}
+
+	public void setActivated(boolean activated) {
+		this.activated = activated;
+	}
+
+	public void setActivationToken(String activationToken) {
+		this.activationToken = activationToken;
 	}
 
 	public void setAvatarUrl(String avatarUrl) {
@@ -147,16 +166,16 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public void setPasswordNoValidation(String password) {
-		this.password = password;
-	}
-
 	public void setPassword(String password) throws UserException {
 		if (passwordIsStrong(password)) {
 			this.password = password;
 		} else {
 			throw new UserException(UserException.PASSWORD_NOT_STRONG);
 		}
+	}
+
+	public void setPasswordNoValidation(String password) {
+		this.password = password;
 	}
 
 	public void setUserId(long userId) throws UserException {

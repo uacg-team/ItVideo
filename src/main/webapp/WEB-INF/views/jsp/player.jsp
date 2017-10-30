@@ -158,7 +158,30 @@
 				<img src="<c:url value="/img/${mainVideo.userId}"/>" width="50px" height="auto"/>
 			</a>
 		</h3>
+		<br>
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<!-- ajax follow/unfollow -->
+		
+
+
+
+
+
+
+
+
+
+
 		<br>
 		
 		<!-- Edit video -->
@@ -187,6 +210,7 @@
   				poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" data-setup="{}">
 		  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
 		</video>
+
 
 		
 		<%-- 
@@ -238,7 +262,7 @@
 				</li>
 			</ul>
 		</div>
-		</div>
+	</div>
 		
 	<div class="inline">		
 		<br>

@@ -13,7 +13,7 @@ import com.itvideo.model.User;
 import com.itvideo.model.exceptions.user.UserException;
 
 
-public class SendEmail {
+public class Send {
 	private static String host = "smtp.gmail.com";
 	private static String port = "465";
 	private static String from = "noreply.itvideo@gmail.com";
@@ -21,7 +21,7 @@ public class SendEmail {
 
 	private static String subject = "Wellcome to www.itvideo.com";
 
-	public static void to(User u) {
+	public static void welcomeMail(User u) {
 		Properties props = new Properties();
 		//props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.host", host);
@@ -45,12 +45,12 @@ public class SendEmail {
 			msg.setRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
 			msg.setSubject(subject);
 			
-			String emailText = String.format("Wellcome to <strong>www.itvideo.com</strong><br>"
+			String emailText = String.format(
+					"Wellcome to <strong>www.itvideo.com</strong><br>"
 					+ "Your username is <strong>%s</strong><br>"
-					+ "Your email is <strong>%s</strong><br>"
-					+ "Your password is <strong>%s</strong>"
+					+ "Please click <a href=\"%s\">here</a> to activate your account "
 					+ "<br><br><br><a href=\"www.itvideo.com\">www.itvideo.com</a> ",
-					u.getUsername(),u.getEmail(), u.getPassword());
+					u.getUsername(), "http://localhost:8080/ItVideo/activate/"+u.getUserId()+"/"+u.getActivationToken());
 			
 			msg.setContent(emailText, "text/html; charset=utf-8");
 
@@ -68,6 +68,6 @@ public class SendEmail {
 	}
 
 	public static void main(String[] args) throws UserException {
-		SendEmail.to(new User("Hristo", "password", "i40.Penev@gmail.com"));
+		Send.welcomeMail(new User("Hristo", "password", "i40.Penev@gmail.com"));
 	}
 }
