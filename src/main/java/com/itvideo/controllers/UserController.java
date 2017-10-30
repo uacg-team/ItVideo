@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -39,6 +40,39 @@ public class UserController {
 	
 	@Autowired
 	PlaylistController pc;
+	
+	@ResponseBody
+	@RequestMapping(value="/player/asyncFollow", method = RequestMethod.POST)
+	public void followAsyncPost(
+			HttpSession session,
+			Model model, 
+			@RequestParam("following") int followingId, 
+			@RequestParam("follower") int followerId, 
+			@RequestParam("action") String action) {
+		
+		
+		User follower = (User) session.getAttribute("user");
+		if (follower == null) {
+			
+		}
+		
+		System.out.println("action = " + action);
+		
+		try {
+			if (action.equals("follow")) {
+				ud.followUser(followingId, followerId);
+				model.addAttribute("follow", true);
+			}
+			if (action.equals("unfollow")) {
+				ud.unfollowUser(followingId, followerId);
+				model.addAttribute("follow", false);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//return "redirect:/viewProfile/"+followingId;
+	}
 	
 	@RequestMapping(value="/follow", method = RequestMethod.POST)
 	public String followPost(

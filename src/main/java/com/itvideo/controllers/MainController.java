@@ -198,6 +198,11 @@ public class MainController {
 			
 			Video video = vd.getVideoForPlayer(videoId, userId);
 
+			//userId - logged user aka me
+			//video.getUserId() - videoOwnerId 
+			boolean follow = ud.isFollowing(userId, video.getUserId());
+			model.addAttribute("follow", follow);
+			
 			Set<Video> related = vd.getRelatedVideos(videoId);
 			
 			vd.increaseViews(videoId);

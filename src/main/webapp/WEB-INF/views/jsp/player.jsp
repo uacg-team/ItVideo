@@ -136,6 +136,35 @@
 				dislike.src="<c:url value="/pics/dislike.png"/>";
 			}
 		}
+		
+		function changeFollowButton(){
+		    var elem = document.getElementById("follow-button");
+		    if (elem.value==="follow") {
+		    	elem.value = "unfollow"
+		    } else if (elem.value==="unfollow"){
+		    	elem.value = "follow"
+		    }
+		}
+		
+		function follow(followingId,myId) {
+			if (typeof myId === 'undefined') {
+			    alert("First login!");
+			    return;
+			}
+			var request = new XMLHttpRequest();
+
+			request.onreadystatechange = function() {
+				changeFollowButton();
+			};
+			var elem = document.getElementById("follow-button");
+			var url = "asyncFollow";
+			var param1 = "following=";
+			var param =param1.concat(followingId,"&action=",elem.value,"&follower=",myId);
+			request.open("POST", url, true);
+			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			request.send(param);
+		}
+		
 	</script>
 </head>
 <body>
@@ -143,45 +172,32 @@
 
 	<div class="inline">
 		<!-- video info -->
-		<h3>Name: <c:out value="${mainVideo.name }"></c:out></h3>
-		<h3>Description: <c:out value="${mainVideo.description }"></c:out></h3>
-		<h3>Views: <c:out value="${mainVideo.views }"></c:out></h3>
-		<h3>Tags:
+		Name: <c:out value="${mainVideo.name }"></c:out><br>
+		Description: <c:out value="${mainVideo.description }"></c:out><br>
+		Views: <c:out value="${mainVideo.views }"></c:out><br>
+		Tags:
 		<c:forEach items="${mainVideo.tags}" var="currentTag">	
 			<c:out value="#${currentTag.tag} "></c:out>
 		</c:forEach>
-		</h3>
-		
-		<h3>Owner: 
-			<a href="<c:url value="/viewProfile/${mainVideo.userId}" />">
-				<c:out value="${mainVideo.userName }"></c:out>
-				<img src="<c:url value="/img/${mainVideo.userId}"/>" width="50px" height="auto"/>
-			</a>
-		</h3>
 		<br>
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		Owner: 
+		<a href="<c:url value="/viewProfile/${mainVideo.userId}" />">
+			<c:out value="${mainVideo.userName }"></c:out>
+			<img src="<c:url value="/img/${mainVideo.userId}"/>" width="50px" height="auto"/>
+		</a>
 		
 		<!-- ajax follow/unfollow -->
-		
-
-
-
-
-
-
-
-
-
-
+		<c:if test="${sessionScope.user.userId != null}">	
+			<c:if test="${sessionScope.user.userId != mainVideo.userId}">	
+					<c:if test="${follow eq true}">
+						<input type="button" value="follow"   id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+					</c:if>
+					<c:if test="${follow eq false}">
+						<input type="button" value="unfollow" id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+					</c:if>
+			</c:if>
+		</c:if>
 		<br>
 		
 		<!-- Edit video -->
@@ -190,9 +206,7 @@
 				<input type="submit" value="edit video">
 			</form>
 		</c:if>
-		
 		<br>
-		
 		
 		<!-- Delete video -->
 		<c:if test="${ not empty sessionScope.user  }">
@@ -203,15 +217,12 @@
 				</form>
 			</c:if>
 		</c:if>
-		
 
 		<!-- GRANDE video player -->
 		<video id="my-video" class="video-js" controls preload="auto" width="640px" height="264px"
   				poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" data-setup="{}">
 		  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
 		</video>
-
-
 		
 		<%-- 
 		<!-- Like video button -->
