@@ -219,6 +219,20 @@ public class CommentController {
 			}
 		}
 	}
+	@ResponseBody
+	@RequestMapping(value = "player/deleteComment", method = RequestMethod.POST)
+	public void deleteComment(HttpServletRequest req) {
+		long commentId = Long.parseLong(req.getParameter("commentId"));
+		try {
+			comment.deleteComment(commentId);
+		} catch (SQLException e) {
+			// TODO add status code
+			e.printStackTrace();
+		} catch (CommentException e) {
+			// TODO add statusCode
+			e.printStackTrace();
+		}
+	}
 	@RequestMapping(value = "/hop", method = RequestMethod.GET)
 	public String testovo() {
 		//tests

@@ -134,8 +134,8 @@ function showReplies(commentId, myUserId, comparator){
  */
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
 	var htmlOneComment="";
-	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
+	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-box-inner">' + text + '</p> <br>');
@@ -168,37 +168,42 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('</ul>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	
-	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<br>');
 	htmlOneComment=htmlOneComment.concat('<br>');
+	//add button reply
+	if(myUserId != 'undefined'){
+		htmlOneComment=htmlOneComment.concat('<div id="addReply' + commentId + '">');
+			htmlOneComment=htmlOneComment.concat('<button onclick="addReplyPopUpHtml('+myUserId+','+videoId+','+commentId+',\''+username+'\')">add reply</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
+	//add button delete
+	if(myUserId == userId){
+		htmlOneComment=htmlOneComment.concat('<div id="deleteComment' + commentId + '">');
+			//TODO add real parameters
+			htmlOneComment=htmlOneComment.concat('<button onclick="deleteComment('+commentId+')">delete</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
 	//if hasReplies -add button show replies
 	if(numberReplies>0){
 		htmlOneComment=htmlOneComment.concat('<div id="viewReplies' + commentId + '">');
 			htmlOneComment=htmlOneComment.concat('<button onclick="showReplies(' + commentId + ',' + myUserId + ',' + comparator + ')">show replies('+numberReplies+')</button>');
 		htmlOneComment=htmlOneComment.concat('</div>');
 	}
-	//add button reply
-	if(myUserId != 'undefined'){
-		htmlOneComment=htmlOneComment.concat('<div id="addReply' + commentId + '">');
-			//TODO add real parameters
-			htmlOneComment=htmlOneComment.concat('<button onclick="addReplyPopUpHtml('+myUserId+','+videoId+','+commentId+',\''+username+'\')">add reply</button>');
-		htmlOneComment=htmlOneComment.concat('</div>');
-	}
-	//add button delete
+	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }
 
 function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId){
 	//build html for comment
-	var htmlOneComment='<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>';
-	htmlOneComment=htmlOneComment.concat('<div class="reply-box">');
+	var htmlOneComment="";
+	htmlOneComment=htmlOneComment.concat('<div id='+commentId+' class="reply-box">');
+	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
 	htmlOneComment=htmlOneComment.concat('<p class="reply-header"><span>' + username + '</span></p>');
 	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner">');
 	htmlOneComment=htmlOneComment.concat('<p>' + text + '</p><br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
-	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="like-buttons">');
 	htmlOneComment=htmlOneComment.concat('<ul>');
 	htmlOneComment=htmlOneComment.concat('<li>');
@@ -222,9 +227,16 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	}
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('</ul>');
-	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<br>');
-	
+	htmlOneComment=htmlOneComment.concat('<br>');
+	if(myUserId == userId){
+		htmlOneComment=htmlOneComment.concat('<div id="deleteComment' + commentId + '">');
+			//TODO add real parameters
+			htmlOneComment=htmlOneComment.concat('<button onclick="deleteComment('+commentId+')">delete</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }
 
@@ -263,10 +275,19 @@ function postComment(myUserId,videoId,replyId,username) {
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
 }
-//TODO AJAX 
 function deleteComment(commentId){
-	//post delete comment from db
-	//delete comment div
+	var url = "/ItVideo/player/deleteComment";
+	var param = "commentId=" + commentId;
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var elem = document.getElementById(commentId);
+		    elem.parentNode.removeChild(elem);
+		}
+	}
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
 }
 function postReply(myUserId,videoId,replyId,username){
 	if (typeof myUserId === 'undefined') {
@@ -322,7 +343,39 @@ function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 function htmlShowMoreComments(commentsShow,allCommentsNumber){
 	//show button if there is more comments
 }
-
+function deleteComment(commentId){
+	if (typeof myUserId === 'undefined') {
+	    alert("First login!");
+	    return;
+	}
+	var text = document.getElementById("novReplyText"+replyId).value;
+	var url = "/ItVideo/player/deleteComment";
+	var param = "videoId=" + videoId + "&myUserId=" + myUserId + "&text=" + text+ "&replyId=" + replyId;
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			//clear text field
+			var lastComment = JSON.parse(this.responseText);
+			
+			//parsing one comment
+			var commentId=lastComment.commentId;
+			var replyId=lastComment.replyId;
+			var text = lastComment.text;
+			var userId=lastComment.userId;
+			var videoId=lastComment.videoId;
+			var date = lastComment.date;
+				//(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator)
+				//(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId)
+			var htmlComment=buildReply(commentId,text,userId,videoId,replyId,0,0,username,' ',0,date,userId);
+			
+			var insertion=document.getElementById("addReply"+replyId);
+			insertion.innerHTML=htmlComment;
+		}
+	}
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
+}
 function showButton(insertionDivName,deleteDivElement,html){
 	//remove button with name deleteDivElement
 	var elem = document.getElementById(deleteDivElement);
