@@ -65,6 +65,7 @@ function comments(myUserId, video_id, comparator, part, commentsPerClick, allCom
  * @param myUserId
  * @param comparator
  * @returns
+ * 
  */
 function showReplies(commentId, myUserId, comparator){
 	var request = new XMLHttpRequest();
@@ -136,7 +137,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	var htmlOneComment="";
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
-	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
+	htmlOneComment=htmlOneComment.concat('<div class="comment-header"><span>' + username + '<span></div>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-box-inner">' + text + '</p> <br>');
 	htmlOneComment=htmlOneComment.concat('</div>');

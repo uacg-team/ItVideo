@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 <link type="text/css" rel="stylesheet" href="<c:url value="/css/comments.css"/>"/>
-<script type="text/javascript" src="<c:url value="/js/commentBuilder.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/js/commentBuilder-v1.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/commentLikes.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/dateParser.js"/>"></script>
 <script type="text/javascript">
