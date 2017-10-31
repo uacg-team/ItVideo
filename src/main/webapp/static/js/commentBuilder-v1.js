@@ -65,7 +65,6 @@ function comments(myUserId, video_id, comparator, part, commentsPerClick, allCom
  * @param myUserId
  * @param comparator
  * @returns
- * 
  */
 function showReplies(commentId, myUserId, comparator){
 	var request = new XMLHttpRequest();
@@ -137,7 +136,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	var htmlOneComment="";
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
-	htmlOneComment=htmlOneComment.concat('<div class="comment-header"><span>' + username + '<span></div>');
+	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-box-inner">' + text + '</p> <br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
@@ -345,32 +344,13 @@ function htmlShowMoreComments(commentsShow,allCommentsNumber){
 	//show button if there is more comments
 }
 function deleteComment(commentId){
-	if (typeof myUserId === 'undefined') {
-	    alert("First login!");
-	    return;
-	}
-	var text = document.getElementById("novReplyText"+replyId).value;
 	var url = "/ItVideo/player/deleteComment";
-	var param = "videoId=" + videoId + "&myUserId=" + myUserId + "&text=" + text+ "&replyId=" + replyId;
+	var param = "commentId=" + commentId;
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			//clear text field
-			var lastComment = JSON.parse(this.responseText);
-			
-			//parsing one comment
-			var commentId=lastComment.commentId;
-			var replyId=lastComment.replyId;
-			var text = lastComment.text;
-			var userId=lastComment.userId;
-			var videoId=lastComment.videoId;
-			var date = lastComment.date;
-				//(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator)
-				//(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId)
-			var htmlComment=buildReply(commentId,text,userId,videoId,replyId,0,0,username,' ',0,date,userId);
-			
-			var insertion=document.getElementById("addReply"+replyId);
-			insertion.innerHTML=htmlComment;
+			var elem = document.getElementById(commentId);
+		    elem.parentNode.removeChild(elem);
 		}
 	}
 	request.open("POST", url, true);
