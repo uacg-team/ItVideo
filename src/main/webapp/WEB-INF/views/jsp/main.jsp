@@ -13,12 +13,9 @@
 	
 	<div class="container-fluid text-center">    
 	  <div class="row content">
-	    <div class="col-sm-2 sidenav">
-	      <p><a href="#">Link</a></p>
-	      <p><a href="#">Link</a></p>
-	      <p><a href="#">Link</a></p>
+	    <div class="col-sm-1 sidenav">
 	    </div>
-	    <div class="col-sm-8 text-left"> 
+	    <div class="col-sm-10 text-left"> 
 			<div>
 				<select onchange="location = this.value;">
 					 <option value="<c:url value="/main/sort/date" />" <c:if test="${sessionScope.sort eq \"date\" }"> selected </c:if>>SortByDate</option>
@@ -26,16 +23,9 @@
 					 <option value="<c:url value="/main/sort/view" />" <c:if test="${sessionScope.sort eq \"view\" }"> selected </c:if>>SortByViews</option>
 				</select>
 			</div>
-	
-		<jsp:include page="showVideosRequest.jsp"></jsp:include><br>
+			<jsp:include page="showVideosRequest.jsp"></jsp:include>
 	    </div>
-	    <div class="col-sm-2 sidenav">
-	      <div class="well">
-	        <p>ADS</p>
-	      </div>
-	      <div class="well">
-	        <p>ADS</p>
-	      </div>
+	    <div class="col-sm-1 sidenav">
 	    </div>
 	  </div>
 	</div>

@@ -249,7 +249,7 @@ public class VideoDao {
 		}
 	}
 
-	public Video getVideo(long videoId) throws VideoNotFoundException, SQLException {
+	public synchronized Video getVideo(long videoId) throws VideoNotFoundException, SQLException {
 		con.setAutoCommit(false);
 		String sql = "SELECT * FROM videos WHERE video_id = ?;";
 
