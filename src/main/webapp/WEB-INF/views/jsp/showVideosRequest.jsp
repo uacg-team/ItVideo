@@ -9,10 +9,16 @@
 <title>videos</title>
 <style>
 
-img {
-    max-width: 100%;
-    height: auto;
+#textLimit {
+   overflow: hidden;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   line-height: 16px;     /* fallback */
+   max-height: 32px;      /* fallback */
+   -webkit-line-clamp: 2; /* number of lines to show */
+   -webkit-box-orient: vertical;
 }
+
 video {
     max-width: 100%;
     height: auto;
@@ -35,10 +41,10 @@ video {
 				<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />"></video>
 			</a>
 			
-				<p class="text-primary"><strong><c:out value="${video.name}"></c:out></strong></p>
+				<p class="text-primary" id="textLimit"><strong><c:out value="${video.name}"></c:out></strong></p>
 				<p class="text-primary">
 				<c:forEach items="${video.tags}" var="tag">	
-						<a href="#" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
+						<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
 				</c:forEach>
 				</p>
 			
