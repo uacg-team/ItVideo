@@ -291,6 +291,8 @@
 	<div class="inline">	
 		<!-- related videos -->
 		<h1>RELATED</h1>
+		<jsp:include page="showVideosRequest.jsp"></jsp:include>
+	<%-- 	
 		<c:forEach items="${requestScope.related}" var="relVideo">	
 		<div class="inline">
 			Name: <c:out value="${relVideo.name }"></c:out><br>
@@ -304,6 +306,8 @@
 			</c:forEach>
 		</div>
 		</c:forEach>
+		 --%>
+		
 	</div> 	
 </body>
 </html>

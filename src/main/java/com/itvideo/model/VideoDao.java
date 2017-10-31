@@ -427,6 +427,7 @@ public class VideoDao {
 	}
 
 	public Set<Video> getRelatedVideos(long videoId) throws SQLException, VideoNotFoundException {
+		//TODO: Make transaction
 		Set<Tag> tags = getTags(videoId);
 		Set<Video> relatedVideos = new HashSet<>();
 		

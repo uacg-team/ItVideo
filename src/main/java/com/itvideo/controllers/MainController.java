@@ -215,7 +215,7 @@ public class MainController {
 			vd.increaseViews(videoId);
 			
 			model.addAttribute("mainVideo", video);
-			model.addAttribute("related", related);
+			model.addAttribute("videos", related);
 			
 //			cc.loadCommentsForVideo(model,videoId);
 			if(session.getAttribute("user")!=null) {
