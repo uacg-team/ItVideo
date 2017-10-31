@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/fmt" prefix = "fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,10 +20,9 @@
 			<img src="<c:url value="/img/${video.userId}"/>" width="50px" height="auto"/>
 		</a><br>
 		
-		<fmt:parseDate value="${ cleanedDateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-		<fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" />
-
-		<c:out value="Published: ${video.date}"></c:out><br>
+		<fmt:parseDate value="${ video.date }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+		Published: <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" /><br>
+		
 		<c:out value="Views: ${video.views}"></c:out><br>
 		<c:out value="Privacy: ${video.privacy}"></c:out><br>
 		<c:out value="Tags: "></c:out><br>
