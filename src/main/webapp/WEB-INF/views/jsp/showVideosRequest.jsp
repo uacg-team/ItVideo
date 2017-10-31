@@ -6,12 +6,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css"/>" />
 <title>videos</title>
 </head>
 <body>
 	<c:forEach items="${requestScope.videos}" var="video">	
-	<div class="inline">
+<!-- 	<div class="inline"> -->
+	<div>
 		<c:out value="Name: ${video.name}"></c:out><br>
 		<c:out value="Description: ${video.description}"></c:out><br>
 				
@@ -34,7 +34,7 @@
 			<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />">
 		  		<source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 			</video>
-		</a><br>
+		</a>
 	</div>
 	</c:forEach>
 </body>

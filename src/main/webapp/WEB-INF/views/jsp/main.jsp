@@ -6,18 +6,42 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>main</title>
-<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css"/>" />
 </head>
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
 	
-	<div>
-		<select onchange="location = this.value;">
-			 <option value="<c:url value="/main/sort/date" />" <c:if test="${sessionScope.sort eq \"date\" }"> selected </c:if>>SortByDate</option>
-			 <option value="<c:url value="/main/sort/like" />" <c:if test="${sessionScope.sort eq \"like\" }"> selected </c:if>>SortByLikes</option>
-			 <option value="<c:url value="/main/sort/view" />" <c:if test="${sessionScope.sort eq \"view\" }"> selected </c:if>>SortByViews</option>
-		</select>
+	
+	<div class="container-fluid text-center">    
+	  <div class="row content">
+	    <div class="col-sm-2 sidenav">
+	      <p><a href="#">Link</a></p>
+	      <p><a href="#">Link</a></p>
+	      <p><a href="#">Link</a></p>
+	    </div>
+	    <div class="col-sm-8 text-left"> 
+			<div>
+				<select onchange="location = this.value;">
+					 <option value="<c:url value="/main/sort/date" />" <c:if test="${sessionScope.sort eq \"date\" }"> selected </c:if>>SortByDate</option>
+					 <option value="<c:url value="/main/sort/like" />" <c:if test="${sessionScope.sort eq \"like\" }"> selected </c:if>>SortByLikes</option>
+					 <option value="<c:url value="/main/sort/view" />" <c:if test="${sessionScope.sort eq \"view\" }"> selected </c:if>>SortByViews</option>
+				</select>
+			</div>
+	
+		<jsp:include page="showVideosRequest.jsp"></jsp:include><br>
+	    </div>
+	    <div class="col-sm-2 sidenav">
+	      <div class="well">
+	        <p>ADS</p>
+	      </div>
+	      <div class="well">
+	        <p>ADS</p>
+	      </div>
+	    </div>
+	  </div>
 	</div>
-	<jsp:include page="showVideosRequest.jsp"></jsp:include><br>
+
+
+
+
 </body>
 </html>
