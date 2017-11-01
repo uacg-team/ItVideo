@@ -7,6 +7,28 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 <script type="text/javascript">
+		function addToPlaylist1(playlistId,userId,videoId) {
+			if (typeof userId === 'undefined') {
+			    alert("First login!");
+			    return;
+			}
+			var request = new XMLHttpRequest();
+			request.onreadystatechange =  function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var add = document.getElementById("playlist".concat(playlistId));
+					if(add.className === "glyphicon glyphicon-minus"){
+						add.className="glyphicon glyphicon-ok";
+					}else{
+						add.className="lyphicon glyphicon-minus";
+					}
+				}
+			};
+			var url = "addToPlaylist";
+			var param = "playlistId="+playlistId+"&videoId="+videoId;
+			request.open("POST", url, true);
+			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			request.send(param);
+		}
 		function addToPlaylist(playlistId,userId,videoId) {
 			if (typeof userId === 'undefined') {
 			    alert("First login!");
@@ -94,23 +116,20 @@
 </head>
 <body>
 <!-- show my playlist while watching  -->
-
 <div class="btn-group">
   <a href="#" class="btn btn-primary">add to playlist</a>
-  <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="true"><span class="caret"></span></a>
-	  <ul class="dropdown-menu" >
+  <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+		<ul class="dropdown-menu" >
   		<c:forEach items="${requestScope.myPlaylists}" var="playlist">
-  			<ul>
 	  			<li onclick="addToPlaylist(${playlist.playlistId},${user.userId},${requestScope.mainVideo.videoId})">
 	  				<c:if test="${playlist.videoStatus == 1}">
-	    				<img alt="inPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/ok.png"/>" style="width: 22px; height: auto" >
+				      	<img alt="inPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/ok.png"/>" style="width: 22px; height: auto" >
     				</c:if>
     				<c:if test="${playlist.videoStatus != 1}">
-	    				<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >
+						<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >	
     				</c:if>
-	    			<span>${playlist.playlistName}</span>
+    				<span>${playlist.playlistName}</span>
     			</li>
-   			 </ul>
 	    </c:forEach>
 	    </ul>
  </div>
