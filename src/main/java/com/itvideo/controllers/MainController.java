@@ -1,20 +1,15 @@
 package com.itvideo.controllers;
 
-import static org.mockito.Mockito.reset;
-
-import java.io.IOException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.httpclient.HttpClientError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,19 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.itvideo.model.CommentDao;
-import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
 import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.user.UserException;
-import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
-import com.mysql.fabric.Response;
-import com.sun.jna.platform.win32.VerRsrc.VS_FIXEDFILEINFO;
 
 @Controller
 public class MainController {
@@ -86,9 +76,26 @@ public class MainController {
 			return "error";
 		}
 	}
+
+	@RequestMapping(value="/search/tag/{tag}", method = RequestMethod.GET)
+	public String searchTag(HttpServletRequest request, Model model, @PathVariable("tag") String tag) {
+		try {
+			List<Video> videos = vd.getVideos(tag);
+			for (Video video : videos) {
+				video.setUserName(vd.getUserName(video.getUserId()));
+				video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
+			}
+			request.setAttribute("videos", videos);
+			return "main";
+		} catch (SQLException e) {
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		}
+	}
 	
 	@RequestMapping(value="/main/sort/{param}", method = RequestMethod.GET)
-	public String sort(HttpSession session, Model model, @PathVariable("param") String param) {
+	public String sort(HttpSession session,HttpServletRequest request, Model model, @PathVariable("param") String param) {
 		try {
 			List<Video> videos = null;
 			switch (param) {
@@ -115,8 +122,8 @@ public class MainController {
 				video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
 			}
 			
-			session.setAttribute("videos", videos);
-			return "redirect:/main";
+			request.setAttribute("videos", videos);
+			return "main";
 		} catch (SQLException e) {
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());

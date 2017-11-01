@@ -1,7 +1,5 @@
 package com.itvideo.model;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -523,5 +521,31 @@ public class VideoDao {
 			}
 		}
 		return video;
+	}
+
+	
+	public List<Video> getVideos(String tag) throws SQLException {
+		String sql = "SELECT v.* FROM videos AS v JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) JOIN tags AS t ON (vt.tag_id = t.tag_id) WHERE t.tag = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, tag);
+			try(ResultSet rs = ps.executeQuery();){
+				List<Video> videos = new ArrayList<>();
+				while (rs.next()) {
+					videos.add(
+							new Video(
+									rs.getLong("video_id"), 
+									rs.getString("name"), 
+									rs.getInt("views"),
+									DateTimeConvertor.sqlToLdt(rs.getString("date")),
+									rs.getString("location_url"), 
+									rs.getLong("user_id"), 
+									rs.getString("thumbnail_url"),
+									rs.getString("description"), 
+									rs.getLong("privacy_id"), 
+									getTags(rs.getLong("video_id"))));
+				}
+				return videos;
+			}
+		}
 	}
 }
