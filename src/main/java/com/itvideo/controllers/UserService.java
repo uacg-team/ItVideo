@@ -1,5 +1,6 @@
 package com.itvideo.controllers;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,12 +19,18 @@ import com.itvideo.model.UserDao;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
+import com.itvideo.model.utils.Resources;
+import com.itvideo.model.utils.Send;
+import com.itvideo.model.utils.TockenGenerator;
 
 @Controller
 @RestController
 public class UserService {
 	@Autowired
 	UserDao ud;
+	/**
+	 * report to js if there is problem,and what action is coming next
+	 */
 	public static class ReportMsg{
 		private String typeError;
 		private String msg;
@@ -75,5 +81,43 @@ public class UserService {
 			response.setStatus(401);
 			return new ReportMsg("usernameError", e.getMessage(),"none");
 		} 
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/main/register", method = RequestMethod.POST)
+	public ReportMsg registerPost( HttpServletResponse response,HttpServletRequest request,HttpSession session ) {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		String confirmPassword = request.getParameter("confirmPassword");
+		String email = request.getParameter("email");
+		User u = null;
+		try {
+			if (ud.existsUser(username)) {
+				response.setStatus(400);
+				return new ReportMsg("usernameError", "This username already exist", "none");
+			}		
+			if (!password.equals(confirmPassword)) {
+				response.setStatus(400);
+				return new ReportMsg("passwordError", "Password differ", "none");
+			}
+			u = new User(username, password, email);
+			u.setAvatarUrl("avatar.png");
+			String token = new TockenGenerator().generate();
+			u.setActivationToken(token);
+			u.setPasswordNoValidation(Hash.getHashPass(password));
+			ud.createUser(u);
+			Send.welcomeMail(u);
+			Resources.initAvatar(u,session);
+			return new ReportMsg("success", "", "none");
+		} catch (SQLException e) {
+			response.setStatus(500);
+			return new ReportMsg("sqlError", "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.","none");
+		} catch (UserException e) {
+			response.setStatus(400);
+			return new ReportMsg("userError",  e.getMessage(), "none");
+		} catch (IOException e) {
+			response.setStatus(500);
+			return new ReportMsg("IOError",  "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.", "none");
+		}
 	}
 }
