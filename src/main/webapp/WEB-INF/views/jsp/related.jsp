@@ -39,6 +39,7 @@ video {
 			<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
 	</c:forEach>
 	</p>
+	<br>
 </c:forEach>
 </body>
 </html>

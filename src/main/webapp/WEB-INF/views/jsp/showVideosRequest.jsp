@@ -8,7 +8,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>videos</title>
 <style>
-
 #textLimit {
    overflow: hidden;
    text-overflow: ellipsis;
@@ -28,6 +27,11 @@ video {
   display: flex;
   flex-wrap: wrap;
 }
+
+#videosList {
+ max-width: 600px; 
+  overflow: hidden;
+}
 </style>
 </head>
 <body>
@@ -35,9 +39,12 @@ video {
     <div class="row row-eq-height">
 	<c:forEach items="${requestScope.videos}" var="video">	
     	<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3" >
-		<div>
+		<div id="videosList">   
+		<div class="video">
 			<a href="<c:url value="/player/${video.videoId}" />">	
-				<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />"></video>
+				<video class="thevideo" width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />">
+				      <source src="<c:url value="/videoStream/${video.videoId}" />" type="video/mp4">
+				</video>
 			</a>
 			<a href="<c:url value="/player/${video.videoId}" />">
 				<p class="text-primary" id="textLimit" >
@@ -51,28 +58,20 @@ video {
 			</p>
 		</div>
 		</div>
+		</div>
 	</c:forEach>
 </div>
 </div>
+<script type="text/javascript">
+var figure = $(".video").hover( hoverVideo, hideVideo );
+
+function hoverVideo(e) {  
+    $('video', this).get(0).play(); 
+}
+
+function hideVideo(e) {
+    $('video', this).get(0).pause(); 
+}
+</script>
 </body>
 </html>
-				
-				<%-- 
-				<p class="text-primary"><c:out value="Description: ${video.description}"></c:out></p>
-				<p class="text-primary">		
-				<a href="<c:url value="/viewProfile/${video.userId}" />">
-					<c:out value="Owner: ${video.userName}"></c:out>
-					<img class="img-rounded" src="<c:url value="/img/${video.userId}"/>" width="50px" height="auto"/>
-				</a>
-				</p>
-				<p class="text-primary">
-				<fmt:parseDate value="${ video.date }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-				Published: <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" /><br>
-				</p>
-				<p class="text-primary">
-				<c:out value="Views: ${video.views}"></c:out>
-				</p>
-				<p class="text-primary">	
-				<c:out value="Privacy: ${video.privacy}"></c:out>
-				</p>
-				 --%>
