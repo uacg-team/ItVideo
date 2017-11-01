@@ -440,10 +440,10 @@ public class VideoDao {
 				try (ResultSet rs = ps.executeQuery();) {
 					while (rs.next()) {
 						long relVideoId = rs.getLong("video_id");
-						Video video = getVideo(videoId);
 						if (videoId == relVideoId) {
 							continue;
 						}
+						Video video = getVideo(relVideoId);
 						relatedVideos.add(video);
 					}
 				}
