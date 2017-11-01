@@ -21,17 +21,19 @@ width: 25px;
 border-radius: 50%;
 }
 .center-search-itvideo{
-   margin-bottom: 0;
+   margin-bottom: 15px;
    margin-top: 15px;
 }
 .nav{
     text-align: center;
 }
-.navbar-nav li a{
+.navbar-nav li button{
 	display: block;
     width: auto;
-	margin-bottom: 5px;
+	margin-bottom: 15px;
     margin-top: 0px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 
@@ -167,35 +169,82 @@ function loginPost(){
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			window.location.href = "/ItVideo/main";
-		}
-		if (this.readyState == 4 && this.status == 401) {
+		}else{
 			var resp = JSON.parse(this.responseText);
 			var typeError= resp.typeError;
 			var msg=resp.msg;
 			var action = resp.action;
-			if(typeError === "not-activated" || typeError === "usernameError"){
-				var insertion=document.getElementById("user-err-login");
-			}else if(typeError === "passwordError"){
-				var insertion=document.getElementById("pass-err-login");
+			if (this.readyState == 4 && this.status == 401) {
+				if(typeError === "not-activated" || typeError === "usernameError"){
+					var insertion=document.getElementById("user-err-login");
+				}else if(typeError === "passwordError"){
+					var insertion=document.getElementById("pass-err-login");
+				}
+				//delete other problems if have
+				document.getElementById("user-err-login").innerHTML="";
+				document.getElementById("pass-err-login").innerHTML="";
+				insertion.innerHTML="<p class=\"text-danger\">"+msg+"</p>";
 			}
-			//delete other problems if have
-			document.getElementById("user-err-login").innerHTML="";
-			document.getElementById("pass-err-login").innerHTML="";
-			insertion.innerHTML="<p class=\"text-danger\">"+msg+"</p>";
-		}
-		if (this.readyState == 4 && this.status == 500) {
-			var resp = JSON.parse(this.responseText);
-			var typeError= resp.typeError;
-			var msg=resp.msg;
-			var action = resp.action;
-			var insertion=document.getElementById("other-err-login");
-			insertion.innerHTML="<p class=\"text-danger\">"+msg+"</p>";
+			else if (this.readyState == 4 && this.status == 500) {
+				var insertion=document.getElementById("other-err-login");
+				insertion.innerHTML="<p class=\"text-danger\">"+msg+"</p>";
+			}
 		}
 	}
 	var username = document.getElementById("username-login").value;
 	var password = document.getElementById("password-login").value;
 	var url = "/ItVideo/main/login";
 	var param = "username=" + username + "&password=" + password;
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
+}
+
+function registerPost(){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var insertion = document.getElementById("success-register");
+			document.getElementById("user-err-register").innerHTML="";
+			document.getElementById("pass-err-register").innerHTML="";
+			document.getElementById("other-err-register").innerHTML="";
+			insertion.innerHTML = "<p class=\"text-success\">Thank You! Please check your email to activate your account</p>";
+			//window.location.href = "/ItVideo/main";
+			//Thank You! Please check your email to activate your account
+		}else{
+			var resp = JSON.parse(this.responseText);
+			var typeError= resp.typeError;
+			var msg=resp.msg;
+			var action = resp.action;
+			if (this.readyState == 4 && this.status == 400) {
+				if(typeError === "usernameError"){
+					var insertion=document.getElementById("user-err-register");
+				}else if(typeError === "passwordError"){
+					var insertion=document.getElementById("pass-err-register");
+				}else{
+					var insertion=document.getElementById("other-err-register");
+				}
+				//delete other problems if have
+				document.getElementById("user-err-register").innerHTML="";
+				document.getElementById("pass-err-register").innerHTML="";
+				document.getElementById("other-err-register").innerHTML="";
+				insertion.innerHTML  = "<p class=\"text-danger\">"+msg+"</p>";
+			}
+			else if (this.readyState == 4 && this.status == 500) {
+				var insertion = document.getElementById("other-err-register");
+				document.getElementById("user-err-register").innerHTML="";
+				document.getElementById("pass-err-register").innerHTML="";
+				document.getElementById("other-err-register").innerHTML="";
+				insertion.innerHTML = "<p class=\"text-danger\">"+msg+"</p>";
+			}
+		}
+	}
+	var username = document.getElementById("username-register").value;
+	var password = document.getElementById("password-register").value;
+	var confirmPassword = document.getElementById("confirmPassword-register").value;
+	var email = document.getElementById("email-register").value;
+	var url = "/ItVideo/main/register";
+	var param = "username=" + username + "&password=" + password+"&confirmPassword=" + confirmPassword+"&email=" + email;
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
@@ -240,11 +289,12 @@ function loginPost(){
 						<img class="avatar-header" src="<c:url value="/img/${sessionScope.user.userId}"/>"/>
 					</a>
 				 </li>
-	      		 <li><a href="<c:url value="/logout"/>">Logout</a></li>
+	      		<%--  <li><a href="<c:url value="/logout"/>">Logout</a></li> --%>
+				 <li><a href="<c:url value="/logout"/>" type="button" class="btn btn-info" style="width:auto;"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
 			 </c:if>
 			 <c:if test="${sessionScope.user == null}"> 
-				 <li><a href="<c:url value="/register"/>">Register</a></li>
-				 <li><button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='block'" style="width:auto;"><span class="glyphicon glyphicon-user"></span>Login</button></li>
+				 <li><button type="button" class="btn btn-info" onclick="document.getElementById('register-form-itvideo').style.display='block'" style="width:auto;"><span class="glyphicon glyphicon-user"></span> Register</button></li>
+				 <li><button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='block'" style="width:auto;"><span class="glyphicon glyphicon-log-in"></span> Login</button></li>
 			 </c:if>
 	      </ul>
     </div>
@@ -252,7 +302,7 @@ function loginPost(){
 </nav>
 
 
-
+<!-- login form -->
 <div id="login-form-itvideo" class="modal">
 						<%-- action="<c:url value="/login"  method="post"/>" --%>
   <div class="modal-content animate" onsubmit="loginPost()">
@@ -280,50 +330,95 @@ function loginPost(){
     </div>
   </div>
 </div>
+<!-- register from -->
+<div id="register-form-itvideo" class="modal">
+  <div class="modal-content animate" >
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('register-form-itvideo').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <img src="<c:url value="/pics/avatar.png"/>" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container-login">
+      <label><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" class="form-control field-addition" required id="username-register">
+	  	<div id="user-err-register"></div>
+      <label><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" class="form-control field-addition" required id="password-register">
+      <label><b>Confirm Password</b></label>
+      <input type="password" placeholder="Confirm Password" name="confirmPassword" class="form-control field-addition" required id="confirmPassword-register">
+		<div id="pass-err-register"></div>
+	  <label><b>Email</b></label>
+	  <input type="text" placeholder="Email" class="form-control field-addition" name="email" required id="email-register"><br>
+      	<div id="other-err-register"></div>
+		<div id="success-register"></div>
+      <button class="btn btn-info btn-login-itvideo" onclick="registerPost()">Register</button>
+    </div>
+    <div class="container-login" style="background-color:#f1f1f1">
+      <button type="button" onclick="document.getElementById('register-form-itvideo').style.display='none'" class="btn btn-danger">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+	<%-- <fieldset>
+	<legend>Registration</legend>
+  		<form action="register" method = "post">
+			<input type="text" value="${username}" placeholder="Username" name="username" required><br>
+      		<!-- Username Error  -->
+			<c:if test="${usernameError != null }">
+				<div class="err">
+					<c:out value="${ usernameError }"></c:out><br>
+				</div>
+			</c:if>
+	      <input type="password" placeholder="Password" name="password" required><br>
+	      <input type="password" placeholder="Confirm Password" name="confirmPassword" required><br>
+			<!-- Password Error  -->
+			<c:if test="${passError != null }">
+				<div class="err">
+					<c:out value="${passError}"></c:out><br>
+				</div>
+			</c:if>
+	      <input type="text" placeholder="Email" value="${email}" name="email" required><br>
+	      	<!-- email Error  -->
+			<c:if test="${userError != null }">
+				<div class="err">
+					<c:out value="${userError}"></c:out><br>
+				</div>
+			</c:if>
+	      <button onclick="activeteMessage()" type="submit">Register</button><br>
+		</form>
+	</fieldset> --%>
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
 //close modal loigin if click other
+var modalRegister = document.getElementById('register-form-itvideo');
 var modalLogin = document.getElementById('login-form-itvideo');
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
+    if (event.target == modalRegister) {
+    	modalRegister.style.display = "none";
+    }
     if (event.target == modalLogin) {
     	modalLogin.style.display = "none";
     }
 }
 </script>
-
-<%-- 
-
-<fieldset>
-	<legend>Login</legend>
-  		<form action="<c:url value="/login" />" method = "post">
-	      <input type="text" placeholder="Enter Username" name="username" required><br>
-	      <c:if test="${requestScope.usernameError != null }">
-			<div class="err">
-				<c:out value="${requestScope.usernameError }"></c:out>
-				<br>
-				<a href="<c:url value="/register" />"><button type="button" formmethod="get">register</button></a>
-			</div>
-	      </c:if>
-	      <input type="password" placeholder="Enter Password" name="password" required><br>
-	      <c:if test="${requestScope.passwordError != null }">
-			<div class="err">
-				<c:out value="${requestScope.passwordError }"></c:out><br>
-			</div>
-	      </c:if>
-	      <button type="submit">Login</button><br>
-	      <input type="checkbox" checked="checked"> Remember me
-  		</form>
-  		
-		<c:if test="${requestScope.passwordError != null }">
-			<form action="<c:url value="/forgotPassword" />" method="get">
-				<input type="hidden" value="${requestScope.username}" name="username">
-				<input type="submit" value="Forgot password?">
-			</form>
-		</c:if>
-  		
-</fieldset> --%>
-
-
-
 </body>
 </html>

@@ -147,17 +147,15 @@ public abstract class Resources {
 	}
 
 	public static void initAvatar(User u, HttpSession session) throws IOException {
-		InputStream in = session.getServletContext().getResourceAsStream("/static/img/avatar.png");
-		String absolutePath = Resources.ROOT + File.separator + u.getUserId() + File.separator + Resources.IMAGE_URL
-				+ File.separator + "avatar.png";
-		File myFile = new File(absolutePath);
-		
-		myFile.getParentFile().mkdirs(); 
-		myFile.createNewFile();
-		
-		Files.copy(in, myFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		in.close();
-		in = null;
-		System.gc();
+		try(InputStream in = session.getServletContext().getResourceAsStream("/static/img/avatar.png")){
+			String absolutePath = Resources.ROOT + File.separator + u.getUserId() + File.separator + Resources.IMAGE_URL
+					+ File.separator + "avatar.png";
+			File myFile = new File(absolutePath);
+			
+			myFile.getParentFile().mkdirs(); 
+			myFile.createNewFile();
+			
+			Files.copy(in, myFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
 	}
 }
