@@ -36,19 +36,20 @@ video {
 	<c:forEach items="${requestScope.videos}" var="video">	
     	<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3" >
 		<div>
-
 			<a href="<c:url value="/player/${video.videoId}" />">	
 				<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />"></video>
 			</a>
-			
-				<p class="text-primary" id="textLimit"><strong><c:out value="${video.name}"></c:out></strong></p>
-				<p class="text-primary">
-				<c:forEach items="${video.tags}" var="tag">	
-						<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
-				</c:forEach>
+			<a href="<c:url value="/player/${video.videoId}" />">
+				<p class="text-primary" id="textLimit" >
+				<strong><c:out value="${video.name}"></c:out></strong>
 				</p>
-			
-			</div>
+			</a>
+			<p class="text-primary">
+			<c:forEach items="${video.tags}" var="tag">	
+					<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
+			</c:forEach>
+			</p>
+		</div>
 		</div>
 	</c:forEach>
 </div>

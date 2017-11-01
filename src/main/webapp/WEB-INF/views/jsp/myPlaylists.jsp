@@ -94,6 +94,30 @@
 </head>
 <body>
 <!-- show my playlist while watching  -->
+
+<div class="btn-group">
+  <a href="#" class="btn btn-primary">add to playlist</a>
+  <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="true"><span class="caret"></span></a>
+	  <ul class="dropdown-menu" >
+  		<c:forEach items="${requestScope.myPlaylists}" var="playlist">
+  			<ul>
+	  			<li onclick="addToPlaylist(${playlist.playlistId},${user.userId},${requestScope.mainVideo.videoId})">
+	  				<c:if test="${playlist.videoStatus == 1}">
+	    				<img alt="inPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/ok.png"/>" style="width: 22px; height: auto" >
+    				</c:if>
+    				<c:if test="${playlist.videoStatus != 1}">
+	    				<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >
+    				</c:if>
+	    			<span>${playlist.playlistName}</span>
+    			</li>
+   			 </ul>
+	    </c:forEach>
+	    </ul>
+ </div>
+
+
+<%-- 
+
 <div class="dropdown">
 <button onclick="showMyPlaylists()" class="dropbtnplaylists">add to playlist</button>
   <div id="dropPlaylists" class="dropdown-content">
@@ -114,5 +138,7 @@
 	    </c:forEach>
   </div>
 </div>
+
+ --%>
 </body>
 </html>

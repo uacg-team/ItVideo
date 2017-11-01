@@ -7,9 +7,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script src="http://vjs.zencdn.net/6.2.8/video.js"></script>
 <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">
-<link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css" />" />
 <link type="text/css" rel="stylesheet" href="<c:url value="/css/comments.css"/>"/>
-<link type="text/css" rel="stylesheet" href="<c:url value="/css/video-js.css"/>"/>
+<link type="text/css" rel="stylesheet" href="<c:url value="/css/Video-js-Sublime-Skin.css"/>"/>
+<%-- <link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css" />" /> --%>
 <title>Player</title>
 <script type="text/javascript">
 		function likeVideo(videoId,userId) {
@@ -166,133 +166,223 @@
 		}
 		
 	</script>
+<style type="text/css">
+video {
+    max-width: 100%;
+    height: auto;
+    align-content: center;
+}
+.tilt {
+  -webkit-transition: all 0.1s ease;
+     -moz-transition: all 0.1s ease;
+       -o-transition: all 0.1s ease;
+      -ms-transition: all 0.1s ease;
+          transition: all 0.1s ease;
+}
+ 
+.tilt:hover {
+  -webkit-transform: rotate(-10deg);
+     -moz-transform: rotate(-10deg);
+       -o-transform: rotate(-10deg);
+      -ms-transform: rotate(-10deg);
+          transform: rotate(-10deg);
+}
+
+</style>
 </head>
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
+	<div class="container-fluid text-center">    
+	  <div class="row content">
+	    <div class="col-sm-1 sidenav">
+	    </div>
+	    <div class="col-sm-10"> 
+			<!-- GRANDE video player -->
+			<video id="my_video_1" class="video-js vjs-sublime-skin" controls preload="auto" width="640px" height="264px"
+	  				poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" data-setup='{ "aspectRatio":"640:267", "playbackRates": [1, 1.5, 2] }'>
+			  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
+			</video>
 
-	<div class="inline">
-		<!-- video info -->
-		Name: <c:out value="${mainVideo.name }"></c:out><br>
-		Description: <c:out value="${mainVideo.description }"></c:out><br>
-		Views: <c:out value="${mainVideo.views }"></c:out><br>
-		Tags:
-		<c:forEach items="${mainVideo.tags}" var="currentTag">	
-			<c:out value="#${currentTag.tag} "></c:out>
-		</c:forEach>
-		<br>
-		
-		Owner: 
-		<a href="<c:url value="/viewProfile/${mainVideo.userId}" />">
-			<c:out value="${mainVideo.userName }"></c:out>
-			<img src="<c:url value="/img/${mainVideo.userId}"/>" width="50px" height="auto"/>
-		</a>
-		
-		<!-- ajax follow/unfollow -->
-		<c:if test="${sessionScope.user.userId != null}">	
-			<c:if test="${sessionScope.user.userId != mainVideo.userId}">	
-				<c:if test="${follow == \"false\"}">
-					<input type="button" value="follow"   id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
-				</c:if>
-				<c:if test="${follow == \"true\"}">
-					<input type="button" value="unfollow" id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+			<script type="text/javascript">
+				$(function(){
+					  var $refreshButton = $('#refresh');
+					  var $results = $('#css_result');
+					  
+					  function refresh(){
+					    var css = $('style.cp-pen-styles').text();
+					    $results.html(css);
+					  }
+				
+					  refresh();
+					  $refreshButton.click(refresh);
+					  
+					  // Select all the contents when clicked
+					  $results.click(function(){
+					    $(this).select();
+					  });
+				});
+			</script>
+					
+					
+					
+			<!-- myPlaylists -->
+			<c:if test="${not empty sessionScope.user}">
+				<span style="float:left;">
+					<jsp:include page="myPlaylists.jsp"></jsp:include>
+				</span>
+			</c:if>
+			
+			<c:if test="${ not empty sessionScope.user  }">
+				<c:if test="${sessionScope.user.userId == requestScope.mainVideo.userId}">
+					<span style="float:left;">
+						<!-- Edit video -->
+						<form action="<c:url value="/editVideo/${mainVideo.videoId}"/>" method="get">
+							<input class="btn btn-warning" type="submit" value="edit">
+						</form>
+					</span>
+					<span style="float:left;">  
+						<!-- Delete video -->
+						<form action="<c:url value="/deleteVideo"/>" method="post">
+							<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
+							<input class="btn btn-danger" type="submit" value="delete">
+						</form>
+					</span>
 				</c:if>
 			</c:if>
-		</c:if>
-		<br>
-		
-		<!-- Edit video -->
-		<c:if test="${sessionScope.user.userId == mainVideo.userId }">
-			<form action="<c:url value="/editVideo/${mainVideo.videoId}"/>" method="get">
-				<input type="submit" value="edit video">
-			</form>
-		</c:if>
-		<br>
-		
-		<!-- Delete video -->
-		<c:if test="${ not empty sessionScope.user  }">
-			<c:if test="${sessionScope.user.userId == requestScope.mainVideo.userId}">
-				<form action="<c:url value="/deleteVideo"/>" method="post">
-					<input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
-					<input type="submit" value="Delete">
-				</form>
-			</c:if>
-		</c:if>
+			<br>
+			
+			<!-- video info -->
+			<hr>
+			<div class="row">
+				<div class="col-xs-9 container">  
+					<div class="media">
+						
+						<div class="media-left media-top">
+							<a href="<c:url value="/viewProfile/${mainVideo.userId}" />">
+							<img src="<c:url value="/img/${mainVideo.userId}"/>"  class="media-object"  width="50px" height="auto"/>
+							</a>
+				    	</div>
+				    	<div class="media-body" style="text-align: left;">
+			     			<h4 class="media-heading">
+				     			<a  href="<c:url value="/viewProfile/${mainVideo.userId}" />">
+				     				<strong><c:out value="${mainVideo.userName }"></c:out></strong>
+			     				</a>
+		     					<!-- ajax follow/unfollow start -->
+									<c:if test="${sessionScope.user.userId != null}">	
+										<c:if test="${sessionScope.user.userId != mainVideo.userId}">	
+											<c:if test="${follow == \"false\"}">
+												<input class="btn btn-primary btn-sm" type="button" value="follow" id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+											</c:if>
+											<c:if test="${follow == \"true\"}">
+												<input class="btn btn-primary btn-sm" type="button" value="unfollow" id="follow-button" onclick="follow(${sessionScope.user.userId},${mainVideo.userId})"></input>
+											</c:if>
+										</c:if>
+									</c:if>
+								<!-- ajax follow/unfollow end -->
+			     			</h4>
+							<p class="text-primary"  style="font-size: 150%;"><c:out value="${mainVideo.name}"></c:out><p>
+							<p class="text-primary" >Description: <c:out value="${mainVideo.description }"></c:out></p>
+							<c:forEach items="${mainVideo.tags}" var="tag">	
+								<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
+							</c:forEach>
+			   			</div>
+					</div>
+				</div>
+				<div class="container col-xs-3">
+					<div class="row content">
+					<!-- ajax like dislike -->
+					<div class="like-buttons">
+						<ul>
+							<li>
+								<h3>
+									<span class="label label-primary" id="likes${mainVideo.videoId}" >${mainVideo.likes}</span>
+								</h3>
+				 			</li>
+				 			<li>
+				 				<div class="tilt">
+				 				<h6> 
+					 				<c:if test="${mainVideo.vote == 1}">	
+					 					<img alt="liked" id="like${mainVideo.videoId}" src="<c:url value="/pics/liked.png"/>" style="width: 50px; height: auto" onclick="likeVideo(${mainVideo.videoId},${user.userId})">
+									</c:if>
+									<c:if test="${mainVideo.vote < 1}">
+										<img alt="like" id="like${mainVideo.videoId}" src="<c:url value="/pics/like.png"/>" style="width: 50px; height: auto" onclick="likeVideo(${mainVideo.videoId},${user.userId})">
+									</c:if>
+								</h6>
+								</div>
+							</li>
+							<li>	
+								<h3>
+									<span class="label label-primary" id="dislikes${mainVideo.videoId}">${mainVideo.dislikes}</span>
+								</h3>
+				 			</li>
+				 			<li>
+				 				<div class="tilt">
+				 				<h6>
+				 				<c:if test="${mainVideo.vote > -1}">
+				 					<img alt="dislike" id="dislike${mainVideo.videoId}" src="<c:url value="/pics/dislike.png"/>" style="width: 50px; height: auto" onclick="dislikeVideo(${mainVideo.videoId},${user.userId})">
+								</c:if>
+								<c:if test="${mainVideo.vote == -1}">
+									<img alt="disliked" id="dislike${mainVideo.videoId}" src="<c:url value="/pics/disliked.png"/>" style="width: 50px; height: auto" onclick="dislikeVideo(${mainVideo.videoId},${user.userId})">
+								</c:if>
+								</h6>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<!-- ajax like dislike end -->
+					</div>
+					<div class="row pagination-centered">
+						<h4 style="text-align: center" class="text-primary text-right"><c:out value="${mainVideo.views }"></c:out> views</h4>
+					</div>
+				</div>
+				</div>
+				<hr>
+				
+				
+		<div>		
+			<br>
 
-		<!-- GRANDE video player -->
-		<video id="my-video" class="video-js" controls preload="auto" width="640px" height="264px"
-  				poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" data-setup="{}">
-		  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
-		</video>
+			<br>
+			<!-- asynchrn comments -->
+			<%-- <jsp:include page="asinch_comments.jsp"></jsp:include> --%>
+			<jsp:include page="a_comments.jsp"></jsp:include>
+		</div> 	
+<!-- 				
+				
+				
+			</div>
+			
+
+			
 		
-		<%-- 
-		<!-- Like video button -->
-		<form action="<c:url value="/videoLike" />" method="post">
-			<input type="hidden" name="like" value="1">
-			<input type="hidden" name="videoId" value="${requestScope.mainVideo.videoId}">
-			<input type="hidden" name="userId" value="${sessionScope.user.userId}">
-			<input type="hidden" name="url" value="${requestScope.mainVideo.locationUrl}">
-			<c:out value="${requestScope.likes}"></c:out>
-			<input type="submit" value="Like">
-		</form>
+			<br>
+			
 		
-		<!-- dislike video button -->
-		<form action="<c:url value="/videoLike" />" method="post">
-			<input type="hidden" name="like" value="-1">
-			<input type="hidden" name="videoId" value="${requestScope.mainVideo.videoId}">
-			<input type="hidden" name="userId" value="${sessionScope.user.userId}">
-			<input type="hidden" name="url" value="${requestScope.mainVideo.locationUrl}">
-			<c:out value="${requestScope.disLikes}"></c:out>
-			<input type="submit" value="Dislike">
-		</form>
-		 --%>
-		 
-		<!-- ajax like dislike -->
-		<div class="like-buttons">
-			<ul>
-				<li>
-	 				<p id="likes${mainVideo.videoId}">${mainVideo.likes}</p>
-	 			</li>
-	 			<li>
-	 				<c:if test="${mainVideo.vote == 1}">	
-	 					<img alt="liked" id="like${mainVideo.videoId}" src="<c:url value="/pics/liked.png"/>" style="width: 25px; height: auto" onclick="likeVideo(${mainVideo.videoId},${user.userId})">
-					</c:if>
-					<c:if test="${mainVideo.vote < 1}">
-						<img alt="like" id="like${mainVideo.videoId}" src="<c:url value="/pics/like.png"/>" style="width: 25px; height: auto" onclick="likeVideo(${mainVideo.videoId},${user.userId})">
-					</c:if>
-				</li>
-				<li>	
-					<p id="dislikes${mainVideo.videoId}">${mainVideo.dislikes}</p>
-	 			</li>
-	 			<li>
-	 				<c:if test="${mainVideo.vote > -1}">
-	 					<img alt="dislike" id="dislike${mainVideo.videoId}" src="<c:url value="/pics/dislike.png"/>" style="width: 25px; height: auto" onclick="dislikeVideo(${mainVideo.videoId},${user.userId})">
-					</c:if>
-					<c:if test="${mainVideo.vote == -1}">
-						<img alt="disliked" id="dislike${mainVideo.videoId}" src="<c:url value="/pics/disliked.png"/>" style="width: 25px; height: auto" onclick="dislikeVideo(${mainVideo.videoId},${user.userId})">
-					</c:if>
-				</li>
-			</ul>
+			
+
 		</div>
+		
+		
+		
 	</div>
 		
-	<div class="inline">		
-		<br>
-		<!-- myPlaylists -->
-		<c:if test="${not empty sessionScope.user}">
-			<jsp:include page="myPlaylists.jsp"></jsp:include>
-		</c:if>
-		<br>
-		<!-- asynchrn comments -->
-		<%-- <jsp:include page="asinch_comments.jsp"></jsp:include> --%>
-		<jsp:include page="a_comments.jsp"></jsp:include>
-		
-	</div> 	
+
+	    </div>
+	    
+	     -->
+	    <div class="col-sm-1 sidenav">
+	    </div>
 	
+
+
+		
+
+<%-- 	
 	<div class="inline">	
 		<!-- related videos -->
 		<h1>RELATED</h1>
 		<jsp:include page="showVideosRequest.jsp"></jsp:include>
-	<%-- 	
+		
 		<c:forEach items="${requestScope.related}" var="relVideo">	
 		<div class="inline">
 			Name: <c:out value="${relVideo.name }"></c:out><br>
@@ -306,8 +396,11 @@
 			</c:forEach>
 		</div>
 		</c:forEach>
-		 --%>
+		
 		
 	</div> 	
+	
+	 --%>
+	
 </body>
 </html>
