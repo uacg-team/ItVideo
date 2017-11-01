@@ -4,15 +4,18 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,9 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.itvideo.model.Comment;
 import com.itvideo.model.CommentDao;
 import com.itvideo.model.User;
+import com.itvideo.model.UserDao;
+import com.itvideo.model.Video;
+import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
+import com.itvideo.model.exceptions.video.VideoNotFoundException;
 
 //sinhronni zaqvki
 @Controller
@@ -228,6 +235,63 @@ public class CommentController {
 		} catch (CommentException e) {
 			// TODO add statusCode
 			e.printStackTrace();
+		}
+	}
+	
+	@Autowired
+	VideoController vc;
+	@Autowired
+	VideoDao vd;
+	@Autowired
+	UserDao ud;
+	@Autowired
+	PlaylistController pc;
+	@RequestMapping(value = "test/{videoId}", method = RequestMethod.GET)
+	public String player(Model model, @PathVariable("videoId") long videoId, HttpSession session, HttpServletResponse response) {
+		try {
+			if (!vd.existsVideo(videoId)) {
+				model.addAttribute("exception", "VideoNotFoundException");
+				model.addAttribute("getMessage", "Video Not Found");
+				return "error";
+			}
+			
+			User user = (User) session.getAttribute("user");
+			long userId = 0;
+			if (user != null) {
+				userId = user.getUserId();
+			}
+			
+			Video video = vd.getVideoForPlayer(videoId, userId);
+
+			//userId - logged user a.k.a. me
+			//video.getUserId() - videoOwnerId 
+			if (user != null) {
+				boolean follow = ud.isFollowing(userId, video.getUserId());
+				System.out.println(follow);
+				model.addAttribute("follow", follow);
+			}
+			
+			Set<Video> related = vd.getRelatedVideos(videoId);
+			
+			vd.increaseViews(videoId);
+			
+			model.addAttribute("mainVideo", video);
+			model.addAttribute("related", related);
+			
+//			cc.loadCommentsForVideo(model,videoId);
+			if(session.getAttribute("user")!=null) {
+				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
+//				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
+			}
+			return "testBootstrap";
+		} catch (SQLException e) {
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		} catch (VideoNotFoundException e) {
+			model.addAttribute("exception", "VideoNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 	}
 }
