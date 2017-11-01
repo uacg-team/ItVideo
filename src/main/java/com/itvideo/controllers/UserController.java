@@ -285,45 +285,6 @@ public class UserController {
 		} 
 	}
 	
-	@RequestMapping(value="/logint", method = RequestMethod.POST)
-	public String loginPostTest(Model model, HttpSession session, HttpServletResponse response,
-			@RequestParam("username") String username,
-			@RequestParam("password") String password ) {
-		String hashedPass = Hash.getHashPass(password);
-		try {
-			User u = ud.getUser(username);
-			if (!u.isActivated()) {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				model.addAttribute("username", username);
-				model.addAttribute("usernameError", "Please Activate Your Account");
-				return "login";
-			}
-			
-			if (hashedPass.equals(u.getPassword())) {
-				session.setMaxInactiveInterval(-1);
-				session.setAttribute("user", u);
-				return "redirect:main";
-			} else {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				model.addAttribute("username", username);
-				model.addAttribute("passwordError", "Wrong Password");
-				return "login";
-			}
-		} catch (SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			model.addAttribute("error", e.getMessage());
-			return "login";
-		} catch (UserNotFoundException e) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("usernameError", e.getMessage());
-			return "login";
-		} catch (UserException e) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("error", e.getMessage());
-			return "login";
-		} 
-	}
-	
 	@RequestMapping(value="/register", method = RequestMethod.GET)
 	public String registerGet() {
 		return "register";

@@ -162,14 +162,43 @@ span.psw {
 }
 </style>
 <script type="text/javascript">
-//Get the modal
-var modal = document.getElementById('login-form-itvideo');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+function loginPost(){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			window.location.href = "/ItVideo/main";
+		}
+		if (this.readyState == 4 && this.status == 401) {
+			var resp = JSON.parse(this.responseText);
+			var typeError= resp.typeError;
+			var msg=resp.msg;
+			var action = resp.action;
+			if(typeError === "not-activated" || typeError === "usernameError"){
+				var insertion=document.getElementById("user-err-login");
+			}else if(typeError === "passwordError"){
+				var insertion=document.getElementById("pass-err-login");
+			}
+			//delete other problems if have
+			document.getElementById("user-err-login").innerHTML="";
+			document.getElementById("pass-err-login").innerHTML="";
+			insertion.innerHTML="<p class=\"text-danger\">"+msg+"</p>";
+		}
+		if (this.readyState == 4 && this.status == 500) {
+			var resp = JSON.parse(this.responseText);
+			var typeError= resp.typeError;
+			var msg=resp.msg;
+			var action = resp.action;
+			var insertion=document.getElementById("other-err-login");
+			insertion.innerHTML="<p class=\"text-danger\">"+msg+"</p>";
+		}
+	}
+	var username = document.getElementById("username-login").value;
+	var password = document.getElementById("password-login").value;
+	var url = "/ItVideo/main/login";
+	var param = "username=" + username + "&password=" + password;
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
 }
 </script>
 </head>
@@ -225,7 +254,8 @@ window.onclick = function(event) {
 
 
 <div id="login-form-itvideo" class="modal">
-  <form class="modal-content animate" action="<c:url value="/login" />" method="post">
+						<%-- action="<c:url value="/login"  method="post"/>" --%>
+  <div class="modal-content animate" onsubmit="loginPost()">
     <div class="imgcontainer">
       <span onclick="document.getElementById('login-form-itvideo').style.display='none'" class="close" title="Close Modal">&times;</span>
       <img src="<c:url value="/pics/avatar.png"/>" alt="Avatar" class="avatar">
@@ -233,31 +263,33 @@ window.onclick = function(event) {
 
     <div class="container-login">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="username" class="form-control field-addition" required>
-	  <c:if test="${requestScope.usernameError != null }">
-			<div class="err">
-				<c:out value="${requestScope.usernameError }"></c:out>
-				<br>
-				<a href="<c:url value="/register" />"><button type="button" formmethod="get">register</button></a>
-			</div>
-	  </c:if>
-	  
+      <input type="text" placeholder="Enter Username" name="username" class="form-control field-addition" required id="username-login">
+	  	<div id="user-err-login">	
+		</div>
       <label><b>Password</b></label>
-      <input type="password" placeholder="Enter Password" name="password" class="form-control field-addition" required>
-      <button class="btn btn-info btn-login-itvideo" type="submit">Login</button>
-       <c:if test="${requestScope.passwordError != null }">
-			<div class="err">
-				<c:out value="${requestScope.passwordError }"></c:out><br>
-			</div>
-	    </c:if>
+      <input type="password" placeholder="Enter Password" name="password" class="form-control field-addition" required id="password-login">
+		<div id="pass-err-login">
+		</div>
+      <button class="btn btn-info btn-login-itvideo" onclick="loginPost()">Login</button>
+      	<div id="other-err-login">
+		</div>
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="document.getElementById('login-form-itvideo').style.display='none'" class="btn btn-danger">Cancel</button>
       <span class="psw text-muted"><a  href="#">Forgot password?</a></span>
     </div>
-  </form>
+  </div>
 </div>
-
+<script>
+//close modal loigin if click other
+var modalLogin = document.getElementById('login-form-itvideo');
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modalLogin) {
+    	modalLogin.style.display = "none";
+    }
+}
+</script>
 
 <%-- 
 

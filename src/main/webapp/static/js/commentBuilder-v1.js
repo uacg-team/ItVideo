@@ -231,7 +231,6 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	htmlOneComment=htmlOneComment.concat('<br>');
 	if(myUserId == userId){
 		htmlOneComment=htmlOneComment.concat('<div id="deleteComment' + commentId + '">');
-			//TODO add real parameters
 			htmlOneComment=htmlOneComment.concat('<button onclick="deleteComment('+commentId+')">delete</button>');
 		htmlOneComment=htmlOneComment.concat('</div>');
 	}
@@ -275,20 +274,7 @@ function postComment(myUserId,videoId,replyId,username) {
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
 }
-function deleteComment(commentId){
-	var url = "/ItVideo/player/deleteComment";
-	var param = "commentId=" + commentId;
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var elem = document.getElementById(commentId);
-		    elem.parentNode.removeChild(elem);
-		}
-	}
-	request.open("POST", url, true);
-	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	request.send(param);
-}
+
 function postReply(myUserId,videoId,replyId,username){
 	if (typeof myUserId === 'undefined') {
 	    alert("First login!");
@@ -322,7 +308,7 @@ function postReply(myUserId,videoId,replyId,username){
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
 }
-//TODO add real parameters
+
 function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 	//insert form to input new Comment
 	var html="";
