@@ -15,7 +15,11 @@ import javax.servlet.http.HttpSession;
 
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
+import org.jcodec.common.DemuxerTrack;
+import org.jcodec.common.io.FileChannelWrapper;
+import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Picture;
+import org.jcodec.containers.mp4.demuxer.MP4Demuxer;
 import org.jcodec.scale.AWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -127,25 +131,30 @@ public class UploadController {
 			//MimeType type = allTypes.forName(file.getContentType());
 			//String ext = type.getExtension(); // .whatever
 			
-			File f = new File(
-					WebInitializer.LOCATION + 
+			String absolutePath  = WebInitializer.LOCATION + 
 					File.separator + 
 					u.getUserId() + 
 					File.separator + 
 					Resources.VIDEO_URL + 
-					File.separator,
-					file.getOriginalFilename());
+					File.separator +
+					file.getOriginalFilename();
+			
+			File f = new File(absolutePath);
 
 			f.getParentFile().mkdirs(); 
 			f.createNewFile();
 			file.transferTo(f);
+
 			
-			int frameNumber = 40;
-			Picture picture = FrameGrab.getFrameFromFile(f, frameNumber);
+			//using jcodec library to get middle frame from the image
+			FileChannelWrapper ch = NIOUtils.readableFileChannel(absolutePath);
+			MP4Demuxer demuxer =  MP4Demuxer.createMP4Demuxer(ch);
+			DemuxerTrack video_track = demuxer.getVideoTrack();
+			int midFrame = (int) (video_track.getMeta().getTotalFrames() / 2);
+			Picture picture = FrameGrab.getFrameFromFile(f, midFrame);
 			BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
-			
 			bufferedImage = resize(bufferedImage);
-				
+			
 			ImageIO.write(bufferedImage, "png", new File(
 					WebInitializer.LOCATION + 
 					File.separator + 
@@ -187,7 +196,7 @@ public class UploadController {
 	}
 	
 	public static BufferedImage resize(BufferedImage img) {
-		double ratio = img.getWidth() * 1.0 / img.getHeight();
+		double ratio = (img.getWidth() * 1.0) / (img.getHeight() * 1.0);
 		int newW = THUMBNAIL_WIDTH;
 		int newH = (int)(newW / ratio);
 	    Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);

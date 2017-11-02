@@ -150,11 +150,11 @@ public class MainController {
 	}
 
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public String main(HttpSession session, Model model, HttpServletRequest request) {
-		
-		//model.addAttribute("localDateTimeFormat", new SimpleDateFormat("yyyy-MM-dd'T'hh:mm", new Locale("en", "EN")));
-		
+	public String main(HttpSession session, Model model, HttpServletRequest request, HttpServletResponse response) {
 		try {
+			response.setHeader("Accept-Ranges", "bytes");
+			response.setHeader("Connection", "Keep-Alive");
+			
 			String param = (String) session.getAttribute("sort");
 			List<Video> videos = null;
 			if (param == null) {

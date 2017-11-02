@@ -25,8 +25,8 @@
 		<div  class="container">
 			<fieldset>
 				<legend>Upload</legend>
-				<input type="text" placeholder="Enter video name" name="name" required><br>
-				<input type="text" placeholder="Enter video description" name="description" required><br>
+				<input type="text" placeholder="Enter video name" name="name" required  size="40"><br>
+				<input type="text" placeholder="Enter video description" name="description" required size="40"><br>
 				<input type="text" placeholder="Enter tags separated by space" name="tags"><br>
 				<input type="radio" name="privacy" value="1" checked>Public 
 				<input type="radio" name="privacy" value="2">Private<br>

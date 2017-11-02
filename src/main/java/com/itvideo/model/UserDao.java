@@ -72,7 +72,7 @@ public class UserDao {
 									rs.getString("last_name"),
 									rs.getString("avatar_url"),
 									rs.getString("gender"),
-									rs.getString("activation_token"),
+									rs.getString("register_token"),
 									rs.getBoolean("activated")));
 				}
 				return users;
@@ -169,7 +169,7 @@ public class UserDao {
 							rs.getString("last_name"),
 							rs.getString("avatar_url"),
 							rs.getString("gender"),
-							rs.getString("activation_token"),
+							rs.getString("register_token"),
 							rs.getBoolean("activated"));
 				} else {
 					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
@@ -229,7 +229,7 @@ public class UserDao {
 									rs.getString("last_name"),
 									rs.getString("avatar_url"),
 									rs.getString("gender"),
-									rs.getString("activation_token"),
+									rs.getString("register_token"),
 									rs.getBoolean("activated")));
 				}
 				return followers;
@@ -256,7 +256,7 @@ public class UserDao {
 									rs.getString("last_name"),
 									rs.getString("avatar_url"),
 									rs.getString("gender"),
-									rs.getString("activation_token"),
+									rs.getString("register_token"),
 									rs.getBoolean("activated")));
 				}
 				return following;
