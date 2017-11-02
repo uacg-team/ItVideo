@@ -97,8 +97,9 @@ function showReplies(commentId, myUserId, comparator){
 				htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
 				
 			}
-		var div = document.getElementById('viewReplies'+commentId);
-	    div.innerHTML=htmlComments;
+			var div = document.getElementById('viewReplies'+commentId);
+			div.innerHTML=htmlComments;
+			document.getElementById('viewRepliesButton'+commentId).innerHTML="";
 		}
 	}
 	if (typeof myUserId === 'undefined') {
@@ -107,11 +108,9 @@ function showReplies(commentId, myUserId, comparator){
 	if (typeof comparator === 'undefined') {
 		comparator=0;
 	}
-	//TODO delete reply
 	var url="getRepliesWithVotes/"+commentId+"/"+myUserId+"/"+comparator;
 	request.open("GET", url, true);
 	request.send();
-	//show all replies for comment
 }
 /**
  * Build one comment
@@ -134,36 +133,50 @@ function showReplies(commentId, myUserId, comparator){
  */
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
 	var htmlOneComment="";
-	/*
-	 * <div class="media">
-  <div class="media-left">
-    <img src="img_avatar1.png" class="media-object" style="width:60px">
-  </div>
-  <div class="media-body">
-    <h4 class="media-heading">John Doe</h4>
-    <p>Lorem ipsum...</p>
-  </div>
-</div>
-	 */
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '">');
-	htmlOneComment=htmlOneComment.concat('<div class="media"');
-	htmlOneComment=htmlOneComment.concat('<div class="media-left"');
-	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
-	htmlOneComment=htmlOneComment.concat('<div>');
-	htmlOneComment=htmlOneComment.concat('<div class="media-body">');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
-	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner">');
-	htmlOneComment=htmlOneComment.concat('<p class="comment-box-inner">' + text + '</p> <br>');
+	htmlOneComment=htmlOneComment.concat('<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">');
+	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '"/>');
 	htmlOneComment=htmlOneComment.concat('</div>');
-	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
+	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner col-lg-11 container-fluid">');
+	htmlOneComment=htmlOneComment.concat('<p >' + text + '</p> <br>');
+	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
-	htmlOneComment=htmlOneComment.concat('<div>');
-	
-	htmlOneComment=htmlOneComment.concat('<div class="like-buttons">');
+//	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2 comment-buttons-left">');
+	//if hasReplies -add button show replies
+	if(numberReplies>0){
+		htmlOneComment=htmlOneComment.concat('<div  id="viewRepliesButton' + commentId + '">');
+			htmlOneComment=htmlOneComment.concat('<button class="btn btn-primary btn-xs" onclick="showReplies(' + commentId + ',' + myUserId + ',' + comparator + ')">show replies('+numberReplies+')</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	//add button reply
+	if(myUserId != 'undefined'){
+		htmlOneComment=htmlOneComment.concat('<div class="comment-buttons-right">');
+			htmlOneComment=htmlOneComment.concat('<button class="btn btn-primary btn-xs" onclick="addReplyPopUpHtml('+myUserId+','+videoId+','+commentId+',\''+username+'\')">add reply</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
+	//add button delete
+	if(myUserId == userId){
+		htmlOneComment=htmlOneComment.concat('<div class="comment-buttons-right" id="deleteComment' + commentId + '">');
+			htmlOneComment=htmlOneComment.concat('<button class="btn btn-danger btn-xs" onclick="deleteComment('+commentId+')">delete</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
+	htmlOneComment=htmlOneComment.concat('</div>');
+	//likes dislikes
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2 like-buttons">');
 	htmlOneComment=htmlOneComment.concat('<ul>');
 	htmlOneComment=htmlOneComment.concat('<li>');
-	htmlOneComment=htmlOneComment.concat('<p id="likes'+ commentId + '">' + likes + '</p>');
+	htmlOneComment=htmlOneComment.concat('<span class="label label-primary" id="likes'+ commentId + '">' + likes + '</span>');
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('<li>');
 	if(vote === 1){
@@ -173,7 +186,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	}
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('<li>');
-	htmlOneComment=htmlOneComment.concat('<p id="dislikes' + commentId + '">' + dislikes + '</p>');
+	htmlOneComment=htmlOneComment.concat('<span class="label label-primary" id="dislikes' + commentId + '">' + dislikes + '</span>');
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('<li>');
 	if(vote === -1){
@@ -185,28 +198,13 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('</ul>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	
-	htmlOneComment=htmlOneComment.concat('<br>');
-	htmlOneComment=htmlOneComment.concat('<br>');
-	//add button reply
-	if(myUserId != 'undefined'){
-		htmlOneComment=htmlOneComment.concat('<div id="addReply' + commentId + '">');
-			htmlOneComment=htmlOneComment.concat('<button onclick="addReplyPopUpHtml('+myUserId+','+videoId+','+commentId+',\''+username+'\')">add reply</button>');
-		htmlOneComment=htmlOneComment.concat('</div>');
-	}
-	//add button delete
-	if(myUserId == userId){
-		htmlOneComment=htmlOneComment.concat('<div id="deleteComment' + commentId + '">');
-			//TODO add real parameters
-			htmlOneComment=htmlOneComment.concat('<button onclick="deleteComment('+commentId+')">delete</button>');
-		htmlOneComment=htmlOneComment.concat('</div>');
-	}
-	//if hasReplies -add button show replies
-	if(numberReplies>0){
-		htmlOneComment=htmlOneComment.concat('<div id="viewReplies' + commentId + '">');
-			htmlOneComment=htmlOneComment.concat('<button onclick="showReplies(' + commentId + ',' + myUserId + ',' + comparator + ')">show replies('+numberReplies+')</button>');
-		htmlOneComment=htmlOneComment.concat('</div>');
-	}
+	//insertion point for new comment:
+	htmlOneComment=htmlOneComment.concat('<div id="addReply' + commentId + '">');
 	htmlOneComment=htmlOneComment.concat('</div>');
+	//insertion point for replies:
+	htmlOneComment=htmlOneComment.concat('<div id="viewReplies' + commentId + '">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	
 	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }
@@ -214,18 +212,40 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId){
 	//build html for comment
 	var htmlOneComment="";
-	htmlOneComment=htmlOneComment.concat('<div id='+commentId+' class="reply-box">');
-	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
+	htmlOneComment=htmlOneComment.concat('<div id='+commentId+'>');
+	htmlOneComment=htmlOneComment.concat('<div class="reply-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="reply-header"><span>' + username + '</span></p>');
-	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner">');
+	htmlOneComment=htmlOneComment.concat('<div class="reply-box-user col-lg-1 container-fluid" style="padding-left: 0px;">');
+	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '"/>');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	
+	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner col-lg-11 container-fluid">');
 	htmlOneComment=htmlOneComment.concat('<p>' + text + '</p><br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
-	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
+//	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
-	htmlOneComment=htmlOneComment.concat('<div class="like-buttons">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	
+	
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
+	if(myUserId == userId){
+		htmlOneComment=htmlOneComment.concat('<div id="deleteComment' + commentId + '">');
+			htmlOneComment=htmlOneComment.concat('<button class="btn btn-danger btn-xs" onclick="deleteComment('+commentId+')">delete</button>');
+		htmlOneComment=htmlOneComment.concat('</div>');
+	}
+	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2 like-buttons">');
 	htmlOneComment=htmlOneComment.concat('<ul>');
 	htmlOneComment=htmlOneComment.concat('<li>');
-	htmlOneComment=htmlOneComment.concat('<p id="likes'+ commentId + '">' + likes + '</p>');
+	htmlOneComment=htmlOneComment.concat('<p class="label label-primary" id="likes'+ commentId + '">' + likes + '</p>');
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('<li>');
 	if(vote === 1){
@@ -235,7 +255,7 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	}
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('<li>');
-	htmlOneComment=htmlOneComment.concat('<p id="dislikes' + commentId + '">' + dislikes + '</p>');
+	htmlOneComment=htmlOneComment.concat('<p class="label label-primary" id="dislikes' + commentId + '">' + dislikes + '</p>');
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('<li>');
 	if(vote === -1){
@@ -245,14 +265,7 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	}
 	htmlOneComment=htmlOneComment.concat('</li>');
 	htmlOneComment=htmlOneComment.concat('</ul>');
-	htmlOneComment=htmlOneComment.concat('<br>');
-	htmlOneComment=htmlOneComment.concat('<br>');
-	if(myUserId == userId){
-		htmlOneComment=htmlOneComment.concat('<div id="deleteComment' + commentId + '">');
-			htmlOneComment=htmlOneComment.concat('<button onclick="deleteComment('+commentId+')">delete</button>');
-		htmlOneComment=htmlOneComment.concat('</div>');
-	}
-	htmlOneComment=htmlOneComment.concat('</div>');
+	
 	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }

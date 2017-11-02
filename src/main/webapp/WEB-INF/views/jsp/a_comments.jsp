@@ -16,6 +16,38 @@ function getSelected(){
 	return e.options[e.selectedIndex].value;
 }
 </script>
+<style type="text/css">
+.comment-box-user img{
+width: 60px;
+height: 60px;
+margin-left: 0px;
+}
+.comment-box comment-box-inner{
+float: right;
+}
+.comment-box comment-box-user{
+float: left;
+}
+.comment-buttons-left{
+padding-left: 0;
+}
+.comment-buttons-left button{
+float: left;
+}
+.comment-buttons-right button{
+float: right;
+margin-left: 5px;
+margin-right: 5px;
+}
+.like-buttons ul{
+float: right;
+}
+.reply-box-user img{
+width: 50px;
+height: 50px;
+margin-left: 0px;
+}
+</style>
 </head>
 <body>
 <div id="addNewComment">
@@ -25,16 +57,15 @@ function getSelected(){
 			<a href="<c:url value="/login"/>">First login</a>
 			
 	</c:if>
-	<ul>
-	<li>
+	<div class="col-lg-1 container-fluid">
 		<c:if test="${sessionScope.user!=null}">
 		<img src="<c:url value="/img/${sessionScope.user.userId}"/>" height="50px" width="auto"/>
 		</c:if>
 		<c:if test="${sessionScope.user==null}">
-		<img src="<c:url value="/pics/avatar.png"/>" height="50px" width="auto" />
+		<img src="<c:url value="/pics/avatar.png"/>" height="50px" width="50px" />
 		</c:if>
-	</li>
-	<li>
+	</div>
+	<div class="col-lg-1 container-fluid">
 		<c:if test="${sessionScope.user!=null}">
 			<textarea rows="3" cols="80" id="novComentar"></textarea>
 			<button onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
@@ -43,8 +74,7 @@ function getSelected(){
 			<textarea rows="3" cols="80" id="novComentar"></textarea>
 			<button>addComment</button>
 		</c:if>
-	</li>
-	</ul>
+	</div>
 </div>
 <hr>
 <div id="newComments" title="0" >

@@ -10,9 +10,11 @@ p {
 
 .comment-box{
 margin:20px 10px;
-width:750px;
+width: auto;
+/* width:750px; */
 /* display:inline-block; */
 }
+
 .comment-box-inner{
   background: none repeat scroll 0 0 #EEE;
   border: 0px solid #CCC;
@@ -60,7 +62,8 @@ border-color: #EEE transparent transparent transparent;
 .reply-box{
 margin:20px 10px;
 margin-left:60px;
-width:700px;
+width:auto;
+/* width:700px; */
 /* display:inline-block; */
 }
 .reply-box-inner{

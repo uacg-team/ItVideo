@@ -12,7 +12,11 @@
 	<c:forEach items="${requestScope.myPlaylists}" var="playlist">
 		<ul>
 			<li>
-				<a href=<c:url value="/showPlaylist?playlistName=${playlist.playlistName}&userId=${user.userId}"/>>
+				<c:url value="/showPlaylist" var="myURL">
+					  <c:param name="playlistName" value="${playlist.playlistName}"/>
+ 				 	  <c:param name="userId" value="${user.userId}"/>
+				</c:url>
+				<a href="${myURL}">
 					<button>view</button>
 				</a>
 			</li>
