@@ -165,6 +165,23 @@
 			request.send(param);
 		}
 		
+function editVideo(videoId){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			window.location.href = "/ItVideo/player/".concat(videoId);
+		}
+	}
+	var name = document.getElementById("name").value;
+	var description = document.getElementById("description").value;
+	var privacy = document.getElementById("privacy").value;
+	
+	var url = "/ItVideo/editVideo/".concat(videoId);
+	var param = "videoId=" + videoId + "&name=" + name + "&description=" + description + "&privacy=" + privacy;
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
+}
 	</script>
 <style type="text/css">
 video {
@@ -188,9 +205,93 @@ video {
           transform: rotate(-10deg);
 }
 
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 1% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 50%;/*   Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+    -webkit-animation: animatezoom 0.9s;
+    animation: animatezoom 0.9s
+}
+
+@-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)} 
+    to {-webkit-transform: scale(1)}
+}
+    
+@keyframes animatezoom {
+    from {transform: scale(0)} 
+    to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+    span.psw {
+       display: block;
+       float: none;
+    }
+    .cancelbtn {
+       width: 100%;
+    }
+}
+
 </style>
 </head>
 <body>
+<!-- Video Edit form-->
+<div id="edit-video-form" class="modal">
+	<div class="modal-content animate" onsubmit="editVideo( ${mainVideo.videoId})">
+	 	name: <input id="name"  type="text" placeholder="${mainVideo.name }" name="name"><br>
+	 	description: <input id="description" type="text" placeholder="${mainVideo.description }" name="description"><br>
+ 		
+	  	<select id="privacy" name="privacy">
+		  <option <c:if test="${mainVideo.privacyId == \"1\" }"> selected </c:if> value="1">Public</option>
+		  <option <c:if test="${mainVideo.privacyId == \"2\" }"> selected </c:if> value="2">Private</option>
+		</select><br>
+		
+		<button class="btn btn-info btn-edit-video" onclick="editVideo( ${mainVideo.videoId} )">update</button>
+		<!-- back to player -->
+		<button type="button" onclick="document.getElementById('edit-video-form').style.display='none'" class="btn btn-danger">Cancel</button>
+	</div>
+</div>
+
 <jsp:include page="header.jsp"></jsp:include><br>
    <div class="container-fluid">
     <div class="col-sm-9">
@@ -198,7 +299,7 @@ video {
 			<!-- GRANDE video player -->
 	        <video id="my_video_1" class="video-js vjs-sublime-skin" controls preload="auto" width="640px" height="264px" 
 	        poster="<c:url value="/thumbnail/${mainVideo.videoId} " />" data-setup=' {"aspectRatio":"640:267", "playbackRates": [1, 1.5, 2] }'>
-	            <source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}" />" type="video/mp4">
+	            <source src="<c:url value="/video/${requestScope.mainVideo.videoId}" />" type="video/mp4">
 	        </video>
 	        <script type="text/javascript">
 	            $(function () {
@@ -232,9 +333,7 @@ video {
                  <c:if test="${sessionScope.user.userId == requestScope.mainVideo.userId}">
                      <span style="float:left;">
                          <!-- Edit video -->
-                         <form action="<c:url value="/editVideo/${mainVideo.videoId}"/>" method="get">
-                             <input class="btn btn-warning" type="submit" value="edit">
-                         </form>
+                         <button type="button" class="btn btn-warning" onclick="document.getElementById('edit-video-form').style.display='block'">edit</button>
                      </span>
                      <span style="float:left;">
                          <!-- Delete video -->

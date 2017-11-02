@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
+import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
 import com.itvideo.model.utils.DBConnection;
@@ -23,6 +24,9 @@ import com.itvideo.model.utils.DateTimeConvertor;
 @Component
 public class VideoDao {
 	private Connection con;
+	
+	@Autowired
+	CommentDao cd;
 	
 	@Autowired
 	TagDao td;
@@ -37,23 +41,27 @@ public class VideoDao {
 		try(PreparedStatement ps = con.prepareStatement(sql);){
 			ps.setLong(1, privacyId);
 			try(ResultSet rs = ps.executeQuery();){
-				rs.next();
-				return rs.getString("name");
+				if (rs.next()) {
+					return rs.getString("name");
+				}else {
+					return "";
+				}
 			}
 		}
 	}
 	
-	public String getUserName(long userId) throws SQLException {
-		String result = null;
+	public String getUserName(long userId) throws SQLException, UserNotFoundException {
 		String sql = "SELECT username FROM youtubedb.users WHERE user_id = ?;";
 		try(PreparedStatement ps = con.prepareStatement(sql);){
 			ps.setLong(1, userId);
 			try(ResultSet rs = ps.executeQuery();){
-				rs.next();
-				result = rs.getString("username");
+				if (rs.next()) {
+					return rs.getString("username");
+				}else {
+					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+				}
 			}			
 		}
-		return result;
 	}
 	
 	public void createVideo(Video v) throws SQLException, TagNotFoundException {
@@ -78,10 +86,9 @@ public class VideoDao {
 
 			td.insertVideoTags(v);
 			con.commit();
-			System.out.println("======In the base======");
 		} catch (SQLException e) {
 			con.rollback();
-			throw new SQLException(e);
+			throw e;
 		} finally {
 			con.setAutoCommit(true);
 		}
@@ -95,10 +102,10 @@ public class VideoDao {
 		}
 	}
 	
-	public void deleteVideosFromPlaylist(long videoID) throws SQLException {
+	public void deleteVideosFromPlaylist(long videoId) throws SQLException {
 		String sql = "DELETE FROM playlists_has_videos WHERE video_id = ?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setLong(1, videoID);
+			ps.setLong(1, videoId);
 			ps.executeUpdate();
 		}
 	}
@@ -108,7 +115,8 @@ public class VideoDao {
 			con.setAutoCommit(false);
 			deleteVideoLikes(videoId);
 			deleteVideosFromPlaylist(videoId);
-//			cd.deleteComments(videoId);
+			//TODO: da pitam veli trqbva li ?
+			cd.deleteComments(videoId);
 			td.delete(videoId);
 			String sql = "DELETE FROM videos WHERE video_id = ?;";
 			try (PreparedStatement ps = con.prepareStatement(sql);) {
@@ -118,7 +126,7 @@ public class VideoDao {
 			con.commit();
 		} catch (SQLException e) {
 			con.rollback();
-			throw new SQLException(e);
+			throw e;
 		} finally {
 			con.setAutoCommit(true);
 		}
@@ -149,7 +157,7 @@ public class VideoDao {
 	}
 
 	public boolean existsVideo(long video_id) throws SQLException {
-		String sql = "SELECT * FROM videos WHERE video_id=?;";
+		String sql = "SELECT * FROM videos WHERE video_id = ?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, video_id);
 			try(ResultSet rs = ps.executeQuery();){
@@ -162,6 +170,7 @@ public class VideoDao {
 	}
 	
 	public List<Video> getAllVideoOrderByDate() throws SQLException {
+		//TODO: make transaction
 		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY date DESC;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try(ResultSet rs = ps.executeQuery();){
@@ -186,6 +195,7 @@ public class VideoDao {
 	}
 
 	public List<Video> getAllVideoOrderByViews() throws SQLException {
+		//TODO: make transaction
 		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY views DESC;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try(ResultSet rs = ps.executeQuery();){
@@ -210,6 +220,7 @@ public class VideoDao {
 	}
 	
 	public List<Video> getAllVideoOrderByLikes() throws SQLException {
+		//TODO: make transaction
 		String sql = "SELECT v.video_id, v.name, v.views, v.date, v.location_url, v.user_id, v.thumbnail_url, v.description, v.privacy_id, SUM(video_likes.isLike) AS likes FROM videos as v LEFT JOIN video_likes USING (video_id) GROUP BY video_id ORDER BY SUM(video_likes.isLike) DESC;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try (ResultSet rs = ps.executeQuery();) {
@@ -235,8 +246,8 @@ public class VideoDao {
 
 	private Set<Tag> getTags(long videoId) throws SQLException {
 		Set<Tag> tags = new HashSet<>();
-		String getTags = "SELECT tags.tag FROM videos_has_tags JOIN tags USING (tag_id) JOIN videos ON (videos_has_tags.video_id = videos.video_id) WHERE videos.video_id = ? ;";
-		try (PreparedStatement ps_tags = con.prepareStatement(getTags);) {
+		String sql = "SELECT t.tag FROM videos_has_tags as vt JOIN tags as t USING (tag_id) JOIN videos as v ON (vt.video_id = v.video_id) WHERE v.video_id = ? ;";
+		try (PreparedStatement ps_tags = con.prepareStatement(sql);) {
 			ps_tags.setLong(1, videoId);
 			try (ResultSet rs = ps_tags.executeQuery();) {
 				while (rs.next()) {
@@ -247,12 +258,10 @@ public class VideoDao {
 		}
 	}
 
-	public synchronized Video getVideo(long videoId) throws VideoNotFoundException, SQLException {
+	public Video getVideo(long videoId) throws VideoNotFoundException, SQLException {
 		con.setAutoCommit(false);
-		String sql = "SELECT * FROM videos WHERE video_id = ?;";
-
 		Video video = null;
-
+		String sql = "SELECT * FROM videos WHERE video_id = ?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, videoId);
 			try (ResultSet rs = ps.executeQuery();) {
@@ -268,39 +277,34 @@ public class VideoDao {
 							rs.getString("description"),
 							rs.getLong("privacy_id"), 
 							getTags(videoId));
-				}
+				} 
 			}
-
-//			if (video == null) {
-//				throw new VideoNotFoundException(VideoException.NOT_FOUND);
-//			}
 			
 			con.commit();
-			return video;
-			
-		} catch (SQLException e) {
+			if (video == null) {
+				throw new VideoNotFoundException(VideoException.NOT_FOUND);
+			} else {
+				return video;
+			}
+		} catch (SQLException e ) {
 			con.rollback();
-			throw new SQLException(e);
-		} finally {
+			throw e;
+		} catch (VideoNotFoundException e) {
+			throw e;
+		} 
+		finally {
 			con.setAutoCommit(true);
 		}
 	}
 
 	public List<Video> getPublicVideos(long user_id) throws SQLException {
+		//TODO: transaction
 		String sql = "Select * FROM videos WHERE privacy_id = 1 AND user_id = ?;";
 		List<Video> allUserVideos = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, user_id);
 			try (ResultSet rs = ps.executeQuery();){
 				while (rs.next()) {
-					Set<Tag> tags = new HashSet<>();
-					String getTags = "SELECT tags.tag FROM videos_has_tags JOIN tags USING (tag_id) WHERE videos_has_tags.video_id = ? ;";
-					PreparedStatement ps_tags = con.prepareStatement(getTags);
-					ps_tags.setLong(1, rs.getLong("video_id"));
-					ResultSet rs1 = ps_tags.executeQuery();
-					while (rs1.next()) {
-						tags.add(new Tag(rs1.getString("tag")));
-					}
 					allUserVideos.add(
 							new Video(
 									rs.getLong("video_id"), 
@@ -312,7 +316,22 @@ public class VideoDao {
 									rs.getString("thumbnail_url"),
 									rs.getString("description"), 
 									rs.getLong("privacy_id"), 
-									tags));
+									getTags(rs.getLong("video_id"))));
+					
+					
+					//TODO: delete
+					/*				
+					Set<Tag> tags = new HashSet<>();
+					String getTags = "SELECT tags.tag FROM videos_has_tags JOIN tags USING (tag_id) WHERE videos_has_tags.video_id = ? ;";
+					try (PreparedStatement ps_tags = con.prepareStatement(getTags);){
+						ps_tags.setLong(1, rs.getLong("video_id"));
+						try (ResultSet rs1 = ps_tags.executeQuery();){
+							while (rs1.next()) {
+								tags.add(new Tag(rs1.getString("tag")));
+							}
+							
+						}
+					}*/
 				}
 			}
 		}
@@ -320,10 +339,11 @@ public class VideoDao {
 	}
 	
 	public void deleteAllVideoLikes(long user_id) {
-		
+		//TODO: not impemented
 	}
 	
 	public void deleteVideos(long userId) throws SQLException {
+		//TODO: transaction
 		List<Video> videos = getVideos(userId);
 		for (Video video : videos) {
 			deleteVideo(video.getVideoId());
@@ -331,6 +351,7 @@ public class VideoDao {
 	}
 	
 	public List<Video> getVideos(long user_id) throws SQLException {
+	//TODO: Transaction and try with resources
 		String sql = "Select * FROM videos WHERE user_id = ?;";
 		List<Video> allUserVideos = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
@@ -345,7 +366,6 @@ public class VideoDao {
 					while (rs1.next()) {
 						tags.add(new Tag(rs1.getString("tag")));
 					}
-
 					allUserVideos.add(
 							new Video(
 									rs.getLong("video_id"), 
@@ -431,9 +451,9 @@ public class VideoDao {
 		
 		for (Tag tag : tags) {
 			String sql = "SELECT v.location_url, v.video_id FROM videos as v "
-					+ "join videos_has_tags as vt on(v.video_id = vt.video_id) "
-					+ "join tags as t on (vt.tag_id = t.tag_id) "
-					+ "where t.tag = ? LIMIT 5;";
+					+ "JOIN videos_has_tags AS vt ON(v.video_id = vt.video_id) "
+					+ "JOIN tags AS t ON (vt.tag_id = t.tag_id) "
+					+ "WHERE t.tag = ? LIMIT 5;";
 			
 			try (PreparedStatement ps = con.prepareStatement(sql);) {
 				ps.setString(1, tag.getTag());
@@ -461,6 +481,7 @@ public class VideoDao {
 	}
 
 	public int getLikes(long videoId) throws SQLException {
+		//TODO: change sql query: SELECT sum(if(isLike = 0,1,0)) as dislikes_sum FROM video_likes WHERE video_id = 5;
 		String sql = "SELECT isLike FROM video_likes WHERE video_id = ?;";
 		int count = 0;
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
@@ -477,6 +498,7 @@ public class VideoDao {
 	}
 
 	public int getDisLikes(long videoId) throws SQLException {
+		//TODO: look getLikes method
 		String sql = "SELECT isLike FROM video_likes WHERE video_id = ?;";
 		int count = 0;
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
@@ -493,6 +515,7 @@ public class VideoDao {
 	}
 
 	public Video getVideoForPlayer(long videoId, long userId) throws SQLException, VideoNotFoundException {
+		//TODO: qkata zaqvka
 		String sql = "SELECT v.*, SUM(IF(vl.isLike = 1, 1, 0)) AS likes, SUM(IF(vl.isLike = 0, 1, 0)) AS dislikes, SUM(IF(vl.user_id = ?, IF(vl.isLike = 1, 1, - 1), 0)) AS current_user_vote, u.username AS video_owner_username FROM videos AS v LEFT JOIN video_likes AS vl ON (v.video_id = vl.video_id) JOIN users AS u ON (u.user_id = v.user_id) WHERE v.video_id = ? GROUP BY (v.video_id);";
 		Video video = null;
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
@@ -522,7 +545,6 @@ public class VideoDao {
 		}
 		return video;
 	}
-
 	
 	public List<Video> getVideos(String tag) throws SQLException {
 		String sql = "SELECT v.* FROM videos AS v JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) JOIN tags AS t ON (vt.tag_id = t.tag_id) WHERE t.tag = ?;";
@@ -545,6 +567,46 @@ public class VideoDao {
 									getTags(rs.getLong("video_id"))));
 				}
 				return videos;
+			}
+		}
+	}
+
+	public String getThumbnailUrl(long videoId) throws SQLException, VideoNotFoundException {
+		String sql = "SELECT thumbnail_url FROM videos WHERE video_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, videoId);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getString("thumbnail_url");
+				} 
+				throw new VideoNotFoundException(VideoNotFoundException.NOT_FOUND);
+			}
+		}
+	}
+	
+
+	public long getUserId(long videoId) throws SQLException, VideoNotFoundException {
+		String sql = "SELECT user_id FROM videos WHERE video_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, videoId);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getLong("user_id");
+				} 
+				throw new VideoNotFoundException(VideoNotFoundException.NOT_FOUND);
+			}
+		}
+	}
+
+	public String getlocationUrl(Long videoId) throws SQLException, VideoNotFoundException {
+		String sql = "SELECT location_url FROM videos WHERE video_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, videoId);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getString("location_url");
+				} 
+				throw new VideoNotFoundException(VideoNotFoundException.NOT_FOUND);
 			}
 		}
 	}

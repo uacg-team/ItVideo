@@ -37,6 +37,11 @@
 	<h1><c:out value="Reason: ${getMessage}"></c:out></h1><br>
 </c:if>
 
+<c:if test="${exception eq \"IOException\" }" >
+	<%-- <img src="<c:url value="/pics/UserNotFoundException.png"/>" /><br> --%>
+	<h1><c:out value="Reason: ${getMessage}"></c:out></h1><br>
+</c:if>
+
 
 
 <a href="<c:url value="/main" />"><button type="button" formmethod="get">go to main page</button></a>

@@ -42,8 +42,9 @@ video {
 		<div id="videosList">   
 		<div class="video">
 			<a href="<c:url value="/player/${video.videoId}" />">	
-				<video class="thevideo" width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />">
-				      <source src="<c:url value="/videoStream/${video.videoId}" />" type="video/mp4">
+		<%-- 	<c:url value="thumbnail/${video.videoId}" /> --%>
+				<video width="320" height="240" preload="none" poster="${pageContext.request.contextPath}/thumbnail/${video.videoId}">
+				      <source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 				</video>
 			</a>
 			<a href="<c:url value="/player/${video.videoId}" />">
@@ -63,6 +64,37 @@ video {
 </div>
 </div>
 <script type="text/javascript">
+window.onload = function() { //executes code after DOM loads
+	 //--- select all <video> on the page
+	 const vids = document.getElementsByTagName(`video`)
+	 // Loop over the selected elements and add event listeners
+	 for (let i = 0; i < vids.length; i++) {
+	   vids[i].addEventListener(`mouseover`, function(e) { 
+	     vids[i].play()
+	   })
+	   vids[i].addEventListener( `mouseout`, function(e) {
+	     vids[i].pause()
+	   })
+	 }
+	}
+</script>
+<!--  onmouseover="Play()" onmouseout="Pause()" 
+<script type="text/javascript"> 
+var myVideo=document.getElementById("video"); 
+
+function Pause()
+{ 
+  myVideo.pause(); 
+}
+function Play()
+{
+if (myVideo.paused) 
+  myVideo.play();     
+}    
+    
+</script>  -->
+<!-- 
+<script type="text/javascript">
 var figure = $(".video").hover( hoverVideo, hideVideo );
 
 function hoverVideo(e) {  
@@ -73,5 +105,7 @@ function hideVideo(e) {
     $('video', this).get(0).pause(); 
 }
 </script>
+ -->
+
 </body>
 </html>

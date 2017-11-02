@@ -1,8 +1,5 @@
 package com.itvideo.model.utils;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,15 +10,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-
-import org.jcodec.api.FrameGrab;
-import org.jcodec.api.JCodecException;
-import org.jcodec.common.model.Picture;
-import org.jcodec.scale.AWTUtil;
 
 import com.itvideo.model.User;
 import com.itvideo.model.Video;
@@ -32,7 +23,7 @@ import com.itvideo.model.exceptions.video.VideoException;
 
 public abstract class Resources {
 
-	public static final String ROOT = "C:" + File.separator + "res";
+	public static final String ROOT = "D:" + File.separator + "res";
 	public static final String VIDEO_URL = "videos";
 	public static final String IMAGE_URL = "images";
 	
@@ -103,7 +94,6 @@ public abstract class Resources {
 		try (OutputStream out = response.getOutputStream()) {
 			Files.copy(myFile.toPath(), out);
 			out.flush();
-			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,7 +109,6 @@ public abstract class Resources {
 
 	public static void readVideo(String url, Long userId, HttpServletResponse response) throws IOException {
 		String absolutePath = Resources.ROOT + File.separator + userId + File.separator + Resources.VIDEO_URL+ File.separator + url;
-//		System.out.println("Resources:readVideo:absolutePath:"+absolutePath);
 		read(absolutePath, userId, response);
 	}
 	

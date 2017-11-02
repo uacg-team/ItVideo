@@ -37,7 +37,7 @@ public class UserDao {
     }
 
 	public void createUser(User u) throws SQLException, UserException {
-		String sql = "INSERT INTO users (username, password, email, date_creation, avatar_url, activation_token) VALUES (?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO users (username, password, email, date_creation, avatar_url, register_token) VALUES (?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
 			ps.setString(1, u.getUsername());
 			ps.setString(2, u.getPassword());
@@ -143,7 +143,7 @@ public class UserDao {
 							rs.getString("last_name"),
 							rs.getString("avatar_url"),
 							rs.getString("gender"),
-							rs.getString("activation_token"),
+							rs.getString("register_token"),
 							rs.getBoolean("activated"));
 				} else {
 					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
@@ -322,6 +322,19 @@ public class UserDao {
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, userId);
 			ps.executeUpdate();
+		}
+	}
+
+	public String getAvatarUrl(Long userId) throws SQLException, UserNotFoundException {
+		String sql = "SELECT avatar_url FROM users WHERE user_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, userId);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getString("avatar_url");
+				}
+				throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+			}
 		}
 	}
 }
