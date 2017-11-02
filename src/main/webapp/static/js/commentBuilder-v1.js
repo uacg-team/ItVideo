@@ -134,14 +134,31 @@ function showReplies(commentId, myUserId, comparator){
  */
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
 	var htmlOneComment="";
-	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '" class="comment-box">');
+	/*
+	 * <div class="media">
+  <div class="media-left">
+    <img src="img_avatar1.png" class="media-object" style="width:60px">
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading">John Doe</h4>
+    <p>Lorem ipsum...</p>
+  </div>
+</div>
+	 */
+	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '">');
+	htmlOneComment=htmlOneComment.concat('<div class="media"');
+	htmlOneComment=htmlOneComment.concat('<div class="media-left"');
 	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '" width="50px" height="auto"/>');
+	htmlOneComment=htmlOneComment.concat('<div>');
+	htmlOneComment=htmlOneComment.concat('<div class="media-body">');
+	htmlOneComment=htmlOneComment.concat('<div class="comment-box">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner">');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-box-inner">' + text + '</p> <br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
+	htmlOneComment=htmlOneComment.concat('<div>');
 	
 	htmlOneComment=htmlOneComment.concat('<div class="like-buttons">');
 	htmlOneComment=htmlOneComment.concat('<ul>');
@@ -189,6 +206,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 			htmlOneComment=htmlOneComment.concat('<button onclick="showReplies(' + commentId + ',' + myUserId + ',' + comparator + ')">show replies('+numberReplies+')</button>');
 		htmlOneComment=htmlOneComment.concat('</div>');
 	}
+	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }

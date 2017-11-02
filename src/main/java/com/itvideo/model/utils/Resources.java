@@ -23,7 +23,7 @@ import com.itvideo.model.exceptions.video.VideoException;
 
 public abstract class Resources {
 
-	public static final String ROOT = "D:" + File.separator + "res";
+	public static final String ROOT = "C:" + File.separator + "res";
 	public static final String VIDEO_URL = "videos";
 	public static final String IMAGE_URL = "images";
 	
@@ -77,16 +77,14 @@ public abstract class Resources {
 	}
 	
 	private static void write(Part file, String absolutePath) throws IOException {
-		InputStream inputStream = file.getInputStream();
-		File myFile = new File(absolutePath);
-		if (!myFile.exists()) {
-			myFile.mkdirs();
-			myFile.createNewFile();
+		try(InputStream inputStream = file.getInputStream()){
+			File myFile = new File(absolutePath);
+			if (!myFile.exists()) {
+				myFile.mkdirs();
+				myFile.createNewFile();
+			}
+			Files.copy(inputStream, myFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
 		}
-		Files.copy(inputStream, myFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
-		inputStream.close();
-		inputStream = null;
-		System.gc();
 	}
 	
 	private static void read(String absolutePath, Long userId, HttpServletResponse response) {

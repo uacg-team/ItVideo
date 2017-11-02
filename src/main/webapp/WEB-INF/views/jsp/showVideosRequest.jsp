@@ -42,7 +42,7 @@ video {
 		<div id="videosList">   
 		<div class="video">
 			<a href="<c:url value="/player/${video.videoId}" />">	
-		<%-- 	<c:url value="thumbnail/${video.videoId}" /> --%>
+				<%-- 	<c:url value="thumbnail/${video.videoId}" /> --%>
 				<video width="320" height="240" preload="none" poster="${pageContext.request.contextPath}/thumbnail/${video.videoId}">
 				      <source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 				</video>
@@ -63,6 +63,8 @@ video {
 	</c:forEach>
 </div>
 </div>
+
+
 <script type="text/javascript">
 window.onload = function() { //executes code after DOM loads
 	 //--- select all <video> on the page
@@ -78,6 +80,7 @@ window.onload = function() { //executes code after DOM loads
 	 }
 	}
 </script>
+
 <!--  onmouseover="Play()" onmouseout="Pause()" 
 <script type="text/javascript"> 
 var myVideo=document.getElementById("video"); 
@@ -93,8 +96,8 @@ if (myVideo.paused)
 }    
     
 </script>  -->
-<!-- 
-<script type="text/javascript">
+
+<!-- <script type="text/javascript">
 var figure = $(".video").hover( hoverVideo, hideVideo );
 
 function hoverVideo(e) {  
@@ -106,6 +109,6 @@ function hideVideo(e) {
 }
 </script>
  -->
-
+ 
 </body>
 </html>
