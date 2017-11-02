@@ -3,8 +3,10 @@ package com.itvideo.controllers;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.spi.ErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +31,7 @@ public class VideoController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/player/videoAsyncLike", method = RequestMethod.POST)
-	public void videoAsyncLike(HttpSession session, Model model,
+	public void videoAsyncLike(HttpSession session, HttpServletResponse response,
 			@RequestParam("like") int like,
 			@RequestParam("videoId") int videoId,
 			@RequestParam("userId") int userId) {
@@ -43,14 +45,16 @@ public class VideoController {
 					vd.disLike(videoId, userId);
 				}
 			} catch (SQLException e) {
+				//TODO: return status code and handle it with JS
 				e.printStackTrace();
 			}
 		}
 	}
 
+
 	@RequestMapping(value = "/videoLike", method = RequestMethod.POST)
 	@Deprecated
-	public String likeVideo(HttpSession session, HttpServletRequest request) {
+	public String likeVideo(HttpSession session, Model model, HttpServletRequest request) {
 		User u = (User) session.getAttribute("user");
 		if (u == null) {
 			return "login";
@@ -67,8 +71,9 @@ public class VideoController {
 				vd.disLike(videoId, userId);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return "redirect:/player/"+videoId;
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 
 		return "redirect:/player/"+videoId;
@@ -102,9 +107,7 @@ public class VideoController {
 			@PathVariable("videoId") long videoId,
 			@RequestParam("name") String newName, 
 			@RequestParam("description") String newDesc, 
-			@RequestParam("privacy") long newPrivacy
-			) {
-		
+			@RequestParam("privacy") long newPrivacy) {
 		try {
 			Video v = vd.getVideo(videoId);
 			
@@ -135,14 +138,18 @@ public class VideoController {
 	}
 	
 	@RequestMapping(value = "/deleteVideo", method = RequestMethod.POST)
-	public String deleteVideoPost(@RequestParam("videoId") long videoId) {
+	public String deleteVideoPost(@RequestParam("videoId") long videoId, Model model) {
 		try {
 			Resources.deleteVideo(vd.getVideo(videoId));
 			vd.deleteVideo(videoId);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (VideoNotFoundException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "VideoNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "redirect:/main";
 	}

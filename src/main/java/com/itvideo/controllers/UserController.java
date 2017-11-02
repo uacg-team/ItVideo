@@ -62,6 +62,7 @@ public class UserController {
 				model.addAttribute("follow", false);
 			}
 		} catch (SQLException e) {
+			//TODO: return status code and handle it with JS
 			e.printStackTrace();
 		}
 	}
@@ -102,15 +103,16 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/deleteUser/{userId}", method = RequestMethod.POST)
-	public String deleteUserPost(HttpSession session, @PathVariable("userId") long userId) {
+	public String deleteUserPost(HttpSession session, Model model, @PathVariable("userId") long userId) {
 		try {
 			User user = (User) session.getAttribute("user");
 			if (user.getUserId() == userId) {
 				ud.delete(user.getUserId());
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "redirect:/main";
 	}
@@ -183,21 +185,20 @@ public class UserController {
 			if (gender == "null") {
 				gender = null;
 			}
-			
 			u.setGender(gender);
 			ud.updateUser(u);
 		} catch (UserException e) {
-			e.printStackTrace();
-			model.addAttribute("UserException", e.getMessage());
-			return "updateUser";
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (SQLException e) {
-			e.printStackTrace();
-			model.addAttribute("SQLException", e.getMessage());
-			return "updateUser";
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserNotFoundException e) {
-			e.printStackTrace();
-			model.addAttribute("UserNotFoundException", e.getMessage());
-			return "updateUser";
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "updateUser";
 	}
@@ -229,14 +230,17 @@ public class UserController {
 				model.addAttribute("videos", videos);
 				pc.loadPlaylistsForUser(model, u.getUserId());
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				model.addAttribute("exception", "SQLException");
+				model.addAttribute("getMessage", e.getMessage());
+				return "error";
 			} catch (UserNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				model.addAttribute("exception", "UserNotFoundException");
+				model.addAttribute("getMessage", e.getMessage());
+				return "error";
 			} catch (UserException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				model.addAttribute("exception", "UserException");
+				model.addAttribute("getMessage", e.getMessage());
+				return "error";
 			}
 		return "viewProfile";
 	}
@@ -271,17 +275,17 @@ public class UserController {
 				return "login";
 			}
 		} catch (SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			model.addAttribute("error", e.getMessage());
-			return "login";
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserNotFoundException e) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("usernameError", e.getMessage());
-			return "login";
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("error", e.getMessage());
-			return "login";
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} 
 	}
 	
@@ -323,14 +327,17 @@ public class UserController {
 			
 			return "redirect:/main";
 		} catch (SQLException e) {
-			model.addAttribute("userError", "SQLException: " + e.getMessage());
-			return "register";
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			model.addAttribute("userError", "UserException: " + e.getMessage());
-			return "register";
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (IOException e) {
-			model.addAttribute("userError", "IOException: " + e.getMessage());
-			return "register";
+			model.addAttribute("exception", "IOException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 	}
 	
@@ -350,14 +357,17 @@ public class UserController {
 				session.setAttribute("user", u);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "redirect:/main";
 	}
@@ -385,14 +395,17 @@ public class UserController {
 			u.setPasswordNoValidation(Hash.getHashPass(newPassword));
 			ud.updateUser(u);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "redirect:main";
 	}

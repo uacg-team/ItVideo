@@ -23,6 +23,7 @@ import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
 import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
 
@@ -30,12 +31,16 @@ import com.itvideo.model.exceptions.video.VideoNotFoundException;
 public class MainController {
 	@Autowired
 	VideoDao vd;
+	
 	@Autowired
 	UserDao ud;
+	
 	@Autowired
 	CommentController cc;
+	
 	@Autowired
 	PlaylistController pc;
+	
 	@Autowired
 	PlaylistDao pd;
 	
@@ -46,7 +51,6 @@ public class MainController {
 			HttpServletRequest request, 
 			HttpSession session, 
 			Model model) {
-		
 		session.setAttribute("searchParam", searchParam);
 		try {
 			switch (searchParam) {
@@ -91,6 +95,10 @@ public class MainController {
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
+		} catch (UserNotFoundException e) {
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 	}
 	
@@ -126,6 +134,10 @@ public class MainController {
 			return "main";
 		} catch (SQLException e) {
 			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		} catch (UserNotFoundException e) {
+			model.addAttribute("exception", "UserNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}
@@ -188,6 +200,10 @@ public class MainController {
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
+		} catch (UserNotFoundException e) {
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		}
 		return "main";
 	}
@@ -223,9 +239,9 @@ public class MainController {
 			
 			model.addAttribute("mainVideo", video);
 			model.addAttribute("videos", related);
-			
+			//TODO: what to do?
 //			cc.loadCommentsForVideo(model,videoId);
-			if(session.getAttribute("user")!=null) {
+			if (session.getAttribute("user") != null) {
 				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
 //				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
 			}

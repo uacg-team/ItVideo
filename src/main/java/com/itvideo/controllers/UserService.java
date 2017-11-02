@@ -28,6 +28,7 @@ import com.itvideo.model.utils.TockenGenerator;
 public class UserService {
 	@Autowired
 	UserDao ud;
+	
 	/**
 	 * report to js if there is problem,and what action is coming next
 	 */
@@ -35,21 +36,26 @@ public class UserService {
 		private String typeError;
 		private String msg;
 		private String action;
-		ReportMsg(String typeError,String report,String action){
+
+		ReportMsg(String typeError, String report, String action) {
 			this.msg = report;
 			this.typeError = typeError;
-			this.action=action;
+			this.action = action;
 		}
+
 		public String getAction() {
 			return action;
 		}
+
 		public String getMsg() {
 			return msg;
 		}
+
 		public String getTypeError() {
 			return typeError;
 		}
 	}
+	
 	@ResponseBody
 	@RequestMapping(value="/main/login", method = RequestMethod.POST)
 	public ReportMsg loginPostTest(HttpSession session, HttpServletResponse response,HttpServletRequest request) {
@@ -110,12 +116,14 @@ public class UserService {
 			Resources.initAvatar(u,session);
 			return new ReportMsg("success", "", "none");
 		} catch (SQLException e) {
+			e.printStackTrace();
 			response.setStatus(500);
 			return new ReportMsg("sqlError", "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.","none");
 		} catch (UserException e) {
 			response.setStatus(400);
 			return new ReportMsg("userError",  e.getMessage(), "none");
 		} catch (IOException e) {
+			e.printStackTrace();
 			response.setStatus(500);
 			return new ReportMsg("IOError",  "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.", "none");
 		}

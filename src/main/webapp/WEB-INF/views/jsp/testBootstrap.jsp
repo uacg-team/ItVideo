@@ -145,7 +145,7 @@
 		<!-- GRANDE video player -->
 		<video id="my-video" class="video-js" controls preload="auto" width="640px" height="264px"
   				poster="<c:url value="/thumbnail/${mainVideo.videoId}" />" data-setup="{}">
-		  		<source src="<c:url value="/videoStream/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
+		  		<source src="<c:url value="/video/${requestScope.mainVideo.videoId}"/>" type="video/mp4">
 		</video>
 		
 		<%-- 

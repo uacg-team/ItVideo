@@ -74,11 +74,17 @@ public class UploadController {
 			u.setAvatarUrl(avatar.getOriginalFilename());
 			ud.updateUser(u);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (UserNotFoundException e) {
-			e.printStackTrace();
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

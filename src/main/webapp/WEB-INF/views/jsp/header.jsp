@@ -355,6 +355,7 @@ function registerPost(){
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="document.getElementById('register-form-itvideo').style.display='none'" class="btn btn-danger">Cancel</button>
+      <button type="button" onclick="document.getElementById('register-form-itvideo').style.display='none'" class="btn btn-info" style="float: right;">Ok</button>
     </div>
   </div>
 </div>
