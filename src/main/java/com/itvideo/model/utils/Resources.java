@@ -86,16 +86,14 @@ public abstract class Resources {
 	}
 	
 	private static void write(Part file, String absolutePath) throws IOException {
-		InputStream inputStream = file.getInputStream();
-		File myFile = new File(absolutePath);
-		if (!myFile.exists()) {
-			myFile.mkdirs();
-			myFile.createNewFile();
+		try(InputStream inputStream = file.getInputStream()){
+			File myFile = new File(absolutePath);
+			if (!myFile.exists()) {
+				myFile.mkdirs();
+				myFile.createNewFile();
+			}
+			Files.copy(inputStream, myFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
 		}
-		Files.copy(inputStream, myFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
-		inputStream.close();
-		inputStream = null;
-		System.gc();
 	}
 	
 	private static void read(String absolutePath, Long userId, HttpServletResponse response) {

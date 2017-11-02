@@ -62,7 +62,7 @@ video {
 	</c:forEach>
 </div>
 </div>
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 var figure = $(".video").hover( hoverVideo, hideVideo );
 
 function hoverVideo(e) {  
@@ -72,6 +72,6 @@ function hoverVideo(e) {
 function hideVideo(e) {
     $('video', this).get(0).pause(); 
 }
-</script>
+</script> -->
 </body>
 </html>
