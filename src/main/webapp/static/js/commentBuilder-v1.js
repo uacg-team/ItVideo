@@ -351,7 +351,6 @@ function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 	html=html.concat('<li>');
 	html=html.concat('<textarea rows="3" cols="80" id="novReplyText'+replyId+'"></textarea>');
 	html=html.concat('</li>');
-	//TODO add real function addReply (myUserId,commentId,replyId,username)
 	html=html.concat('<button onclick="postReply(' + myUserId + ',' + videoId+',' + replyId+',\''+username+'\')">add reply</button>');
 	html=html.concat('</ul>');
 	document.getElementById('addReply' + replyId).innerHTML=html;

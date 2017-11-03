@@ -17,6 +17,11 @@ function getSelected(){
 }
 </script>
 <style type="text/css">
+.addNewComment img{
+width: 60px;
+height: 60px;
+margin-left: 0px;
+}
 .comment-box-user img{
 width: 60px;
 height: 60px;
@@ -47,32 +52,33 @@ width: 50px;
 height: 50px;
 margin-left: 0px;
 }
+textarea { resize: none; }
 </style>
 </head>
 <body>
+<strong>Leave comment...</strong><br>
+<p class="comment-header"><strong>${sessionScope.user.username}</strong></p>
+<c:if test="${sessionScope.user==null}">
+	<a href="<c:url value="/login"/>">First login</a>
+</c:if>
+
 <div id="addNewComment">
-	<strong>Leave comment</strong><br>
-	<strong>${sessionScope.user.username}</strong>
-	<c:if test="${sessionScope.user==null}">
-			<a href="<c:url value="/login"/>">First login</a>
-			
-	</c:if>
-	<div class="col-lg-1 container-fluid">
+	<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">
 		<c:if test="${sessionScope.user!=null}">
-		<img src="<c:url value="/img/${sessionScope.user.userId}"/>" height="50px" width="auto"/>
+			<img src="<c:url value="/img/${sessionScope.user.userId}"/>"/>
 		</c:if>
 		<c:if test="${sessionScope.user==null}">
-		<img src="<c:url value="/pics/avatar.png"/>" height="50px" width="50px" />
+			<img src="<c:url value="/pics/avatar.png"/>"/>
 		</c:if>
 	</div>
-	<div class="col-lg-1 container-fluid">
+	<div class="col-lg-11 container-fluid">
 		<c:if test="${sessionScope.user!=null}">
-			<textarea rows="3" cols="80" id="novComentar"></textarea>
-			<button onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
+			<textarea class="form-control" rows="3" rows="3" cols="80" id="novComentar"></textarea>
+			<button class="btn btn-primary btn-xs" onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
 		</c:if>
 		<c:if test="${sessionScope.user==null}">
-			<textarea rows="3" cols="80" id="novComentar"></textarea>
-			<button>addComment</button>
+			<textarea class="form-control" rows="3" cols="80" id="novComentar" ></textarea>
+			<button class="btn btn-primary btn-xs">addComment</button>
 		</c:if>
 	</div>
 </div>
