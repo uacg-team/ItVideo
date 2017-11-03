@@ -209,7 +209,10 @@ public class MainController {
 	}
 	
 	@RequestMapping(value="/player/{videoId}", method = RequestMethod.GET)
-	public String player(Model model, @PathVariable("videoId") long videoId, HttpSession session, HttpServletResponse response) {
+	public String player(Model model, 
+			@PathVariable("videoId") long videoId, 
+			HttpSession session, 
+			HttpServletResponse response) {
 		try {
 			if (!vd.existsVideo(videoId)) {
 				model.addAttribute("exception", "VideoNotFoundException");

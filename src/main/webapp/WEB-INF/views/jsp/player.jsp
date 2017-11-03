@@ -298,7 +298,7 @@ video {
 		<div class="row">
 			<!-- GRANDE video player -->
 	        <video id="my_video_1" class="video-js vjs-sublime-skin" controls autoplay preload="auto" width="640px" height="264px" 
-	        poster="<c:url value="/thumbnail/${mainVideo.videoId} " />" data-setup=' {"aspectRatio":"640:267", "playbackRates": [1, 1.5, 2] }'>
+	        poster="<c:url value="/thumbnail/${requestScope.mainVideo.videoId} " />" data-setup=' {"aspectRatio":"640:267", "playbackRates": [1, 1.5, 2] }'>
 	            <source src="<c:url value="/video/${requestScope.mainVideo.videoId}" />" type="video/mp4">
 	        </video>
 	        <script type="text/javascript">

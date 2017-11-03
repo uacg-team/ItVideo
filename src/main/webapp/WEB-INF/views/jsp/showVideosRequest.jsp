@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/fmt" prefix = "fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,9 +54,11 @@ video {
 				</p>
 			</a>
 			<p class="text-primary">
-			<c:forEach items="${video.tags}" var="tag">	
-					<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
-			</c:forEach>
+			<c:if test="${not empty video.tags }">
+				<c:forEach items="${video.tags}" var="tag">	
+						<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
+				</c:forEach>
+			</c:if>
 			</p>
 		</div>
 		</div>
