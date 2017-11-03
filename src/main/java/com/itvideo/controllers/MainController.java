@@ -1,7 +1,6 @@
 package com.itvideo.controllers;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -38,9 +37,6 @@ public class MainController {
 	
 	@Autowired
 	CommentDao comment;
-	
-	@Autowired
-	CommentController cc;
 	
 	@Autowired
 	PlaylistController pc;
