@@ -337,4 +337,30 @@ public class UserDao {
 			}
 		}
 	}
+
+	public User getUserByEmail(String email) throws SQLException, UserException, UserNotFoundException {
+		String sql = "SELECT * FROM users WHERE email = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, email);
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return new User(
+							rs.getLong("user_id"), 
+							rs.getString("username"), 
+							rs.getString("password"),
+							rs.getString("facebook"), 
+							rs.getString("email"),
+							DateTimeConvertor.sqlToLdt(rs.getString("date_creation")), 
+							rs.getString("first_name"),
+							rs.getString("last_name"),
+							rs.getString("avatar_url"),
+							rs.getString("gender"),
+							rs.getString("register_token"),
+							rs.getBoolean("activated"));
+				} else {
+					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+				}
+			}
+		}
+	}
 }

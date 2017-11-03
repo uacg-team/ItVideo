@@ -9,8 +9,10 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +21,7 @@ import com.itvideo.model.UserDao;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
+import com.itvideo.model.utils.PasswordGenerator;
 import com.itvideo.model.utils.Resources;
 import com.itvideo.model.utils.Send;
 import com.itvideo.model.utils.TockenGenerator;
@@ -56,13 +59,42 @@ public class UserService {
 		}
 	}
 	
+	@ResponseBody	
+	@RequestMapping(value="/forgotPassword", method = RequestMethod.POST)
+	public ReportMsg forgotPasswordPost(
+			HttpServletResponse response,
+			@RequestParam("email") String email) {
+		
+		System.out.println("in the forgotPassword");
+		
+		String newPassword = PasswordGenerator.generate();
+		try {
+			User u =  ud.getUserByEmail(email);
+			
+			u.setPasswordNoValidation(newPassword);
+			Send.welcomeMail(u);
+			u.setPasswordNoValidation(Hash.getHashPass(newPassword));
+			ud.updateUser(u);
+			response.setStatus(200);
+			return new ReportMsg(" ", " ","none");
+		} catch (SQLException e) {
+			response.setStatus(500);
+			return new ReportMsg("sqlError", e.getMessage() ,"none");
+		} catch (UserNotFoundException e) {
+			response.setStatus(400);
+			return new ReportMsg("userError", e.getMessage(),"none");
+		} catch (UserException e) {
+			response.setStatus(400);
+			return new ReportMsg("userError", e.getMessage(),"none");
+		}
+	}
+	
 	@ResponseBody
 	@RequestMapping(value="/main/login", method = RequestMethod.POST)
 	public ReportMsg loginPostTest(HttpSession session, HttpServletResponse response,HttpServletRequest request) {
 		String username=request.getParameter("username");
 		String password=request.getParameter("password");
 		String hashedPass = Hash.getHashPass(password);
-
 		try {
 			User u = ud.getUser(username);
 			if (!u.isActivated()) {

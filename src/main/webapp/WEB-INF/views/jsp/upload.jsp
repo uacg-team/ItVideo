@@ -25,7 +25,7 @@
 		    <div class="form-group">
 		      <label for="text" class="col-lg-2 control-label">Name</label>
 		      <div class="col-lg-10">
-		        <input type="text" name="name" class="form-control" placeholder="Video Name">
+		        <input type="text" name="name" class="form-control" placeholder="Video Name" required>
 				<span class="help-block">Required</span>
 		      </div>
 		    </div>

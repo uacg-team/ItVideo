@@ -294,7 +294,6 @@ public class UserController {
 		return "register";
 	}
 	
-	
 	@RequestMapping(value="/register", method = RequestMethod.POST)
 	public String registerPost(Model model, HttpSession session,
 			@RequestParam("username") String username,
@@ -341,8 +340,6 @@ public class UserController {
 		}
 	}
 	
-	
-	
 	// http://localhost:8080/ItVideo/activate/"+u.getUserId()+"/"+u.getActivationToken()
 	@RequestMapping(value="/activate/{userId}/{token}", method = RequestMethod.GET)
 	public String activateUser(
@@ -372,12 +369,15 @@ public class UserController {
 		return "redirect:/main";
 	}
 	
+/*	
 	@RequestMapping(value="/forgotPassword", method = RequestMethod.GET)
 	public String forgotPasswordGet(@RequestParam("username") String username,Model model) {
 		model.addAttribute("username", username);
 		return "forgotPassword";
 	}
+*/
 	
+	/*
 	@RequestMapping(value="/forgotPassword", method = RequestMethod.POST)
 	public String forgotPasswordPost(
 			Model model,
@@ -409,7 +409,7 @@ public class UserController {
 		}
 		return "redirect:main";
 	}
-	
+	*/
 	@RequestMapping(value="/logout", method = RequestMethod.GET)
 	public String logout(HttpSession session) {
 		session.invalidate();
