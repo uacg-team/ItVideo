@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,8 @@ public class PlaylistController {
 		//get for this videostatus
 		List<Playlist> playlists = null;
 		try {
-			playlists=playlist.getPlaylistForUserWithStatus(userId,videoId);
+			playlists = playlist.getPlaylistForUserWithStatus(userId,videoId);
+			
 			model.addAttribute("myPlaylists", playlists);
 		} catch (UserException e) {
 			// TODO handle

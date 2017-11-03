@@ -108,6 +108,7 @@ public class UploadController {
 			Model model, 
 			@RequestParam("newVideo") MultipartFile file, 
 			@RequestParam("name") String name, 
+			@RequestParam("description") String description, 
 			@RequestParam("tags") String allTags, 
 			@RequestParam("privacy") long privacy) {
 		
@@ -121,12 +122,19 @@ public class UploadController {
 				return "upload";
 			}
 			
+			
 			String[] inputTags = allTags.split("\\s+");
 			Set<Tag> tags = new HashSet<>();
 			for (String string : inputTags) {
+				if (string.trim().isEmpty()) {
+					continue;
+				}
 				tags.add(new Tag(string));
 			}
-		
+			
+			Video v = new Video(name, file.getOriginalFilename() , privacy, u.getUserId(), tags);
+			v.setDescription(description);
+			
 			//MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
 			//MimeType type = allTypes.forName(file.getContentType());
 			//String ext = type.getExtension(); // .whatever
@@ -165,8 +173,6 @@ public class UploadController {
 					file.getOriginalFilename() +
 					".png"));
 			
-			
-			Video v = new Video(name, file.getOriginalFilename() , privacy, u.getUserId(), tags);
 			v.setThumbnailUrl(file.getOriginalFilename() + ".png");
 			
 			vd.createVideo(v);
@@ -178,8 +184,8 @@ public class UploadController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (VideoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("error", e.getMessage());
+			return "upload";
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

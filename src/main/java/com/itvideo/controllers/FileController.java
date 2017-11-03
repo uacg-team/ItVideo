@@ -38,16 +38,16 @@ public class FileController {
 			String absolutePath = Resources.ROOT + File.separator + userId + File.separator + Resources.VIDEO_URL
 					+ File.separator + location;
 			File file = new File(absolutePath);
+			
+			response.setContentType("video/mp4");
+			response.setHeader("Accept-Ranges", "bytes");
+			response.setHeader("Connection", "Keep-Alive");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + location + "\"");
+			response.setContentLength((int) file.length());
+			
 			try (FileInputStream fis = new FileInputStream(file);
 				 BufferedInputStream bis = new BufferedInputStream(fis);
 				 BufferedOutputStream output = new BufferedOutputStream(response.getOutputStream());) {
-				
-				response.setContentType("video/mp4");
-				response.setHeader("Accept-Ranges", "bytes");
-				response.setHeader("Connection", "Keep-Alive");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + location + "\"");
-				response.setContentLength((int) file.length());
-
 				for (int data; (data = bis.read()) > -1;) {
 					output.write(data);
 				}

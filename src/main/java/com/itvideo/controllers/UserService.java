@@ -102,6 +102,10 @@ public class UserService {
 				response.setStatus(400);
 				return new ReportMsg("usernameError", "This username already exist", "none");
 			}		
+			if (ud.existsEmail(email)) {
+				response.setStatus(400);
+				return new ReportMsg("emailError", "This email already exist", "none");
+			}		
 			if (!password.equals(confirmPassword)) {
 				response.setStatus(400);
 				return new ReportMsg("passwordError", "Password differ", "none");

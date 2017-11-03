@@ -157,9 +157,6 @@ public class Video implements Serializable {
 	}
 
 	public void setDescription(String description) throws VideoException {
-		if (description == null || description.isEmpty()) {
-			throw new VideoException(VideoException.INVALID_DESCRIPTION);
-		}
 		this.description = description;
 	}
 
@@ -182,7 +179,7 @@ public class Video implements Serializable {
 		if (name == null || name.isEmpty()) {
 			throw new VideoException(VideoException.INVALID_NAME);
 		}
-		if (name.length() < MIN_NAME_LENGTH) {
+		if (name.trim().length() < MIN_NAME_LENGTH) {
 			throw new VideoException(VideoException.INVALID_NAME_LENGTH);
 		}
 		this.name = name;
