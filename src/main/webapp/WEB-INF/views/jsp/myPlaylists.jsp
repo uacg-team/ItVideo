@@ -129,7 +129,7 @@
   				<c:if test="${playlist.videoStatus != 1}">
 					<img alt="notInPlaylist" id="playlist${playlist.playlistId}" src="<c:url value="/pics/not_ok.png"/>" style="width: 22px; height: auto" >	
   				</c:if>
-  				<span>${playlist.playlistName}</span>
+  				<p>${playlist.playlistName}</p>
   			</li>
     </c:forEach>
     </ul>

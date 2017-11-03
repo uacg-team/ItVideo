@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.validator.internal.constraintvalidators.bv.future.FutureValidatorForInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -409,9 +410,20 @@ public class VideoDao {
 	}
 
 	public List<Video> searchVideo(String name) throws SQLException, VideoException {
-		String sql = "SELECT * FROM videos WHERE name LIKE ? and privacy_id = 1";
-		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setString(1, "%" + name + "%");
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM videos WHERE privacy_id = 1");
+		
+		String[] words = name.split("\\s+");
+		
+		for (int i = 0; i < words.length; i++) {
+			sql.append(" AND name LIKE ?");
+		}
+		
+		try (PreparedStatement ps = con.prepareStatement(sql.toString());) {
+			for (int i = 0; i < words.length; i++) {
+				ps.setString(i+1, "%" + words[i] + "%");
+			}
+			
 			try (ResultSet rs = ps.executeQuery();) {
 				List<Video> videos = new ArrayList<>();
 				while (rs.next()) {

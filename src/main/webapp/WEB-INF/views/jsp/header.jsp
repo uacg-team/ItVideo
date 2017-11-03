@@ -168,7 +168,9 @@ function loginPost(){
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			window.location.href = "/ItVideo/main";
+			/* false - Default. Reloads the current page from the cache. */
+			/* true - Reloads the current page from the server */
+			window.location.reload(false); 
 		}else{
 			var resp = JSON.parse(this.responseText);
 			var typeError= resp.typeError;
@@ -290,7 +292,7 @@ function registerPost(){
 					</a>
 				 </li>
 	      		<%--  <li><a href="<c:url value="/logout"/>">Logout</a></li> --%>
-				 <li><a href="<c:url value="/logout"/>" type="button" class="btn btn-info" style="width:auto;"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+				<li><a href="<c:url value="/logout"/>" type="button" class="btn btn-info" style="width:auto;"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
 			 </c:if>
 			 <c:if test="${sessionScope.user == null}"> 
 				 <li><button type="button" class="btn btn-info" onclick="document.getElementById('register-form-itvideo').style.display='block'" style="width:auto;"><span class="glyphicon glyphicon-user"></span> Register</button></li>
