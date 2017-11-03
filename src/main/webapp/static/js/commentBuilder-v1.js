@@ -83,7 +83,6 @@ function showReplies(commentId, myUserId, comparator){
 				var replyId=comment.replyId;
 				var date = comment.date;
 				//replies
-				var replies=comment.replies;
 				var hasReplies=comment.hasReplies;
 				// likes/dislikes
 				var likes=comment.likes;
@@ -113,22 +112,6 @@ function showReplies(commentId, myUserId, comparator){
 	request.send();
 }
 /**
- * Build one comment
- * @param commentId
- * @param text
- * @param userId
- * @param videoId
- * @param replyId
- * @param replies
- * @param hasReplies
- * @param likes
- * @param dislikes
- * @param username
- * @param url
- * @param vote
- * @param date
- * @param numberReplies
- * @param myUserId-depends from viewer
  * @returns html for one comment
  */
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
@@ -148,7 +131,6 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('<p >' + text + '</p> <br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
-//	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
 	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2 comment-buttons-left">');
 	//if hasReplies -add button show replies
 	if(numberReplies>0){
@@ -165,7 +147,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2">');
 	//add button reply
-	if(myUserId != 'undefined'){
+	if(myUserId != 'undefined'||myUserId!=0){
 		htmlOneComment=htmlOneComment.concat('<div class="comment-buttons-right">');
 			htmlOneComment=htmlOneComment.concat('<button class="btn btn-primary btn-xs" onclick="addReplyPopUpHtml('+myUserId+','+videoId+','+commentId+',\''+username+'\')">add reply</button>');
 		htmlOneComment=htmlOneComment.concat('</div>');
@@ -232,7 +214,6 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner col-lg-11 container-fluid">');
 	htmlOneComment=htmlOneComment.concat('<p>' + text + '</p><br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
-//	htmlOneComment=htmlOneComment.concat('<div class="triangle-comment"></div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	
@@ -360,8 +341,13 @@ function postReply(myUserId,videoId,replyId,username){
 
 function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 	//insert form to input new Comment
+	if(myUserId == 'undefined'||myUserId==0){
+		alert("First login!");
+		return;
+	}
+	var myUsername=document.getElementById('myUsername').innerHTML;
 	var html="";
-	html=html.concat(' <p class="comment-header"><strong>'+username+'</strong></p>');
+	html=html.concat(' <p class="comment-header"><strong>'+myUsername+'</strong></p>');
 	html=html.concat('<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">');
 	html=html.concat('<img  src="/ItVideo/img/' + myUserId + '" height="50px" width="auto" />');
 	html=html.concat('</div>');
@@ -372,20 +358,19 @@ function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 	document.getElementById('addReply' + replyId).innerHTML=html;
 }
 
-function htmlShowMoreComments(commentsShow,allCommentsNumber){
-	//show button if there is more comments
-}
-
 function deleteComment(commentId){
 	var url = "/ItVideo/player/deleteComment";
 	var param = "commentId=" + commentId;
+
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			//get number of replies
-			var numberReplies=document.getElementById("numberRepliesForComment"+commentId).innerHTML;
-			if(typeof numberReplies === 'undefined'){
+			var numberReplies;
+			if(document.getElementById("numberRepliesForComment"+commentId)==null){
 				numberReplies=0;
+			}else{
+				numberReplies=document.getElementById("numberRepliesForComment"+commentId).innerHTML;
 			}
 			var elem = document.getElementById(commentId);
 		    elem.parentNode.removeChild(elem);
@@ -399,6 +384,8 @@ function deleteComment(commentId){
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
 }
+
+
 function showButton(insertionDivName,deleteDivElement,html){
 	//remove button with name deleteDivElement
 	var elem = document.getElementById(deleteDivElement);

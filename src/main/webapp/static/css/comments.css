@@ -44,21 +44,6 @@ margin: 5px 0;
   font-weight: bold;
   font-size: 12px;
 }
-
-.triangle-comment{
-  position: absolute;
-	width: 0px;
-height: 0px;
-border-style: solid;
-border-width: 40px 30px 0 0;
-border-color: #EEE transparent transparent transparent;
--moz-transform:rotate(20deg);
--webkit-transform:rotate(20deg);
--o-transform:rotate(20deg);
--ms-transform:rotate(20deg);
- margin: -10px 0 0 50px;  
- z-index: -1;
-}
 .reply-box{
 margin:20px 10px;
 margin-left:60px;

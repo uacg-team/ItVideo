@@ -4,11 +4,7 @@
  * @returns
  */
 function likeComment(commentId,myUserId) {
-	if (typeof myUserId === 'undefined') {
-	    alert("First login!");
-	    return;
-	}
-	if (myUserId === 0) {
+	if (typeof myUserId === 'undefined' || myUserId === 0) {
 	    alert("First login!");
 	    return;
 	}

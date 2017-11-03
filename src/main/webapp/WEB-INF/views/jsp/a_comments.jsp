@@ -63,7 +63,7 @@ textarea { resize: none; }
 </head>
 <body>
 	<strong>Leave comment...</strong><br>
-	<p class="comment-header"><strong>${sessionScope.user.username}</strong></p>
+	<p style=" font-weight: bold;" class="comment-header" id="myUsername">${sessionScope.user.username}</p>
 	<c:if test="${sessionScope.user==null}">
 		<a href="<c:url value="/login"/>">First login</a>
 	</c:if>
@@ -115,7 +115,7 @@ textarea { resize: none; }
 	</div>
 </div>
 <div class="row">
-	<hr>
+<hr>
 </div>
 <div id="newComments" title="0" >
 <!-- insert new Comments -->

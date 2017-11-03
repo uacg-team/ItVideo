@@ -26,20 +26,10 @@ public class CommentDao {
 	public static final Comparator<Comment> ASC_BY_DATE = (o1, o2) -> o1.getDate().compareTo(o2.getDate());
 	public static final Comparator<Comment> DESC_BY_LIKES = (o1, o2) -> (int)(o2.getLikes()-o1.getLikes());
 	public static final Comparator<Comment> DESC_BY_DISLIKES = (o1, o2) -> (int)(o2.getDislikes()-o1.getDislikes());
-	
 	public static final Comparator<Comment> DESC_BY_DATE = (o1, o2) -> o2.getDate().compareTo(o1.getDate());
-	//local tests
-	public static void main(String[] args) throws SQLException, CommentException {
-//		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-//	    ctx.register(SpringWebConfig.class);
-//	    ctx.refresh();
-//	    CommentDao comment = ctx.getBean(CommentDao.class);
-//		System.out.println(comment.getNumberOfCommentsForVideo(23));
-//		ctx.close();
-	}
+
 	private Connection con;
 	private CommentDao() {
-		
 	}
 
 	/**
@@ -629,23 +619,4 @@ public class CommentDao {
 			}
 		}
 	}
-
-//	public Comment getLastCommentForUserId(Long userId) {
-//		String sql = "select * from comments where user_id=? order by date desc limit 1;";
-//		try (PreparedStatement ps = con.prepareStatement(sql)) {
-//			ps.setLong(1, userId);
-//			try (ResultSet rs = ps.executeQuery()) {
-//				if (rs.next()) {
-//					Long id = rs.getLong("comment_id");
-//					String text = rs.getString("text");
-//					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
-//					Long userId = rs.getLong("user_id");
-//					Long replyId = rs.getLong("reply_id");
-//					Comment reply = new Comment(id, text, date, userId, videoId, replyId);
-//					return comments;
-//				}
-//			}
-//		}
-//		return null;
-//	}
 }
