@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.itvideo.model.CommentDao;
 import com.itvideo.model.PlaylistDao;
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -34,6 +34,9 @@ public class MainController {
 	
 	@Autowired
 	UserDao ud;
+	
+	@Autowired
+	CommentDao comment;
 	
 	@Autowired
 	CommentController cc;
@@ -239,11 +242,9 @@ public class MainController {
 			
 			model.addAttribute("mainVideo", video);
 			model.addAttribute("videos", related);
-			//TODO: what to do?
-//			cc.loadCommentsForVideo(model,videoId);
+			model.addAttribute("countComments",comment.getNumberOfCommentsForVideo(videoId));
 			if (session.getAttribute("user") != null) {
 				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
-//				cc.loadCommentsWithVotesForVideo(model, videoId, userId, CommentDao.ASC_BY_DATE);
 			}
 			return "player";
 		} catch (SQLException e) {

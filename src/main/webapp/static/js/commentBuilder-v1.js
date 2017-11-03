@@ -134,10 +134,15 @@ function showReplies(commentId, myUserId, comparator){
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
 	var htmlOneComment="";
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '">');
+	htmlOneComment=htmlOneComment.concat('<p hidden id="numberRepliesForComment'+commentId+'">'+numberReplies+'</p>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box">');
+	htmlOneComment=htmlOneComment.concat('<a href=/ItVideo/viewProfile/' + userId + '>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-header"><span>' + username + '</span></p>');
+	htmlOneComment=htmlOneComment.concat('</a>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">');
+	htmlOneComment=htmlOneComment.concat('<a href=/ItVideo/viewProfile/' + userId + '>');
 	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '"/>');
+	htmlOneComment=htmlOneComment.concat('</a>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner col-lg-11 container-fluid">');
 	htmlOneComment=htmlOneComment.concat('<p >' + text + '</p> <br>');
@@ -206,6 +211,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('</div>');
 	
 	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }
 
@@ -214,9 +220,13 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	var htmlOneComment="";
 	htmlOneComment=htmlOneComment.concat('<div id='+commentId+'>');
 	htmlOneComment=htmlOneComment.concat('<div class="reply-box">');
+	htmlOneComment=htmlOneComment.concat('<a href=/ItVideo/viewProfile/' + userId + '>');
 	htmlOneComment=htmlOneComment.concat('<p class="reply-header"><span>' + username + '</span></p>');
+	htmlOneComment=htmlOneComment.concat('</a>');
 	htmlOneComment=htmlOneComment.concat('<div class="reply-box-user col-lg-1 container-fluid" style="padding-left: 0px;">');
+	htmlOneComment=htmlOneComment.concat('<a href=/ItVideo/viewProfile/' + userId + '>');
 	htmlOneComment=htmlOneComment.concat('<img src="/ItVideo/img/' + userId + '"/>');
+	htmlOneComment=htmlOneComment.concat('</a>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	
 	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner col-lg-11 container-fluid">');
@@ -297,8 +307,12 @@ function postComment(myUserId,videoId,replyId,username) {
 				insertion.innerHTML=htmlComment;
 				insertion.title="1";
 			}else{
+				insertion.title=Number(insertion.title="1")+1;
 				insertion.insertAdjacentHTML('afterbegin', htmlComment);
 			}
+			//increase number of comments
+			var countComments=document.getElementById("countComments").innerText;
+			document.getElementById("countComments").innerText=(Number(countComments)+1);
 		}
 	}
 	request.open("POST", url, true);
@@ -333,6 +347,10 @@ function postReply(myUserId,videoId,replyId,username){
 			
 			var insertion=document.getElementById("addReply"+replyId);
 			insertion.innerHTML=htmlComment;
+			//increase number of comments
+			document.getElementById("numberRepliesForComment"+replyId).innerHTML=(Number(document.getElementById("numberRepliesForComment"+replyId).innerHTML)+1);
+			var countComments=document.getElementById("countComments").innerText;
+			document.getElementById("countComments").innerText=(Number(countComments)+1);
 		}
 	}
 	request.open("POST", url, true);
@@ -343,30 +361,38 @@ function postReply(myUserId,videoId,replyId,username){
 function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 	//insert form to input new Comment
 	var html="";
-	html=html.concat('<strong>'+username+'</strong>');
-	html=html.concat('<ul>');
-	html=html.concat('<li>');
-	html=html.concat('<img src="/ItVideo/img/' + myUserId + '" height="50px" width="auto" />');
-	html=html.concat('</li>');
-	html=html.concat('<li>');
-	html=html.concat('<textarea rows="3" cols="80" id="novReplyText'+replyId+'"></textarea>');
-	html=html.concat('</li>');
-	html=html.concat('<button onclick="postReply(' + myUserId + ',' + videoId+',' + replyId+',\''+username+'\')">add reply</button>');
-	html=html.concat('</ul>');
+	html=html.concat(' <p class="comment-header"><strong>'+username+'</strong></p>');
+	html=html.concat('<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">');
+	html=html.concat('<img  src="/ItVideo/img/' + myUserId + '" height="50px" width="auto" />');
+	html=html.concat('</div>');
+	html=html.concat('<div class="col-lg-11 container-fluid">');
+	html=html.concat('<textarea  class="form-control" rows="3" cols="80"  id="novReplyText'+replyId+'"></textarea>');
+	html=html.concat('</div>');
+	html=html.concat('<button style="float: right; margin: 5px;" class="btn btn-primary btn-xs" onclick="postReply(' + myUserId + ',' + videoId+',' + replyId+',\''+username+'\')">add reply</button>');
 	document.getElementById('addReply' + replyId).innerHTML=html;
 }
 
 function htmlShowMoreComments(commentsShow,allCommentsNumber){
 	//show button if there is more comments
 }
+
 function deleteComment(commentId){
 	var url = "/ItVideo/player/deleteComment";
 	var param = "commentId=" + commentId;
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
+			//get number of replies
+			var numberReplies=document.getElementById("numberRepliesForComment"+commentId).innerHTML;
+			if(typeof numberReplies === 'undefined'){
+				numberReplies=0;
+			}
 			var elem = document.getElementById(commentId);
 		    elem.parentNode.removeChild(elem);
+		    // elem.parentNode.removeChild(elem);
+		    //decrease number of comments
+			var countComments=document.getElementById("countComments").innerText;
+			document.getElementById("countComments").innerText=(Number(countComments)-1-numberReplies);
 		}
 	}
 	request.open("POST", url, true);
