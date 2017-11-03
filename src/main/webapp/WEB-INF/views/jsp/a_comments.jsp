@@ -17,6 +17,11 @@ function getSelected(){
 }
 </script>
 <style type="text/css">
+.addNewComment img{
+width: 60px;
+height: 60px;
+margin-left: 0px;
+}
 .comment-box-user img{
 width: 60px;
 height: 60px;
@@ -47,63 +52,78 @@ width: 50px;
 height: 50px;
 margin-left: 0px;
 }
+textarea { resize: none; }
+.comment-box-inner p{
+	word-wrap: break-word;
+}
+.comment-sort-by{
+
+}
 </style>
 </head>
 <body>
-<div id="addNewComment">
-	<strong>Leave comment</strong><br>
-	<strong>${sessionScope.user.username}</strong>
+	<strong>Leave comment...</strong><br>
+	<p class="comment-header"><strong>${sessionScope.user.username}</strong></p>
 	<c:if test="${sessionScope.user==null}">
-			<a href="<c:url value="/login"/>">First login</a>
-			
+		<a href="<c:url value="/login"/>">First login</a>
 	</c:if>
-	<div class="col-lg-1 container-fluid">
-		<c:if test="${sessionScope.user!=null}">
-		<img src="<c:url value="/img/${sessionScope.user.userId}"/>" height="50px" width="auto"/>
-		</c:if>
-		<c:if test="${sessionScope.user==null}">
-		<img src="<c:url value="/pics/avatar.png"/>" height="50px" width="50px" />
-		</c:if>
+	
+	<div id="addNewComment">
+		<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">
+			<c:if test="${sessionScope.user!=null}">
+				<img src="<c:url value="/img/${sessionScope.user.userId}"/>"/>
+			</c:if>
+			<c:if test="${sessionScope.user==null}">
+				<img src="<c:url value="/pics/avatar.png"/>"/>
+			</c:if>
+		</div>
+		<div class="col-lg-11 container-fluid">
+			<c:if test="${sessionScope.user!=null}">
+				<textarea class="form-control" rows="3" cols="80" id="novComentar"></textarea>
+				<button style="float: right; margin: 5px;" class="btn btn-primary btn-xs" onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
+			</c:if>
+			<c:if test="${sessionScope.user==null}">
+				<textarea class="form-control" rows="3" cols="80" id="novComentar" ></textarea>
+				<button class="btn btn-primary btn-xs" style="float: right; margin: 5px;">addComment</button>
+			</c:if>
+		</div>
 	</div>
-	<div class="col-lg-1 container-fluid">
-		<c:if test="${sessionScope.user!=null}">
-			<textarea rows="3" cols="80" id="novComentar"></textarea>
-			<button onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
-		</c:if>
-		<c:if test="${sessionScope.user==null}">
-			<textarea rows="3" cols="80" id="novComentar"></textarea>
-			<button>addComment</button>
-		</c:if>
+<div class="row">
+	<hr>
+</div>
+<div class="row">
+	<div class="col-lg-8">
+		<strong><span>Comments:</span><span id="countComments">${requestScope.countComments}</span></strong>
+	</div>
+	<div id="initial-settings" class="col-lg-4">
+		<div class="col-lg-6">
+			<select class="form-control comment-sort-by" id="choiseCompareComments" name="compare">
+			  <option value="newest" selected="selected">Newest</option>
+			  <option value="oldest">Oldest</option>
+			  <option value="mostLiked">Most liked</option>
+			  <option value="mostDisliked">Most disliked</option>
+			</select>
+		</div>
+		<div class="col-lg-6">
+			<c:if test="${sessionScope.user!=null}">
+			<button class="btn btn-primary" onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
+			</c:if>
+			<c:if test="${sessionScope.user==null}">
+			<button class="btn btn-primary" onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
+			</c:if>
+		</div>
 	</div>
 </div>
-<hr>
+<div class="row">
+	<hr>
+</div>
 <div id="newComments" title="0" >
 <!-- insert new Comments -->
 </div>
 <div id="initialComments">
-<b><c:out value="Comments: ${requestScope.countComments}"></c:out></b>
-<!-- insert new Comments -->
-<!-- show first 5 comments if more -show button show more-->
 </div>
 <div id="comments">
-<ul>
-	<li>
-		<select id="choiseCompareComments" name="compare">
-		  <option value="newest" selected="selected">Newest</option>
-		  <option value="oldest">Oldest</option>
-		  <option value="mostLiked">Most liked</option>
-		  <option value="mostDisliked">Most disliked</option>
-		</select>
-	</li>
-	<li>
-	<c:if test="${sessionScope.user!=null}">
-	<button onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
-	</c:if>
-	<c:if test="${sessionScope.user==null}">
-	<button onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
-	</c:if>
-	</li>
-</ul>
+<!-- place for comments -->
 </div>
 </body>
 </html>

@@ -447,9 +447,8 @@ video {
 	    </div>
  	    <hr>
    		<div class="row">
-			<!-- asynchrn comments -->		
+			<!-- asynchrn comments -->
 			<div>
-				<%-- <jsp:include page="asinch_comments.jsp"></jsp:include> --%>
 				<jsp:include page="a_comments.jsp"></jsp:include>
 			</div> 	
    		</div>
