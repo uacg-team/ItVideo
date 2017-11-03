@@ -16,9 +16,16 @@
 	
 	<!-- upload avatar -->
 	<form action="<c:url value="/uploadAvatar"/>" method="post" enctype="multipart/form-data">
-		<input type="file" name="avatar"><br>
+		<input type="file" name="avatar"  accept="image/png"><br>
 		<input type="submit" value="Upload" />
 	</form>
+	
+	<c:if test="${ error != null }">
+		<div class="err">
+			<h1><c:out value="${error}"></c:out></h1>
+		</div>
+	</c:if>
+	
 	
 	<!-- update user -->
 	<form action="updateUser" method="post">

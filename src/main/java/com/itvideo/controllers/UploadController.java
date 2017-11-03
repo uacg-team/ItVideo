@@ -58,7 +58,6 @@ public class UploadController {
 		
 		User u = (User) session.getAttribute("user");
 		try {
-			
 			if (!avatar.getContentType().equals("image/png")) {
 				model.addAttribute("error", "Wrong File Type");
 				return "updateUser";

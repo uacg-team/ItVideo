@@ -248,6 +248,41 @@ function registerPost(){
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
 }
+
+function forgotPassword(){
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var insertion = document.getElementById("success-forgot");
+			document.getElementById("err-forgot").innerHTML="";
+			insertion.innerHTML = "<p class=\"text-success\">Please check your email for your new password</p>";
+		}else{
+			var resp = JSON.parse(this.responseText);
+			var typeError= resp.typeError;
+			var msg=resp.msg;
+			var action = resp.action;
+			if (this.readyState == 4 && this.status == 400) {
+				var insertion=document.getElementById("err-forgot");
+				//delete other problems if have
+				document.getElementById("success-forgot").innerHTML="";
+				insertion.innerHTML  = "<p class=\"text-danger\">"+msg+"</p>";
+			}
+			else if (this.readyState == 4 && this.status == 500) {
+				var insertion=document.getElementById("err-forgot");
+				//delete other problems if have
+				document.getElementById("success-forgot").innerHTML="";
+				insertion.innerHTML  = "<p class=\"text-danger\">"+msg+"</p>";
+			}
+		}
+	}
+	var url = "/ItVideo/forgotPassword";
+	var email = document.getElementById('email-forgot').value;
+	var param = "email=" + email;
+	alert(url+param);
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.send(param);
+}
 </script>
 </head>
 <body>
@@ -300,7 +335,6 @@ function registerPost(){
   </div>
 </nav>
 
-
 <!-- login form -->
 <div id="login-form-itvideo" class="modal">
 						<%-- action="<c:url value="/login"  method="post"/>" --%>
@@ -325,7 +359,25 @@ function registerPost(){
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="document.getElementById('login-form-itvideo').style.display='none'" class="btn btn-danger">Cancel</button>
-      <span class="psw text-muted"><a  href="#">Forgot password?</a></span>
+      <button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='none';document.getElementById('forgot-password').style.display='block';" style="width:auto;">Forgot password?</button>
+    </div>
+  </div>
+</div>
+<!-- forgot password from -->
+<div id="forgot-password" class="modal">
+  <div class="modal-content animate">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('forgot-password').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <img src="<c:url value="/pics/avatar.png"/>" alt="Avatar" class="avatar">
+    </div>
+    <div class="container-login">
+    	<input type="email" placeholder="Enter email" name="email" class="form-control field-addition" required id="email-forgot">
+      	<div id="err-forgot"></div>
+		<div id="success-forgot"></div>
+    </div>
+    <div class="container-login" style="background-color:#f1f1f1">
+      <button type="button" onclick="forgotPassword()" class="btn btn-danger">send new password</button>
+      <button type="button" onclick="document.getElementById('forgot-password').style.display='none'" class="btn btn-info" style="float: right;">Cancel</button>
     </div>
   </div>
 </div>
@@ -347,7 +399,7 @@ function registerPost(){
       <input type="password" placeholder="Confirm Password" name="confirmPassword" class="form-control field-addition" required id="confirmPassword-register">
 		<div id="pass-err-register"></div>
 	  <label><b>Email</b></label>
-	  <input type="text" placeholder="Email" class="form-control field-addition" name="email" required id="email-register"><br>
+	  <input type="email" placeholder="Email" class="form-control field-addition" name="email" required id="email-register"><br>
       	<div id="other-err-register"></div>
 		<div id="success-register"></div>
       <button class="btn btn-info btn-login-itvideo" onclick="registerPost()">Register</button>
@@ -363,6 +415,7 @@ function registerPost(){
 //close modal loigin if click other
 var modalRegister = document.getElementById('register-form-itvideo');
 var modalLogin = document.getElementById('login-form-itvideo');
+var modalForgot = document.getElementById('forgot-password');
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
     if (event.target == modalRegister) {
@@ -370,6 +423,9 @@ window.onclick = function(event) {
     }
     if (event.target == modalLogin) {
     	modalLogin.style.display = "none";
+    }
+    if (event.target == modalForgot) {
+    	modalForgot.style.display = "none";
     }
 }
 </script>
