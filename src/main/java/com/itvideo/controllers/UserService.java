@@ -3,6 +3,7 @@ package com.itvideo.controllers;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,7 +24,7 @@ import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
 import com.itvideo.model.utils.PasswordGenerator;
 import com.itvideo.model.utils.Resources;
-import com.itvideo.model.utils.Send;
+import com.itvideo.model.utils.SendEmail;
 import com.itvideo.model.utils.TockenGenerator;
 
 @Controller
@@ -64,15 +65,12 @@ public class UserService {
 	public ReportMsg forgotPasswordPost(
 			HttpServletResponse response,
 			@RequestParam("email") String email) {
-		
-		System.out.println("in the forgotPassword");
-		
 		String newPassword = PasswordGenerator.generate();
 		try {
 			User u =  ud.getUserByEmail(email);
 			
 			u.setPasswordNoValidation(newPassword);
-			Send.welcomeMail(u);
+			SendEmail.forgottenPassword(u);
 			u.setPasswordNoValidation(Hash.getHashPass(newPassword));
 			ud.updateUser(u);
 			response.setStatus(200);
@@ -86,6 +84,9 @@ public class UserService {
 		} catch (UserException e) {
 			response.setStatus(400);
 			return new ReportMsg("userError", e.getMessage(),"none");
+		} catch (MessagingException e) {
+			response.setStatus(400);
+			return new ReportMsg("emailError", e.getMessage(),"none");
 		}
 	}
 	
@@ -148,7 +149,7 @@ public class UserService {
 			u.setActivationToken(token);
 			u.setPasswordNoValidation(Hash.getHashPass(password));
 			ud.createUser(u);
-			Send.welcomeMail(u);
+			SendEmail.welcome(u);
 			Resources.initAvatar(u,session);
 			return new ReportMsg("success", "", "none");
 		} catch (SQLException e) {
@@ -162,6 +163,9 @@ public class UserService {
 			e.printStackTrace();
 			response.setStatus(500);
 			return new ReportMsg("IOError",  "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.", "none");
+		} catch (MessagingException e) {
+			response.setStatus(400);
+			return new ReportMsg("emailError",  e.getMessage(), "none");
 		}
 	}
 }

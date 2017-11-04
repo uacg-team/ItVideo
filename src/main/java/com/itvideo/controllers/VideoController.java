@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.spi.ErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,19 +37,13 @@ public class VideoController {
 		User u = (User) session.getAttribute("user");
 		if (u != null) {
 			try {
-				if (like == 1) {
-					vd.like(videoId, userId);
-				}
-				if (like == -1) {
-					vd.disLike(videoId, userId);
-				}
+				vd.like(videoId, userId, like);
 			} catch (SQLException e) {
 				//TODO: return status code and handle it with JS
 				e.printStackTrace();
 			}
 		}
 	}
-
 
 	@RequestMapping(value = "/videoLike", method = RequestMethod.POST)
 	@Deprecated
@@ -64,12 +57,7 @@ public class VideoController {
 		long videoId = Long.valueOf(request.getParameter("videoId"));
 		long userId = u.getUserId();
 		try {
-			if (like == 1) {
-				vd.like(videoId, userId);
-			}
-			if (like == -1) {
-				vd.disLike(videoId, userId);
-			}
+			vd.like(videoId, userId, like);
 		} catch (SQLException e) {
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());

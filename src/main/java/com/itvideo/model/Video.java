@@ -11,9 +11,11 @@ import com.itvideo.model.exceptions.video.VideoException;
 
 
 public class Video implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	
 	private static final int MIN_NAME_LENGTH = 3;
+	
 	private long videoId;
 	private String name;
 	private int views;

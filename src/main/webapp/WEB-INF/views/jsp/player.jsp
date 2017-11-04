@@ -97,7 +97,7 @@
 			};
 			var url = "videoAsyncLike";
 			var param1 = "videoId=";
-			var param =param1.concat(videoId,"&like=-1","&userId=",userId);
+			var param =param1.concat(videoId,"&like=0","&userId=",userId);
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			request.send(param);

@@ -54,9 +54,27 @@ public class UserDao {
 	}
 
 	public List<User> searchUser(String username) throws SQLException, UserException {
-		String sql = "SELECT * FROM users WHERE username LIKE ?";
-		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setString(1, "%" + username + "%");
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM users");
+		
+		String[] words = username.split("\\s+");
+		
+		for (int i = 0; i < words.length; i++) {
+			if (i == 0) {
+				sql.append(" WHERE");
+			}
+			if (i == words.length - 1) {
+				sql.append(" username LIKE ?;");
+			} else {
+				sql.append(" username LIKE ? AND");
+			}
+		}
+		
+		try (PreparedStatement ps = con.prepareStatement(sql.toString());) {
+			for (int i = 0; i < words.length; i++) {
+				ps.setString(i+1, "%" + words[i] + "%");
+			}
+			
 			try (ResultSet rs = ps.executeQuery();) {
 				List<User> users = new ArrayList<>();
 				while (rs.next()) {
@@ -80,22 +98,31 @@ public class UserDao {
 		}
 	}
 
-	public void updateUser(User u) throws SQLException, UserException, UserNotFoundException {
-		String sql = "UPDATE users SET username = ?, password = ?, facebook = ?, password = ?, email = ?, first_name = ?, last_name = ?, avatar_url = ?, gender = ? WHERE user_id = ? ;";
-		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setString(1, u.getUsername());
-			ps.setString(2, u.getPassword());
-			ps.setString(3, u.getFacebook());
-			ps.setString(4, u.getPassword());
-			ps.setString(5, u.getEmail());
-			ps.setString(6, u.getFirstName());
-			ps.setString(7, u.getLastName());
-			ps.setString(8, u.getAvatarUrl());
-			ps.setString(9, u.getGender());
-			ps.setLong(10, u.getUserId());
-			int affectedRows = ps.executeUpdate();
-			if (affectedRows == 0) {
-				throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+	public void updateUser(User u) throws SQLException, UserNotFoundException {
+		synchronized (con) {
+			con.setAutoCommit(false);
+			String sql = "UPDATE users SET username = ?, password = ?, facebook = ?, password = ?, email = ?, first_name = ?, last_name = ?, avatar_url = ?, gender = ? WHERE user_id = ? ;";
+			try (PreparedStatement ps = con.prepareStatement(sql);) {
+				ps.setString(1, u.getUsername());
+				ps.setString(2, u.getPassword());
+				ps.setString(3, u.getFacebook());
+				ps.setString(4, u.getPassword());
+				ps.setString(5, u.getEmail());
+				ps.setString(6, u.getFirstName());
+				ps.setString(7, u.getLastName());
+				ps.setString(8, u.getAvatarUrl());
+				ps.setString(9, u.getGender());
+				ps.setLong(10, u.getUserId());
+				int affectedRows = ps.executeUpdate();
+				if (affectedRows == 0) {
+					throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+				}
+				con.commit();
+			} catch (SQLException e) {
+				con.rollback();
+				throw e;
+			} finally {
+				con.setAutoCommit(true);
 			}
 		}
 	}
@@ -281,38 +308,34 @@ public class UserDao {
 	}
 	
 	public void delete(long userId) throws SQLException {
-		//TODO implement
-		
-		//delete followers
-		deleteFollowers(userId);
-		
-		//delete following
-		deleteFollowings(userId);
-	
-		//delete comment likes
-		//delete comments
-		cd.deleteAllCommentsAndLikesForUser(userId);
+		synchronized (con) {
+			con.setAutoCommit(false);
+			try {
+				// delete followers
+				deleteFollowers(userId);
 
-		//delete videos
-		//delete video likes
-		vd.deleteVideos(userId);
-		
-		//delete playlists
-		
-	}
+				// delete following
+				deleteFollowings(userId);
 
-	public int getVote(long videoId, long userId) throws SQLException {
-		String sql = "SELECT isLike FROM video_likes WHERE video_id = ? AND user_id = ?;";
-		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setLong(1, videoId);
-			ps.setLong(2, userId);
-			try (ResultSet rs = ps.executeQuery();) {
-				if (rs.next()) {
-					return rs.getInt("isLike");
-				}else {
-					return 0;
-				}
+				// delete comment likes
+				// delete comments
 				
+				//TODO: get methods in this dao as private method, because of the transaction
+				cd.deleteAllCommentsAndLikesForUser(userId);
+
+				// delete videos
+				// delete video likes
+				vd.deleteVideos(userId);
+				vd.deleteAllVideoLikes(userId);
+				// delete playlists
+				pd.deletePlaylistsForUser(userId);
+
+				con.commit();
+			} catch (SQLException e) {
+				con.rollback();
+				throw e;
+			} finally {
+				con.setAutoCommit(true);
 			}
 		}
 	}

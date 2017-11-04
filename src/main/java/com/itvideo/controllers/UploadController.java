@@ -80,10 +80,6 @@ public class UploadController {
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
-		} catch (UserException e) {
-			model.addAttribute("exception", "UserException");
-			model.addAttribute("getMessage", e.getMessage());
-			return "error";
 		} catch (UserNotFoundException e) {
 			model.addAttribute("exception", "UserNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());

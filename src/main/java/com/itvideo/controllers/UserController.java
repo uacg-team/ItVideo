@@ -1,11 +1,10 @@
 package com.itvideo.controllers;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -26,9 +25,8 @@ import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
-import com.itvideo.model.utils.PasswordGenerator;
 import com.itvideo.model.utils.Resources;
-import com.itvideo.model.utils.Send;
+import com.itvideo.model.utils.SendEmail;
 import com.itvideo.model.utils.TockenGenerator;
 
 @Controller
@@ -321,7 +319,7 @@ public class UserController {
 			u.setActivationToken(token);
 			u.setPasswordNoValidation(Hash.getHashPass(password));
 			ud.createUser(u);
-			Send.welcomeMail(u);
+			SendEmail.welcome(u);
 			Resources.initAvatar(u,session);
 			
 			return "redirect:/main";
@@ -335,6 +333,10 @@ public class UserController {
 			return "error";
 		} catch (IOException e) {
 			model.addAttribute("exception", "IOException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		} catch (MessagingException e) {
+			model.addAttribute("exception", "MessagingException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}
