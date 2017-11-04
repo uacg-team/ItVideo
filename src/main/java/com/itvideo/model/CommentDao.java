@@ -13,10 +13,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.itvideo.model.exceptions.comments.CommentException;
-import com.itvideo.model.exceptions.comments.CommentNotFoundException;
-import com.itvideo.model.exceptions.user.UserException;
-import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 import com.mysql.jdbc.Statement;
@@ -178,8 +174,8 @@ public class CommentDao {
 	}
 
 	/**
+	 * delete all comments and replies and their votes for video with id
 	 * @param videoId
-	 * @return deleted comments
 	 * @throws SQLException
 	 */
 	public void deleteAllCommentsForVideo(long videoId) throws SQLException {
@@ -215,23 +211,32 @@ public class CommentDao {
 	/**
 	 * @param commentId
 	 * @param userId
+	 * @param vote 1 for like,0 for dislike
 	 * @throws SQLException
-	 * @throws CommentException
-	 * @throws UserException
 	 */
-	public void dislikeComment(long commentId, long userId) throws SQLException, CommentException, UserException {
-		String sql = "select isLike from comments_likes where user_id=? and comment_id=?;";
+	public void likeComment(long commentId,long userId,int vote) throws SQLException {
+		String sql = "SELECT isLike FROM comments_likes WHERE user_id=? AND comment_id=?;";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, userId);
 			ps.setLong(2, commentId);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (!rs.next()) {
-					sql = "insert into comments_likes (user_id,comment_id,isLike) values (?,?,0)";
+					sql = "INSERT INTO comments_likes (user_id,comment_id,isLike) VALUES (?,?,"+vote+")";
 				} else {
-					if (!rs.getBoolean(1)) {
-						sql = "delete from comments_likes where user_id=? and comment_id=?";
-					} else {
-						sql = "update comments_likes set isLike=0 where user_id=? and comment_id=?";
+					if(vote==1) {
+						//like
+						if (rs.getBoolean(1)) {
+							sql = "DELETE FROM comments_likes WHERE user_id=? AND comment_id=?";
+						} else {
+							sql = "UPDATE comments_likes SET isLike=1 WHERE user_id=? AND comment_id=?";
+						}
+					}else {
+						//dislike
+						if (!rs.getBoolean(1)) {
+							sql = "DELETE FROM comments_likes WHERE user_id=? AND comment_id=?";
+						} else {
+							sql = "UPDATE comments_likes SET isLike=0 WHERE user_id=? AND comment_id=?";
+						}
 					}
 				}
 			}
@@ -242,7 +247,7 @@ public class CommentDao {
 			ps.executeUpdate();
 		}
 	}
-	
+
 	public long getNumberOfCommentsAndRepliesForVideo(long videoId) throws SQLException{
 		String sql = "SELECT COUNT(*) FROM comments WHERE video_id=?;";
 		long count=0;
@@ -258,88 +263,19 @@ public class CommentDao {
 
 	/**
 	 * @param videoId
-	 * @param withReplies
-	 *            - if true comments and replies sorted by date,else only
-	 *            comments ordered by date
-	 * @return List<Comments>
-	 * @throws VideoException
-	 *             -for invalid id = 0
-	 * @throws SQLException
-	 */
-	public List<Comment> getAllComments(long videoId, boolean withReplies) throws VideoException, SQLException {
-		String addition = "";
-		if (!withReplies) {
-			addition = "and reply_id is null ";
-		}
-		String sql = "select * from comments where video_id=? " + addition + "order by date;";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, videoId);
-			try (ResultSet rs = ps.executeQuery()) {
-				List<Comment> comments = new ArrayList<>();
-				while (rs.next()) {
-					Long id = rs.getLong("comment_id");
-					String text = rs.getString("text");
-					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
-					Long userId = rs.getLong("user_id");
-					Long replyId = rs.getLong("reply_id");
-					Comment reply = new Comment(id, text, date, userId, videoId, replyId);
-					comments.add(reply);
-				}
-				return comments;
-			}
-		}
-	}
-
-	/**
-	 * @param userId
-	 * @param withReplies
-	 *            -if true comments and replies sorted by date,else only
-	 *            comments ordered by date
-	 * @return
-	 * @throws SQLException
-	 * @throws UserException
-	 *             -for invalid id = 0
-	 */
-	public List<Comment> getAllCommentsByUser(long userId, boolean withReplies) throws SQLException, UserException {
-		String addition = "";
-		if (!withReplies) {
-			addition = "and reply_id is null ";
-		}
-		String sql = "select * from comments where user_id=? " + addition + "order by date;";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, userId);
-			try (ResultSet rs = ps.executeQuery()) {
-				List<Comment> comments = new ArrayList<>();
-				while (rs.next()) {
-					Long id = rs.getLong("comment_id");
-					String text = rs.getString("text");
-					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
-					Long videoId = rs.getLong("video_id");
-					Long replyId = rs.getLong("reply_id");
-					Comment reply = new Comment(id, text, date, userId, videoId, replyId);
-					comments.add(reply);
-				}
-				return comments;
-			}
-		}
-	}
-	/**
-	 * @param videoId
 	 * @param myUserId
 	 * @param comparator
 	 * @return all comments for video without replies,sorted by comparator
 	 * @throws SQLException
 	 */
-	//TODO make it with part and number from DB and set number of replies
 	public List<Comment> getAllCommentWithVotesByVideoWithoutReplies(long videoId,long myUserId,Comparator<Comment> comparator) throws SQLException {
 		//get all comments without replies with vote
-		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
-				+ "sum(if(l.isLike = 0, 1, 0)) as dislikes,"
-				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
-				+ "from comments as c left join comments_likes as l "
-				+ "on(c.comment_id=l.comment_id) "
-				+ "where c.video_id=? and c.reply_id is null group by (c.comment_id);";
-		String repNumber="select count(*) from comments where reply_id=?;";
+		String sql="SELECT c.*, SUM( IF( l.isLike = 1, 1, 0)) AS likes,"
+				+ "SUM( IF( l.isLike = 0, 1, 0)) AS dislikes,"
+				+ "SUM( IF( l.user_id = ?, IF( l.isLike = 1, 1, -1),0)) AS my_vote "
+				+ "FROM comments AS c LEFT JOIN comments_likes AS l "
+				+ "ON( c.comment_id = l.comment_id) "
+				+ "WHERE c.video_id=? AND c.reply_id IS NULL GROUP BY (c.comment_id);";
 		List<Comment> comments = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, myUserId);
@@ -359,7 +295,7 @@ public class CommentDao {
 				}
 			}
 		}
-		//TODO replace this code with one querry
+		String repNumber="SELECT COUNT(*) FROM comments WHERE reply_id=?;";
 		for(Comment c:comments) {
 			try (PreparedStatement ps = con.prepareStatement(repNumber)) {
 				ps.setLong(1, c.getCommentId());
@@ -369,44 +305,11 @@ public class CommentDao {
 				}
 			}
 		}
-		//sort by comparator
 		Collections.sort(comments, comparator);
 		return comments;
 	}
 
-
 	/**
-	 * @param commentId
-	 * @return -empty ArrayList list if no comments, or ordered list replies by
-	 *         date
-	 * @throws SQLException
-	 * @throws CommentException
-	 *             -if comment have no id
-	 */
-	public List<Comment> getAllReplies(long commentId) throws SQLException, CommentException {
-		String sql = "select * from comments where reply_id=? order by date;";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, commentId);
-			try (ResultSet rs = ps.executeQuery()) {
-				List<Comment> replies = new ArrayList<>();
-				while (rs.next()) {
-					Long id = rs.getLong("comment_id");
-					String text = rs.getString("text");
-					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
-					Long userId = rs.getLong("user_id");
-					Long videoId = rs.getLong("video_id");
-					// because this is reply there is no reply to this
-					// comment!
-					Long replyId = (long) 0;
-					Comment reply = new Comment(id, text, date, userId, videoId, replyId);
-					replies.add(reply);
-				}
-				return replies;
-			}
-		}
-	}
-	/**
-	 * 
 	 * @param commentId
 	 * @param myUserId
 	 * @param comparator
@@ -444,82 +347,15 @@ public class CommentDao {
 		Collections.sort(replies, comparator);
 		return replies;
 	}
-	/**
-	 * @param commentId
-	 * @return integer
-	 * @throws SQLException
-	 */
-	public int getDislikes(long commentId) throws SQLException {
-		String sql = "select count(*) from comments_likes where comment_id=? and isLike = 0;";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, commentId);
-			try (ResultSet rs = ps.executeQuery()) {
-				// there is always information
-				rs.next();
-				int dislikes = rs.getInt(1);
-				return dislikes;
-			}
-		}
-	}
-	
-	/**
-	 * @param commentId
-	 * @return integer
-	 * @throws SQLException
-	 */
-	public int getLikes(long commentId) throws SQLException {
-		String sql = "select count(*) from comments_likes where comment_id=? and isLike = 1;";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, commentId);
-			try (ResultSet rs = ps.executeQuery()) {
-				// there is always information
-				rs.next();
-				int likes = rs.getInt(1);
-				return likes;
-			}
-		}
-	}
 
 	/**
-	 * @param commentId
-	 *            must have comment_id
-	 * @param userId
-	 *            - must have id
-	 * @throws SQLException
-	 * @throws CommentException
-	 * @throws UserException
-	 */
-	public void likeComment(long commentId, long userId) throws SQLException, CommentException, UserException {
-		String sql = "select isLike from comments_likes where user_id=? and comment_id=?;";
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, userId);
-			ps.setLong(2, commentId);
-			try (ResultSet rs = ps.executeQuery()) {
-				if (!rs.next()) {
-					sql = "insert into comments_likes (user_id,comment_id,isLike) values (?,?,1)";
-				} else {
-					if (rs.getBoolean(1)) {
-						sql = "delete from comments_likes where user_id=? and comment_id=?";
-					} else {
-						sql = "update comments_likes set isLike=1 where user_id=? and comment_id=?";
-					}
-				}
-			}
-		}
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, userId);
-			ps.setLong(2, commentId);
-			ps.executeUpdate();
-		}
-	}
-	/**
-	 * add in comment users info-name and img
+	 * add in comment users info-name and img url
 	 * @param comment
 	 * @throws SQLException
 	 */
 	public void loadUserInfo(Comment comment) throws SQLException {
-		String sql = "select u.username, u.avatar_url as url from users as u "
-				+ "inner join comments as c on(c.user_id=u.user_id) where comment_id=?;";
+		String sql = "SELECT u.username, u.avatar_url AS url FROM users AS u "
+				+ "INNER JOIN comments AS c on(c.user_id=u.user_id) WHERE comment_id=?;";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, comment.getCommentId());
 			try (ResultSet rs = ps.executeQuery()) {
@@ -527,46 +363,6 @@ public class CommentDao {
 					comment.setUsername(rs.getString("username"));
 					comment.setUrl(rs.getString("url"));
 				}
-			}
-		}
-	}
-	/**
-	 * @param comment-comment
-	 *            with changes
-	 * @throws SQLException
-	 * @throws CommentNotFoundException
-	 *             - if cant find comment
-	 * @throws CommentException
-	 *             -if cant update in db
-	 */
-	public void updateComment(Comment comment) throws SQLException, CommentException {
-		// if comment was deleted from another user before load page
-		String foundComment = "select comment_id from comments where comment_id=?;";
-		try (PreparedStatement ps = con.prepareStatement(foundComment)) {
-			ps.setLong(1, comment.getCommentId());
-			try (ResultSet rs = ps.executeQuery()) {
-				if (!rs.next()) {
-					ps.close();
-					rs.close();
-					throw new CommentNotFoundException();
-				}
-			}
-		}
-		String sql = "UPDATE comments SET text=?, date=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s.%f'),video_id=?, user_id=?, reply_id=? WHERE comment_id="
-				+ comment.getCommentId();
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setString(1, comment.getText());
-			ps.setString(2, DateTimeConvertor.ldtToSql(comment.getDate()));
-			ps.setLong(3, comment.getVideoId());
-			ps.setLong(4, comment.getUserId());
-			if (comment.getReplyId() != 0) {
-				ps.setLong(5, comment.getUserId());
-			} else {
-				ps.setString(5, null);
-			}
-			int i = ps.executeUpdate();
-			if (i == 0) {
-				throw new CommentException(CommentException.CANT_UPDATE);
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 package com.itvideo.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.utils.Validator;
@@ -23,9 +22,7 @@ public class Comment {
 	private int vote;
 	//number replies
 	private long numberReplies;
-	/**
-	 * get all fields default, use only by CommentDAO
-	 */
+ 
 	Comment(long commentId, String text, LocalDateTime date, long userId, long videoId, Long replyId) {
 		this.commentId = commentId;
 		this.text = text;
@@ -37,7 +34,6 @@ public class Comment {
 
 	/**
 	 * register new comment use repltId=0 to set no reply
-	 * 
 	 * @throws CommentException
 	 */
 	public Comment(String text, LocalDateTime date, long userId, long videoId, long replyId) throws CommentException {

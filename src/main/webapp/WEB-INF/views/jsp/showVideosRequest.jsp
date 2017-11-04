@@ -44,9 +44,9 @@ video {
 		<div class="video">
 			<a href="<c:url value="/player/${video.videoId}" />">	
 				<%-- 	<c:url value="thumbnail/${video.videoId}" /> --%>
-				<video width="320" height="240" preload="none" poster="${pageContext.request.contextPath}/thumbnail/${video.videoId}">
+				<%-- <video width="320" height="240" preload="none" poster="${pageContext.request.contextPath}/thumbnail/${video.videoId}">
 				      <source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
-				</video>
+				</video> --%>
 			</a>
 			<a href="<c:url value="/player/${video.videoId}" />">
 				<p class="text-primary" id="textLimit" >
