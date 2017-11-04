@@ -355,7 +355,7 @@ function addReplyPopUpHtml(myUserId,videoId,replyId,username){
 	html=html.concat('<div class="col-lg-11 container-fluid">');
 	html=html.concat('<textarea  class="form-control" rows="3" cols="80"  id="novReplyText'+replyId+'"></textarea>');
 	html=html.concat('</div>');
-	html=html.concat('<button style="float: right; margin: 5px;" class="btn btn-primary btn-xs" onclick="postReply(' + myUserId + ',' + videoId+',' + replyId+',\''+username+'\')">add reply</button>');
+	html=html.concat('<button style="float: right; margin: 5px;" class="btn btn-primary btn-xs" onclick="postReply(' + myUserId + ',' + videoId+',' + replyId+',\''+myUsername+'\')">add reply</button>');
 	document.getElementById('addReply' + replyId).innerHTML=html;
 }
 
