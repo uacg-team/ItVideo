@@ -95,7 +95,7 @@ public class VideoDao {
 		try {
 			deleteVideoLikes(videoId);
 			deleteVideosFromPlaylist(videoId);
-			cd.deleteComments(videoId);
+			cd.deleteAllCommentsForVideo(videoId);
 			deleteVideoTags(videoId);
 
 			String sql = "DELETE FROM videos WHERE video_id = ?;";

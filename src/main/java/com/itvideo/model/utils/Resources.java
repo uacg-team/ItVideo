@@ -122,13 +122,6 @@ public abstract class Resources {
 		File video = new File(absoluteVideoPath);
 		File thumbnail = new File(absoluteThumbnailPath);
 		
-		try {
-			video.createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		thumbnail.delete();
 		video.delete();
 	}
