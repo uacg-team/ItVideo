@@ -119,7 +119,7 @@ public class Comment {
 		this.replies = allReplies;
 		this.hasReplies = true;
 	}
-
+	@Deprecated
 	public List<Comment> getReplies() {
 		return replies;
 	}
