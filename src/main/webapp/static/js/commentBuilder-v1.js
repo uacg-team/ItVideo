@@ -69,36 +69,40 @@ function comments(myUserId, video_id, comparator, part, commentsPerClick, allCom
 function showReplies(commentId, myUserId, comparator){
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var listComments = JSON.parse(this.responseText);
-			var commentsCount = listComments.length;
-			var htmlComments="";
-			for (var i = 0; i < commentsCount; i++) {
-				var comment = listComments[i];;
-				//parsing one comment
-				var rcommentId=comment.commentId;
-				var text = comment.text;
-				var userId=comment.userId;
-				var videoId=comment.videoId;
-				var replyId=comment.replyId;
-				var date = comment.date;
-				//replies
-				var hasReplies=comment.hasReplies;
-				// likes/dislikes
-				var likes=comment.likes;
-				var dislikes=comment.dislikes;
-				// userInfo
-				var username=comment.username;
-				var url=comment.url;
-				// myVoteinfo
-				var vote=comment.vote;
-				var numberReplies=comment.numberReplies;
-				htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
-				
+		if (this.readyState == 4) {
+			if(this.status == 200){
+				var listComments = JSON.parse(this.responseText);
+				var commentsCount = listComments.length;
+				var htmlComments="";
+				for (var i = 0; i < commentsCount; i++) {
+					var comment = listComments[i];;
+					//parsing one comment
+					var rcommentId=comment.commentId;
+					var text = comment.text;
+					var userId=comment.userId;
+					var videoId=comment.videoId;
+					var replyId=comment.replyId;
+					var date = comment.date;
+					//replies
+					var hasReplies=comment.hasReplies;
+					// likes/dislikes
+					var likes=comment.likes;
+					var dislikes=comment.dislikes;
+					// userInfo
+					var username=comment.username;
+					var url=comment.url;
+					// myVoteinfo
+					var vote=comment.vote;
+					var numberReplies=comment.numberReplies;
+					htmlComments=htmlComments.concat(buildReply(rcommentId, text, userId, videoId, replyId, likes, dislikes, username, url, vote, date, myUserId));
+					
+				}
+				var div = document.getElementById('viewReplies'+commentId);
+				div.innerHTML=htmlComments;
+				document.getElementById('viewRepliesButton'+commentId).innerHTML="";
+			}else if(this.status==500){
+				document.getElementById('viewRepliesButton'+commentId).innerHTML="Sorry,we have DataBase problem!";
 			}
-			var div = document.getElementById('viewReplies'+commentId);
-			div.innerHTML=htmlComments;
-			document.getElementById('viewRepliesButton'+commentId).innerHTML="";
 		}
 	}
 	if (typeof myUserId === 'undefined') {

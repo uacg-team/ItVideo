@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.itvideo.model.Comment;
 import com.itvideo.model.CommentDao;
@@ -61,7 +62,7 @@ public class CommentsService {
 		Comparator<Comment> comparator = getComparator(compare);
 		List<Comment> comments = null;
 		try {
-			comments = comment.getAllCommentWithVotesByVideoWithoutReplies(videoId, myUserId, comparator);
+			comments = comment.getAllCommentsWithVotesByVideoWithoutReplies(videoId, myUserId, comparator);
 		} catch (SQLException e) {
 			resp.setStatus(500);
 			e.printStackTrace();
@@ -83,7 +84,6 @@ public class CommentsService {
 			comments = comment.getAllRepliesWithVotesForComment(commentId, myUserId, comparator);
 		} catch (SQLException e) {
 			resp.setStatus(500);
-			e.printStackTrace();
 		}
 		return comments;
 	}
@@ -95,7 +95,6 @@ public class CommentsService {
 		Long videoId = Long.parseLong(req.getParameter("videoId"));
 		Long userId = Long.parseLong(req.getParameter("myUserId"));
 		Long replyId = Long.parseLong(req.getParameter("replyId"));
-		System.out.println(text + videoId + userId);
 		Comment newComment = null;
 		try {
 			newComment = new Comment(text, LocalDateTime.now(), userId, videoId, replyId);

@@ -91,24 +91,26 @@ public class VideoDao {
 	 * @throws SQLException
 	 */
 	public void deleteVideo(long videoId) throws SQLException {
-		con.setAutoCommit(false);
-		try {
-			deleteVideoLikes(videoId);
-			deleteVideosFromPlaylist(videoId);
-			cd.deleteAllCommentsForVideo(videoId);
-			deleteVideoTags(videoId);
-
-			String sql = "DELETE FROM videos WHERE video_id = ?;";
-			try (PreparedStatement ps = con.prepareStatement(sql);) {
-				ps.setLong(1, videoId);
-				ps.executeUpdate();
+		synchronized (con) {
+			con.setAutoCommit(false);
+			try {
+				deleteVideoLikes(videoId);
+				deleteVideosFromPlaylist(videoId);
+				cd.deleteAllCommentsForVideo(videoId,con);
+				deleteVideoTags(videoId);
+	
+				String sql = "DELETE FROM videos WHERE video_id = ?;";
+				try (PreparedStatement ps = con.prepareStatement(sql);) {
+					ps.setLong(1, videoId);
+					ps.executeUpdate();
+				}
+				con.commit();
+			} catch (SQLException e) {
+				con.rollback();
+				throw e;
+			} finally {
+				con.setAutoCommit(true);
 			}
-			con.commit();
-		} catch (SQLException e) {
-			con.rollback();
-			throw e;
-		} finally {
-			con.setAutoCommit(true);
 		}
 	}
 		

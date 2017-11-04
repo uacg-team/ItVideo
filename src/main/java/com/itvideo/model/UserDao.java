@@ -321,7 +321,7 @@ public class UserDao {
 				// delete comments
 				
 				//TODO: get methods in this dao as private method, because of the transaction
-				cd.deleteAllCommentsAndLikesForUser(userId);
+				cd.deleteAllCommentsAndLikesForUser(userId,con);
 
 				// delete videos
 				// delete video likes
