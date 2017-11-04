@@ -12,11 +12,6 @@ import org.springframework.stereotype.Component;
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
 import com.itvideo.model.utils.DBConnection;
 
-/**
- * Tag Data Access Object
- * @author HP
- *
- */
 @Component
 public class TagDao {
 
@@ -82,12 +77,4 @@ public class TagDao {
 		}
 	}
 
-	public void delete(long videoId) throws SQLException {
-		//TODO delete from table tags
-		String sql = "DELETE FROM videos_has_tags WHERE video_id = ?;";
-		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setLong(1, videoId);
-			ps.executeUpdate();
-		}
-	}
 }
