@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.itvideo.model.exceptions.comments.CommentException;
+import com.itvideo.model.utils.Validator;
 
 public class Comment {
 	private long commentId;
@@ -12,23 +13,14 @@ public class Comment {
 	private long userId;
 	private long videoId;
 	private long replyId;
-
-	// replies
-	@Deprecated
-	private List<Comment> replies;
-	private boolean hasReplies;
-
 	// likes/dislikes
 	private long likes;
 	private long dislikes;
-
 	// userInfo
 	private String username;
 	private String url;
-
 	// myVoteinfo
 	private int vote;
-	
 	//number replies
 	private long numberReplies;
 	/**
@@ -80,52 +72,31 @@ public class Comment {
 		return replyId;
 	}
 
-	public void setId(long id) throws CommentException {
-		if (id < 1) {
-			throw new CommentException(CommentException.INVALID_ID);
-		}
+	void setId(long id){
 		this.commentId = id;
 	}
 
-	public void setDate(LocalDateTime date) throws CommentException {
-		if (date == null) {
-			throw new CommentException(CommentException.INVALID_DATE);
-		}
+	void setDate(LocalDateTime date){
 		this.date = date;
 	}
 
-	public void setText(String text) throws CommentException {
-		if (text == null) {
+	void setText(String text) throws CommentException {
+		if (Validator.isEmpty(text)) {
 			throw new CommentException(CommentException.INVALID_TEXT);
 		}
 		this.text = text;
 	}
 
-	public void setUserId(long userId) {
-		// user_id validate in other place
+	void setUserId(long userId) {
 		this.userId = userId;
 	}
 
-	public void setVideoId(long videoId) {
-		// video_id validate in other place
+	void setVideoId(long videoId) {
 		this.videoId = videoId;
 	}
 
 	public void setReplyId(long replayId) {
 		this.replyId = replayId;
-	}
-
-	public void addReplies(List<Comment> allReplies) {
-		this.replies = allReplies;
-		this.hasReplies = true;
-	}
-	@Deprecated
-	public List<Comment> getReplies() {
-		return replies;
-	}
-
-	public boolean getHasReplies() {
-		return hasReplies;
 	}
 
 	public void setLikes(long likes) {

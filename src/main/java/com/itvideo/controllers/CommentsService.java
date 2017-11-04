@@ -141,9 +141,6 @@ public class CommentsService {
 		} catch (SQLException e) {
 			// TODO add status code
 			e.printStackTrace();
-		} catch (CommentException e) {
-			// TODO add statusCode
-			e.printStackTrace();
 		}
 	}
 }

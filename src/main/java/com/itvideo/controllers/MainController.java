@@ -242,7 +242,7 @@ public class MainController {
 			
 			model.addAttribute("mainVideo", video);
 			model.addAttribute("videos", related);
-			model.addAttribute("countComments",comment.getNumberOfCommentsForVideo(videoId));
+			model.addAttribute("countComments",comment.getNumberOfCommentsAndRepliesForVideo(videoId));
 			if (session.getAttribute("user") != null) {
 				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
 			}

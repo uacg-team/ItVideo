@@ -305,6 +305,7 @@ public class PlaylistDao {
 	}
 	
 	public void deletePlaylistsForUser(long userId) throws SQLException {
+		//TODO delete from playlists videos with author user_id
 		String sql = "delete from playlists where user_id=?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, userId);

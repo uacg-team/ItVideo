@@ -60,14 +60,11 @@ public class CommentDao {
 	}
 
 	/**
-	 * <b>!Warning! set replyId only to comment,not for reply!</b>
-	 * @param comment
-	 *            must have text,date,videoId,userId,no need of commentId;
+	 * @param comment -new comment
 	 * @throws SQLException
-	 * @throws CommentException
 	 */
-	public void createComment(Comment comment) throws SQLException, CommentException{
-		String sql = "insert into comments (text, date,video_id, user_id, reply_id) values(?,?,?,?,?)";
+	public void createComment(Comment comment) throws SQLException{
+		String sql = "INSERT INTO comments (text, date,video_id, user_id, reply_id) VALUES(?,?,?,?,?)";
 		try (PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, comment.getText());
 			ps.setString(2, DateTimeConvertor.ldtToSql(comment.getDate()));
@@ -86,165 +83,133 @@ public class CommentDao {
 			}
 		}
 	}
+	
 	/**
-	 * delete all likes/dislikes for replies to comment with author user,
-	 * delete all likes/dislikes from user
-	 * delete all replies to comment with author user
-	 * delete all comments with author user;
+	 * delete all votes for comments with author user,all votes by user,all comments and replies with author user
 	 * @param userId
 	 * @throws SQLException
 	 */
 	public void deleteAllCommentsAndLikesForUser(long userId) throws SQLException {
-		//delete likes/dislikes for replies to user id:
-		String sql1 = "delete from comments_likes where comment_id in "
-				+ "(select * from (select r.comment_id from comments as c "
-				+ "inner join comments as r on (r.reply_id = c.comment_id) where c.user_id=?) as d);";
+		//delete votes for replies in comments by user with id:
+		String sql1 = "DELETE cl.* FROM comments_likes AS cl INNER JOIN comments AS r ON(cl.comment_id=r.comment_id) "
+				+ "INNER JOIN comments AS c ON(r.reply_id=c.comment_id) WHERE c.user_id=?;";
 		//delete likes/dislikes for comments by user_id;
-		String sql2 = "delete from comments_likes where user_id=?";
+		String sql2 = "DELETE FROM comments_likes WHERE user_id=?";
 		//delete all replies to comments from user_id;
-		String sql3 =  "delete from comments where comment_id in "
-				+ "(select * from (select r.comment_id from comments as c "
-				+ "inner join comments as r on (r.reply_id = c.comment_id) where c.user_id=?) as d);";
+		String sql3 =  "DELETE FROM comments WHERE comment_id IN "
+				+ "(SELECT * FROM (SELECT r.comment_id FROM comments AS c "
+				+ "INNER JOIN comments AS r ON (r.reply_id = c.comment_id) WHERE c.user_id=?) AS d);";
 		//delete all comments to user_id;
-		String sql4 = "delete from comments where user_id=?";
-		@SuppressWarnings("unused")
-		int count = 0;
+		String sql4 = "DELETE FROM comments WHERE user_id=?";
 		synchronized (con) {
 			try {
 				con.setAutoCommit(false);
 				try (PreparedStatement ps = con.prepareStatement(sql1)) {
 					ps.setLong(1, userId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
 				}
 				try (PreparedStatement ps = con.prepareStatement(sql2)) {
 					ps.setLong(1, userId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
 				}
 				try (PreparedStatement ps = con.prepareStatement(sql3)) {
 					ps.setLong(1, userId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
 				}
 				try (PreparedStatement ps = con.prepareStatement(sql4)) {
 					ps.setLong(1, userId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
 				}
 				con.commit();
 			} catch (SQLException e) {
 				con.rollback();
-				throw new SQLException(e);
+				throw e;
 			} finally {
 				con.setAutoCommit(true);
 			}
 		}
 	}
 
-	// use in transaction!
-	private int deleteAllLikesForCommentAndReplies(long commentId) throws SQLException {
-		// delete all likes for replies
-		String sql1 = "delete from comments_likes where comment_id in "
-				+ "(select * from (select r.comment_id from comments as c "
-				+ "inner join comments as r on (r.reply_id = c.comment_id) where c.comment_id=?) as d);";
-		// delete all likes for comment
-		String sql2 = "delete from comments_likes where comment_id=?";
-		int count = 0;
-		try (PreparedStatement ps = con.prepareStatement(sql1)) {
-			ps.setLong(1, commentId);
-			count = ps.executeUpdate();
-		}
-		try (PreparedStatement ps = con.prepareStatement(sql2)) {
-			ps.setLong(1, commentId);
-			count += ps.executeUpdate();
-		}
-		return count;
-	}
-
 	/**
+	 * delete all votes for comment replies and for comment, delete all replies for comment,delete the comment;
 	 * @param commentId
-	 * @return count deleted comments
-	 * @throws SQLException
-	 * @throws CommentException
-	 */
-	private int deleteAllRepliesToComment(long commentId) throws SQLException {
-		String sql = "delete from comments where comment_id in "
-				+ "(select * from (select r.comment_id from comments as c "
-				+ "inner join comments as r on (r.reply_id = c.comment_id) where c.comment_id=?) as d);";
-		int count = 0;
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, commentId);
-			count = ps.executeUpdate();
-		}
-		return count;
-	}
-
-	/**
-	 * 
-	 * @param c
-	 * @return comments deleted
-	 * @throws CommentException
 	 * @throws SQLException
 	 */
-	public int deleteComment(long commentId) throws CommentException, SQLException {
-		int count = 0;
+	public void deleteComment(long commentId) throws SQLException {
+		//delete votes for replies to this comment
+		String sql1 = "DELETE FROM comments_likes WHERE comment_id IN "
+				+ "(SELECT * FROM (SELECT r.comment_id FROM comments AS c "
+				+ "INNER JOIN comments AS r ON (r.reply_id = c.comment_id) WHERE c.comment_id=?) AS d);";
+		// delete votes for comment
+		String sql2 = "DELETE FROM comments_likes WHERE comment_id=?";
+		// delete all replies for comment
+		String sql3 = "DELETE FROM comments WHERE comment_id IN "
+				+ "(SELECT * FROM (SELECT r.comment_id FROM comments AS c "
+				+ "INNER JOIN comments AS r ON (r.reply_id = c.comment_id) WHERE c.comment_id=?) AS d);";
+		//delete comment
+		String sql4 = "DELETE FROM comments WHERE comment_id=?";
 		synchronized (con) {
 			try {
 				con.setAutoCommit(false);
-
-				deleteAllLikesForCommentAndReplies(commentId);
-
-				count = deleteAllRepliesToComment(commentId);
-
-				String sql = "delete from comments where comment_id=?";
-				try (PreparedStatement ps = con.prepareStatement(sql)) {
+				try (PreparedStatement ps = con.prepareStatement(sql1)) {
 					ps.setLong(1, commentId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
+				}
+				try (PreparedStatement ps = con.prepareStatement(sql2)) {
+					ps.setLong(1, commentId);
+					ps.executeUpdate();
+				}
+				try (PreparedStatement ps = con.prepareStatement(sql3)) {
+					ps.setLong(1, commentId);
+					ps.executeUpdate();
+				}
+				try (PreparedStatement ps = con.prepareStatement(sql4)) {
+					ps.setLong(1, commentId);
+					ps.executeUpdate();
 				}
 				con.commit();
 			} catch (SQLException e) {
 				con.rollback();
-				throw new SQLException(e);
+				throw e;
 			} finally {
 				con.setAutoCommit(true);
 			}
 		}
-		return count;
 	}
 
 	/**
-	 * 
 	 * @param videoId
 	 * @return deleted comments
 	 * @throws SQLException
 	 */
-	public int deleteComments(long videoId) throws SQLException {
-		int count = 0;
+	public void deleteAllCommentsForVideo(long videoId) throws SQLException {
+		String sql1 = "DELETE cl . * FROM comments_likes AS cl INNER JOIN comments AS r ON (cl.comment_id = r.comment_id) "
+				+ "INNER JOIN comments AS c ON (r.reply_id = c.comment_id) WHERE c.video_id = ?;";
+		String sql2 = "DELETE FROM comments WHERE video_id = ? AND reply_id IS NOT null;";
+		String sql3 = "DELETE FROM comments WHERE video_id = ?";
 		synchronized (con) {
 			try {
 				con.setAutoCommit(false);
-				String deleteLikes = "delete from comments_likes where comment_id in "
-						+ "(select * from (select c.comment_id from comments as c "
-						+ "inner join videos as v on (v.video_id = c.video_id) " + "where c.video_id=?) as co);";
-				String deleteReplies = "delete from comments where video_id = ? and reply_id is not null;";
-				String deleteComments = "delete from comments where video_id = ?";
-				try (PreparedStatement ps = con.prepareStatement(deleteLikes)) {
+				try (PreparedStatement ps = con.prepareStatement(sql1)) {
 					ps.setLong(1, videoId);
+					ps.executeUpdate();
 				}
-				try (PreparedStatement ps = con.prepareStatement(deleteReplies)) {
+				try (PreparedStatement ps = con.prepareStatement(sql2)) {
 					ps.setLong(1, videoId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
 				}
-				try (PreparedStatement ps = con.prepareStatement(deleteComments)) {
+				try (PreparedStatement ps = con.prepareStatement(sql3)) {
 					ps.setLong(1, videoId);
-					count += ps.executeUpdate();
+					ps.executeUpdate();
 				}
 				con.commit();
 			} catch (SQLException e) {
 				con.rollback();
-				throw new SQLException(e);
+				throw e;
 			} finally {
 				con.setAutoCommit(true);
 			}
 		}
-		return count;
 	}
 
 	/**
@@ -277,14 +242,15 @@ public class CommentDao {
 			ps.executeUpdate();
 		}
 	}
-	public long getNumberOfCommentsForVideo(long videoId) throws SQLException{
-		String sql = "select count(*) from comments where video_id=?;";
-		int count=0;
+	
+	public long getNumberOfCommentsAndRepliesForVideo(long videoId) throws SQLException{
+		String sql = "SELECT COUNT(*) FROM comments WHERE video_id=?;";
+		long count=0;
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, videoId);
 			try (ResultSet rs = ps.executeQuery()) {
 				rs.next();
-				count = rs.getInt(1);
+				count = rs.getLong(1);
 			}
 		}
 		return count;
@@ -407,42 +373,7 @@ public class CommentDao {
 		Collections.sort(comments, comparator);
 		return comments;
 	}
-	
-	public List<Comment> getAllCommentsWithVotesByVideo(long videoId,long myUserId,Comparator<Comment> comparator) throws SQLException {
-		//get all comments without replies with vote
-		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
-				+ "sum(if(l.isLike = 0, 1, 0)) as dislikes,"
-				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
-				+ "from comments as c left join comments_likes as l "
-				+ "on(c.comment_id=l.comment_id) "
-				+ "where c.video_id=? and c.reply_id is null group by (c.comment_id);";
-		List<Comment> comments = new ArrayList<>();
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, myUserId);
-			ps.setLong(2, videoId);
-			try (ResultSet rs = ps.executeQuery()) {
-				while (rs.next()) {
-					Long id = rs.getLong("comment_id");
-					String text = rs.getString("text");
-					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
-					Long userId = rs.getLong("user_id");
-					Comment comment = new Comment(id, text, date, userId, videoId, (long)0);
-					comment.setLikes(rs.getLong("likes"));
-					comment.setDislikes(rs.getLong("dislikes"));
-					comment.setVote(rs.getInt("my_vote"));
-					loadUserInfo(comment);
-					comments.add(comment);
-				}
-			}
-		}
-		//sort by comparator
-		Collections.sort(comments, comparator);
-		//get ordered replies
-		for(Comment c:comments) {
-			c.addReplies(getAllRepliesWithVotesForComment(c.getCommentId(), myUserId, comparator));
-		}
-		return comments;
-	}
+
 
 	/**
 	 * @param commentId
@@ -621,7 +552,6 @@ public class CommentDao {
 				}
 			}
 		}
-
 		String sql = "UPDATE comments SET text=?, date=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s.%f'),video_id=?, user_id=?, reply_id=? WHERE comment_id="
 				+ comment.getCommentId();
 		try (PreparedStatement ps = con.prepareStatement(sql)) {

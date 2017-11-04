@@ -45,4 +45,8 @@ public final class Validator {
 		}
 		return true;
 	}
+	
+	public static boolean isValidIndex(long index) {
+		return index>0;
+	}
 }
