@@ -26,7 +26,6 @@ import com.itvideo.model.exceptions.user.UserException;
 public class CommentsService {
 	@Autowired
 	CommentDao comment;
-	//Move to POJO
 	/**
 	 * @param compare-String coming from jsp
 	 * @return comparator for comments, default comparator is <b>DESC_BY_DATE<b>
@@ -91,10 +90,12 @@ public class CommentsService {
 		try {
 			newComment = new Comment(text, LocalDateTime.now(), userId, videoId, replyId);
 			comment.createComment(newComment);
-		} catch (CommentException | SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (CommentException e) {
+			resp.setStatus(401);
 			//TODO js catch errors
-			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			resp.setStatus(401);
 		}
 		System.out.println(newComment.getCommentId());
 		return newComment;

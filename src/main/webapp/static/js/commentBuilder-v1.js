@@ -258,6 +258,7 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	htmlOneComment=htmlOneComment.concat('</ul>');
 	
 	htmlOneComment=htmlOneComment.concat('</div>');
+	htmlOneComment=htmlOneComment.concat('</div>');
 	return htmlOneComment;
 }
 

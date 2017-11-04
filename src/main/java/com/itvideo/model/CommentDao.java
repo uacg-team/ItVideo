@@ -23,24 +23,50 @@ import com.mysql.jdbc.Statement;
 
 @Component
 public class CommentDao {
-	public static final Comparator<Comment> ASC_BY_DATE = (o1, o2) -> o1.getDate().compareTo(o2.getDate());
-	public static final Comparator<Comment> DESC_BY_LIKES = (o1, o2) -> (int)(o2.getLikes()-o1.getLikes());
-	public static final Comparator<Comment> DESC_BY_DISLIKES = (o1, o2) -> (int)(o2.getDislikes()-o1.getDislikes());
-	public static final Comparator<Comment> DESC_BY_DATE = (o1, o2) -> o2.getDate().compareTo(o1.getDate());
+	public static final Comparator<Comment> ASC_BY_DATE = (c1, c2) -> c1.getDate().compareTo(c2.getDate());
+	
+	public static final Comparator<Comment> DESC_BY_DATE = (c1, c2) -> c2.getDate().compareTo(c1.getDate());
+	
+	public static final Comparator<Comment> DESC_BY_LIKES = (c1, c2) -> {
+		if(c1.getLikes() == c2.getLikes()) {
+			if(c2.getDislikes() > c1.getDislikes()) {
+				return -1;
+			}else {
+				return 1;
+			}
+		}
+		return (c2.getLikes()-c1.getLikes()) > 0 ? 1 : -1;
+	};
+	
+	public static final Comparator<Comment> DESC_BY_DISLIKES = (c1, c2) -> {
+		if(c2.getDislikes() == c1.getDislikes()) {
+			if(c2.getLikes()>c1.getLikes()) {
+				return -1;
+			}else {
+				return 1;
+			}
+		}
+		return (c2.getDislikes()-c1.getDislikes()) > 0 ? 1 : -1;
+	};
 
 	private Connection con;
+	
 	private CommentDao() {
+	}
+
+	@Autowired
+	private void initCon() {
+		con = DBConnection.COMMENTS.getConnection();
 	}
 
 	/**
 	 * <b>!Warning! set replyId only to comment,not for reply!</b>
-	 * 
 	 * @param comment
 	 *            must have text,date,videoId,userId,no need of commentId;
 	 * @throws SQLException
 	 * @throws CommentException
 	 */
-	public void createComment(Comment comment) throws SQLException, CommentException {
+	public void createComment(Comment comment) throws SQLException, CommentException{
 		String sql = "insert into comments (text, date,video_id, user_id, reply_id) values(?,?,?,?,?)";
 		try (PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, comment.getText());
@@ -521,11 +547,6 @@ public class CommentDao {
 				return likes;
 			}
 		}
-	}
-
-	@Autowired
-	private void initCon() {
-		con = DBConnection.COMMENTS.getConnection();
 	}
 
 	/**
