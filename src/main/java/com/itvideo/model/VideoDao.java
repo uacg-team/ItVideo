@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.tree.RowMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -662,6 +664,46 @@ public class VideoDao {
 			ps.setLong(3, v.getPrivacyId());
 			ps.setLong(4, v.getVideoId());
 			ps.executeUpdate();
+		}
+	}
+	
+
+	//TODO test pagination
+	public List<Video> getVideosByPage(int pageid, int total) throws SQLException {
+		String sql = "SELECT * FROM videos LIMIT " + (pageid - 1) + "," + total;
+		List<Video> page = new ArrayList<>();
+		try (PreparedStatement ps = con.prepareStatement(sql);){
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					page.add(
+						new Video(
+							rs.getLong("video_id"), 
+							rs.getString("name"), 
+							rs.getInt("views"),
+							DateTimeConvertor.sqlToLdt(rs.getString("date")), 
+							rs.getString("location_url"),
+							rs.getLong("user_id"), 
+							rs.getString("thumbnail_url"), 
+							rs.getString("description"),
+							rs.getLong("privacy_id"), 
+							getTags(rs.getLong("video_id"))));
+				}
+			}
+			
+		}
+		return page;
+	}
+	public int getAllVideos() throws SQLException {
+		String sql = "SELECT count(*) as total FROM videos;";
+		try (PreparedStatement ps = con.prepareStatement(sql);){
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getInt("total");
+				}else {
+					return 0;
+				}
+			}
+			
 		}
 	}
 }
