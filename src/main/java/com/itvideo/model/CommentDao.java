@@ -242,8 +242,8 @@ public class CommentDao {
 		}
 	}
 
-	public long getNumberOfCommentsAndRepliesForVideo(long videoId) throws SQLException{
-		String sql = "SELECT COUNT(*) FROM comments WHERE video_id=?;";
+	public long getNumberOfCommentsForVideo(long videoId) throws SQLException{
+		String sql = "SELECT COUNT(*) FROM comments WHERE video_id=? and reply_id IS NULL;";
 		long count=0;
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, videoId);
@@ -361,18 +361,24 @@ public class CommentDao {
 		}
 	}
 
-	public List<Comment> getCommentByPage(int pageid, int total,Comparator<Comment> comparator,long myUserId,long videoId) throws SQLException {
+	public List<Comment> getAllCommentsWithVotesByVideoWithoutReplies(int pageid,long videoId,long myUserId,String comparator,String dateFromRequest) throws SQLException {
+		int count=10;
+		
 		//get all comments without replies with vote
 		String sql="SELECT c.*, SUM( IF( l.isLike = 1, 1, 0)) AS likes,"
 				+ "SUM( IF( l.isLike = 0, 1, 0)) AS dislikes,"
 				+ "SUM( IF( l.user_id = ?, IF( l.isLike = 1, 1, -1),0)) AS my_vote "
 				+ "FROM comments AS c LEFT JOIN comments_likes AS l "
 				+ "ON( c.comment_id = l.comment_id) "
-				+ "WHERE c.video_id=? AND c.reply_id IS NULL GROUP BY (c.comment_id) limit "+pageid+" ,"+total;
+				+ "WHERE c.video_id=? AND c.date <= STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s.%f') "
+				+ "AND c.reply_id IS NULL GROUP BY (c.comment_id) ORDER BY "+comparator+",c.date desc "
+				+ "limit "+count+" offset "+count*pageid;
 		List<Comment> comments = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, myUserId);
 			ps.setLong(2, videoId);
+			LocalDateTime dateRequest=LocalDateTime.parse(dateFromRequest);
+			ps.setString(3, DateTimeConvertor.ldtToSql(dateRequest));
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					Long id = rs.getLong("comment_id");
@@ -398,7 +404,6 @@ public class CommentDao {
 				}
 			}
 		}
-		Collections.sort(comments, comparator);
 		return comments;
 	}
 }
