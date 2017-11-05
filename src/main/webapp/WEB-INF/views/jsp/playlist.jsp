@@ -9,7 +9,6 @@
 </head>
 <body>
 <!-- show my playlist in my profile -->
-
 <div class="btn-group">
   <a href="#" class="btn btn-primary">${user.username}'s playlists</a>
   <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>

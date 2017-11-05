@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,18 +65,18 @@ public class PlaylistController {
 	}
 	@ResponseBody
 	@RequestMapping(value = "player/addToPlaylist", method = RequestMethod.POST)
-	public void addToPlaylists(HttpServletRequest req) {
+	public void addToPlaylists(HttpServletRequest req) throws SQLException {
 		long videoId=Long.parseLong(req.getParameter("videoId"));
 		long playlistId=Long.parseLong(req.getParameter("playlistId"));
 		try {
 			playlist.addVideo(playlistId, videoId);
 		} catch (SQLException e) {
-			// TODO handle
 			e.printStackTrace();
+			throw e;
 		}
 	}
 	@RequestMapping(value = "/createPlaylist", method = RequestMethod.POST)
-	public String createPlaylist(HttpServletRequest req) {
+	public String createPlaylist(HttpServletRequest req,Model model) {
 		long userId = Long.parseLong(req.getParameter("userId"));
 		String playlistName = req.getParameter("newPlaylist");
 		Playlist newPlaylist = null;
@@ -93,9 +92,12 @@ public class PlaylistController {
 		} catch (PlaylistException e) {
 			// TODO handle
 			e.printStackTrace();
+			
 		} catch (SQLException e) {
-			// TODO handle
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		} catch (UserException e) {
 			// TODO handle
 			e.printStackTrace();

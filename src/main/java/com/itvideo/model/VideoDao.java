@@ -399,7 +399,7 @@ public class VideoDao {
 		return relatedVideos;
 	}
 	
-	private Set<Tag> getTags(long videoId) throws SQLException {
+	public Set<Tag> getTags(long videoId) throws SQLException {
 		Set<Tag> tags = new HashSet<>();
 		String sql = "SELECT t.tag FROM videos_has_tags as vt JOIN tags as t USING (tag_id) JOIN videos as v ON (vt.video_id = v.video_id) WHERE v.video_id = ? ;";
 		try (PreparedStatement ps_tags = con.prepareStatement(sql);) {

@@ -126,7 +126,6 @@ public class CommentsService {
 			e.printStackTrace();
 			return new Comment("error", LocalDateTime.now(), 0, 0, 0);
 		}
-		System.out.println(newComment.getCommentId());
 		return newComment;
 	}
 

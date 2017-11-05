@@ -15,6 +15,7 @@ import com.itvideo.model.exceptions.video.VideoNotFoundException;
 public class Playlist {
 	public static final int MIN_LENGTH_PLAYLIST_NAME = 3;
 	public static final int MAX_LENGTH_PLAYLIST_NAME = 45;
+	
 	private long playlistId;
 	private String playlistName;
 	private long userId;
