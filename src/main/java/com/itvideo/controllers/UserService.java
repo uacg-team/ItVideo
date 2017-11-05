@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +22,7 @@ import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.utils.Hash;
 import com.itvideo.model.utils.PasswordGenerator;
+import com.itvideo.model.utils.ReportMsg;
 import com.itvideo.model.utils.Resources;
 import com.itvideo.model.utils.SendEmail;
 import com.itvideo.model.utils.TockenGenerator;
@@ -33,32 +33,6 @@ public class UserService {
 	@Autowired
 	UserDao ud;
 	
-	/**
-	 * report to js if there is problem,and what action is coming next
-	 */
-	public static class ReportMsg{
-		private String typeError;
-		private String msg;
-		private String action;
-
-		ReportMsg(String typeError, String report, String action) {
-			this.msg = report;
-			this.typeError = typeError;
-			this.action = action;
-		}
-
-		public String getAction() {
-			return action;
-		}
-
-		public String getMsg() {
-			return msg;
-		}
-
-		public String getTypeError() {
-			return typeError;
-		}
-	}
 	
 	@ResponseBody	
 	@RequestMapping(value="/forgotPassword", method = RequestMethod.POST)

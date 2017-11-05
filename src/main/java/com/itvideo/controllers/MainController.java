@@ -1,6 +1,7 @@
 package com.itvideo.controllers;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -242,7 +243,8 @@ public class MainController {
 			
 			model.addAttribute("mainVideo", video);
 			model.addAttribute("videos", related);
-			model.addAttribute("countComments",comment.getNumberOfCommentsAndRepliesForVideo(videoId));
+			model.addAttribute("countComments",comment.getNumberOfCommentsForVideo(videoId));
+			model.addAttribute("date",LocalDateTime.now().toString());
 			if (session.getAttribute("user") != null) {
 				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
 			}

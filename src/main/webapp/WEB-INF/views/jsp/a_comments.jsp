@@ -15,6 +15,9 @@ function getSelected(){
 	var e=document.getElementById("choiseCompareComments");	
 	return e.options[e.selectedIndex].value;
 }
+function msgErr(){
+	alert("First login!");
+}
 </script>
 <style type="text/css">
 .addNewComment img{
@@ -62,6 +65,10 @@ textarea { resize: none; }
 </style>
 </head>
 <body>
+	<p id="dateOfRequest" hidden="" title="${requestScope.date}"></p>
+	<p id="part" hidden="" title="1"></p>
+	<p id="totalComments" hidden="" title="${requestScope.countComments}"></p>
+	
 	<strong>Leave comment...</strong><br>
 	<p style=" font-weight: bold;" class="comment-header" id="myUsername">${sessionScope.user.username}</p>
 	<c:if test="${sessionScope.user==null}">
@@ -82,9 +89,9 @@ textarea { resize: none; }
 				<textarea class="form-control" rows="3" cols="80" id="novComentar"></textarea>
 				<button style="float: right; margin: 5px;" class="btn btn-primary btn-xs" onclick="postComment(${sessionScope.user.userId},${requestScope.mainVideo.videoId},0,'${sessionScope.user.username}')">addComment</button>
 			</c:if>
-			<c:if test="${sessionScope.user==null}">
+			<c:if test="${sessionScope.user == null}">
 				<textarea class="form-control" rows="3" cols="80" id="novComentar" ></textarea>
-				<button class="btn btn-primary btn-xs" style="float: right; margin: 5px;">addComment</button>
+				<button class="btn btn-primary btn-xs" style="float: right; margin: 5px;" onclick="msgErr()">addComment</button>
 			</c:if>
 		</div>
 	</div>
@@ -93,7 +100,7 @@ textarea { resize: none; }
 </div>
 <div class="row">
 	<div class="col-lg-8">
-		<strong><span>Comments:</span><span id="countComments">${requestScope.countComments}</span></strong>
+		<strong><span>Comments:</span><span>${requestScope.countComments}</span></strong>
 	</div>
 	<div id="initial-settings" class="col-lg-4">
 		<div class="col-lg-6">
@@ -106,10 +113,10 @@ textarea { resize: none; }
 		</div>
 		<div class="col-lg-6">
 			<c:if test="${sessionScope.user!=null}">
-			<button class="btn btn-primary" onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
+			<button class="btn btn-primary" onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),0)">Show comments</button>
 			</c:if>
 			<c:if test="${sessionScope.user==null}">
-			<button class="btn btn-primary" onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),1,2,50)">Show comments</button>
+			<button class="btn btn-primary" onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),0)">Show comments</button>
 			</c:if>
 		</div>
 	</div>
@@ -120,10 +127,11 @@ textarea { resize: none; }
 <div id="newComments" title="0" >
 <!-- insert new Comments -->
 </div>
-<div id="initialComments">
-</div>
 <div id="comments">
 <!-- place for comments -->
+</div>
+<div id="showMoreButtonDiv">
+<!-- show more comments -->
 </div>
 </body>
 </html>
