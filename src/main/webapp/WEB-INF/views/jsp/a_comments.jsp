@@ -71,10 +71,6 @@ textarea { resize: none; }
 	
 	<strong>Leave comment...</strong><br>
 	<p style=" font-weight: bold;" class="comment-header" id="myUsername">${sessionScope.user.username}</p>
-	<c:if test="${sessionScope.user==null}">
-		<a href="<c:url value="/login"/>">First login</a>
-	</c:if>
-	
 	<div id="addNewComment">
 		<div class="comment-box-user col-lg-1 container-fluid" style="padding-left: 0px;">
 			<c:if test="${sessionScope.user!=null}">

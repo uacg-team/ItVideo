@@ -83,8 +83,5 @@ window.onload = function() { //executes code after DOM loads
 	 }
 	}
 </script>
-
-
-
 </body>
 </html>

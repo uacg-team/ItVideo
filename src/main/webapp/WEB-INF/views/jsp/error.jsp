@@ -42,6 +42,7 @@
 </c:if>
 
 <c:if test="${exception eq \"MessagingException\" }" >
+<img src="<c:url value="/pics/VideoException.png"/>" /><br>
 	<h1><c:out value="Reason: ${getMessage}"></c:out></h1><br>
 </c:if>
 

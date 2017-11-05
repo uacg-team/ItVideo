@@ -320,15 +320,15 @@ public class UserDao {
 				// delete comment likes
 				// delete comments
 				
-				//TODO: get methods in this dao as private method, because of the transaction
 				cd.deleteAllCommentsAndLikesForUser(userId,con);
 
 				// delete videos
 				// delete video likes
 				vd.deleteVideos(userId);
 				vd.deleteAllVideoLikes(userId);
+				
 				// delete playlists
-				pd.deletePlaylistsForUser(userId);
+				pd.deletePlaylistsForUser(userId,con);
 
 				con.commit();
 			} catch (SQLException e) {

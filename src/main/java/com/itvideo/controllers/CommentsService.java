@@ -48,7 +48,6 @@ public class CommentsService {
 		}
 	}
 
-	//TODO refactor js parameters
 	@ResponseBody
 	@RequestMapping(value = "player/getCommentsWithVotes/{videoId}/{myUserId}/{compare}/{part}/{date}", method = RequestMethod.GET)
 	public List<Comment> getCommentsWithVotesForVideo(
@@ -102,6 +101,7 @@ public class CommentsService {
 			comments = comment.getAllRepliesWithVotesForComment(commentId, myUserId, comparator);
 		} catch (SQLException e) {
 			resp.setStatus(500);
+			e.printStackTrace();
 		}
 		return comments;
 	}
@@ -119,18 +119,18 @@ public class CommentsService {
 			comment.createComment(newComment);
 		} catch (CommentException e) {
 			resp.setStatus(405);
+			e.printStackTrace();
 			return new Comment("error", LocalDateTime.now(), 0, 0, 0);
 		} catch (SQLException e) {
 			resp.setStatus(500);
+			e.printStackTrace();
 			return new Comment("error", LocalDateTime.now(), 0, 0, 0);
 		}
-		System.out.println(newComment.getCommentId());
 		return newComment;
 	}
 
-	// TODO rename commentLikeTest, like dislike with one function,catch 401,500
 	@ResponseBody
-	@RequestMapping(value = "player/commentLikeTest", method = RequestMethod.POST)
+	@RequestMapping(value = "player/commentLike", method = RequestMethod.POST)
 	public void likeCommentTest(HttpServletRequest req,HttpServletResponse response) {
 		Long userId = Long.parseLong(req.getParameter("userId"));
 		long commentId = Long.parseLong(req.getParameter("commentId"));
@@ -144,6 +144,7 @@ public class CommentsService {
 				like = like == 1 ? 1 : 0;
 				comment.likeComment(commentId, userId, like);
 			} catch (SQLException e) {
+				e.printStackTrace();
 				response.setStatus(500);
 			}
 		}
@@ -156,6 +157,7 @@ public class CommentsService {
 		try {
 			comment.deleteComment(commentId);
 		} catch (SQLException e) {
+			e.printStackTrace();
 			resp.setStatus(500);
 		}
 	}

@@ -19,12 +19,12 @@
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
-				var like = document.getElementById("like".concat(videoId));
-			    var dislike = document.getElementById("dislike".concat(videoId));
+				var like = document.getElementById("like_v".concat(videoId));
+			    var dislike = document.getElementById("dislike_v".concat(videoId));
 			   
-			    var likes = document.getElementById("likes".concat(videoId));
+			    var likes = document.getElementById("likes_v".concat(videoId));
 			    var countLikes = likes.innerHTML;
-			    var dislikes = document.getElementById("dislikes".concat(videoId));
+			    var dislikes = document.getElementById("dislikes_v".concat(videoId));
 			    var countDislikes = dislikes.innerHTML;
 			    
 			    if(like.alt==="like" && dislike.alt==="dislike"){
@@ -65,12 +65,12 @@
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
-				var like = document.getElementById("like".concat(videoId));
-			    var dislike = document.getElementById("dislike".concat(videoId));
+				var like = document.getElementById("like_v".concat(videoId));
+			    var dislike = document.getElementById("dislike_v".concat(videoId));
 			    
-			    var likes = document.getElementById("likes".concat(videoId));
+			    var likes = document.getElementById("likes_v".concat(videoId));
 			    var countLikes = likes.innerHTML;
-			    var dislikes = document.getElementById("dislikes".concat(videoId));
+			    var dislikes = document.getElementById("dislikes_v".concat(videoId));
 			    var countDislikes = dislikes.innerHTML;
 			    
 			    if(like.alt==="like" && dislike.alt==="dislike"){
@@ -101,40 +101,6 @@
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			request.send(param);
-		}
-		function likeButton(){
-		    var like = document.getElementById("like");
-		    var dislike = document.getElementById("dislike");
-		    if(like.alt==="like" && dislike.alt==="dislike"){
-		        like.alt="liked";
-		        like.src="<c:url value="/pics/liked.png"/>";
-		    }else if(like.alt==="like" && dislike.alt==="disliked"){
-		    	like.alt="liked";
-		    	like.src="<c:url value="/pics/liked.png"/>";
-		    	dislike.alt="dislike";
-		    	dislike.src="<c:url value="/pics/dislike.png"/>";
-		    }else{
-		        //like.alt=="liked"
-		        like.alt="like";
-		        like.src="<c:url value="/pics/like.png"/>";
-		    }
-		}
-		function dislikeButton(){
-			var like = document.getElementById("like");
-			var dislike = document.getElementById("dislike");
-			if(like.alt==="like" && dislike.alt==="dislike"){
-				dislike.alt="disliked";
-				dislike.src="<c:url value="/pics/disliked.png"/>";
-			}else if(dislike.alt==="dislike" && like.alt==="liked"){
-				dislike.alt="disliked";
-				dislike.src="<c:url value="/pics/disliked.png"/>";
-				like.alt="like";
-				like.src="<c:url value="/pics/like.png"/>";
-			}else{
-				//dislike.alt=="disliked"
-				dislike.alt="dislike";
-				dislike.src="<c:url value="/pics/dislike.png"/>";
-			}
 		}
 		
 		function changeFollowButton(){
@@ -398,36 +364,36 @@ video {
                             <ul>
                                 <li>
                                     <h3>
-                                        <span class="label label-primary" id="likes${mainVideo.videoId}">${mainVideo.likes}</span>
+                                        <span class="label label-primary" id="likes_v${mainVideo.videoId}">${mainVideo.likes}</span>
                                     </h3>
                                 </li>
                                 <li>
                                     <div class="tilt">
                                         <h6>
                                             <c:if test="${mainVideo.vote == 1}">
-                                                <img alt="liked" id="like${mainVideo.videoId}" src="<c:url value="/pics/liked.png "/>" style="width: 50px; height: auto"
+                                                <img alt="liked" id="like_v${mainVideo.videoId}" src="<c:url value="/pics/liked.png "/>" style="width: 50px; height: auto"
                                                     onclick="likeVideo(${mainVideo.videoId},${user.userId})">
                                             </c:if>
                                             <c:if test="${mainVideo.vote < 1}">
-                                                <img alt="like" id="like${mainVideo.videoId}" src="<c:url value="/pics/like.png "/>" style="width: 50px; height: auto" onclick="likeVideo(${mainVideo.videoId},${user.userId})">
+                                                <img alt="like" id="like_v${mainVideo.videoId}" src="<c:url value="/pics/like.png "/>" style="width: 50px; height: auto" onclick="likeVideo(${mainVideo.videoId},${user.userId})">
                                             </c:if>
                                         </h6>
                                     </div>
                                 </li>
                                 <li>
                                     <h3>
-                                        <span class="label label-primary" id="dislikes${mainVideo.videoId}">${mainVideo.dislikes}</span>
+                                        <span class="label label-primary" id="dislikes_v${mainVideo.videoId}">${mainVideo.dislikes}</span>
                                     </h3>
                                 </li>
                                 <li>
                                     <div class="tilt">
                                         <h6>
                                             <c:if test="${mainVideo.vote > -1}">
-                                                <img alt="dislike" id="dislike${mainVideo.videoId}" src="<c:url value="/pics/dislike.png "/>" style="width: 50px; height: auto"
+                                                <img alt="dislike" id="dislike_v${mainVideo.videoId}" src="<c:url value="/pics/dislike.png "/>" style="width: 50px; height: auto"
                                                     onclick="dislikeVideo(${mainVideo.videoId},${user.userId})">
                                             </c:if>
                                             <c:if test="${mainVideo.vote == -1}">
-                                                <img alt="disliked" id="dislike${mainVideo.videoId}" src="<c:url value="/pics/disliked.png "/>" style="width: 50px; height: auto"
+                                                <img alt="disliked" id="dislike_v${mainVideo.videoId}" src="<c:url value="/pics/disliked.png "/>" style="width: 50px; height: auto"
                                                     onclick="dislikeVideo(${mainVideo.videoId},${user.userId})">
                                             </c:if>
                                         </h6>

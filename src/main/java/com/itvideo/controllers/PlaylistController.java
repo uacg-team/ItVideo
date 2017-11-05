@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,88 +26,63 @@ import com.itvideo.model.exceptions.user.UserNotFoundException;
 @Component
 public class PlaylistController {
 	@Autowired
-	private PlaylistDao playlist;
+	private PlaylistDao pd;
 	@Autowired
 	private UserDao ud;
-	
-	public void loadPlaylistsForUser(Model model, long userId) {
-		//get for this videostatus
-		List<Playlist> playlists = null;
-		try {
-			playlists=playlist.getPlaylistForUser(userId);
-			model.addAttribute("myPlaylists", playlists);
-		} catch (UserException e) {
-			// TODO handle
-			e.printStackTrace();
-			return;
-		} catch (SQLException e) {
-			// TODO handle
-			e.printStackTrace();
-			return;
-		}
-	}
-	public void loadPlaylistsForUserWithStatus(Model model, long userId,long videoId) {
-		//get for this videostatus
-		List<Playlist> playlists = null;
-		try {
-			playlists = playlist.getPlaylistForUserWithStatus(userId,videoId);
-			
-			model.addAttribute("myPlaylists", playlists);
-		} catch (UserException e) {
-			// TODO handle
-			e.printStackTrace();
-			return;
-		} catch (SQLException e) {
-			// TODO handle
-			e.printStackTrace();
-			return;
-		}
-	}
+
 	@ResponseBody
 	@RequestMapping(value = "player/addToPlaylist", method = RequestMethod.POST)
-	public void addToPlaylists(HttpServletRequest req) {
+	public void addToPlaylists(HttpServletRequest req) throws SQLException {
 		long videoId=Long.parseLong(req.getParameter("videoId"));
 		long playlistId=Long.parseLong(req.getParameter("playlistId"));
 		try {
-			playlist.addVideo(playlistId, videoId);
+			pd.addVideo(playlistId, videoId);
 		} catch (SQLException e) {
-			// TODO handle
 			e.printStackTrace();
+			throw e;
 		}
 	}
 	@RequestMapping(value = "/createPlaylist", method = RequestMethod.POST)
-	public String createPlaylist(HttpServletRequest req) {
+	public String createPlaylist(HttpServletRequest req,Model model) {
 		long userId = Long.parseLong(req.getParameter("userId"));
 		String playlistName = req.getParameter("newPlaylist");
 		Playlist newPlaylist = null;
 		try {
 			newPlaylist = new Playlist(playlistName, userId);
 		} catch (PlaylistException e) {
-			// TODO handle return error to user wrong name, not good name...
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
-			return null;
+			return "error";
 		}
 		try {
-			playlist.createPlaylist(newPlaylist);
+			pd.createPlaylist(newPlaylist);
 		} catch (PlaylistException e) {
-			// TODO handle
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
+			
 		} catch (SQLException e) {
-			// TODO handle
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		} catch (UserException e) {
-			// TODO handle
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		}
 		return "redirect:/viewProfile/"+userId;
 	}
 	@RequestMapping(value = "/showPlaylist", method = RequestMethod.GET)
-	private String loadVideosForPlaylist(HttpServletRequest req) {
+	private String loadVideosForPlaylist(HttpServletRequest req,Model model) {
 		Long userId = Long.valueOf(req.getParameter("userId"));
 		String playlistName = req.getParameter("playlistName");
 		try {
-			Playlist thePlaylist = playlist.getPlaylist(userId, playlistName);
-			playlist.loadVideosInPlaylist(thePlaylist);
+			Playlist thePlaylist = pd.getPlaylist(userId, playlistName);
+			pd.loadVideosInPlaylist(thePlaylist);
 			List<Video> videos= thePlaylist.getVideos();
 			for(Video v:videos) {
 				User videoOwner =  ud.getUser(v.getUserId());
@@ -117,17 +91,25 @@ public class PlaylistController {
 			req.setAttribute("videos", videos);
 			req.setAttribute("playlistName", playlistName);
 		} catch (UserException e) {
-			// TODO handle
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		} catch (SQLException e) {
-			// TODO handle
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		} catch (PlaylistException e) {
-			// TODO handle
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		} catch (UserNotFoundException e) {
-			// TODO Auto-generated catch block
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		}
 		return "playlistVideos";
 	}
