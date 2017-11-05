@@ -10,11 +10,18 @@
 .center {
 text-align:center;
 }
+.right {
+text-align:right;
+}
 .vertical-center {
 vertical-align: middle;
 }
 .margin-5 {
 margin: 5px;
+}
+.img-avatar{
+border:1.5px solid black;
+margin: 10px;
 }
 </style>
 </head>
@@ -28,15 +35,16 @@ margin: 5px;
 				 <fieldset>
 				    <legend >Update user</legend>
 				    <div class="center">
-						<img src="<c:url value="/img/${sessionScope.user.userId}"/>" width="100px" height="auto" /><br>
+						<img class="img-avatar" src="<c:url value="/img/${sessionScope.user.userId}"/>" width="150px" height="auto"/><br>
 					</div>
 						<!-- upload avatar -->
 						<form action="<c:url value="/uploadAvatar"/>" method="post" enctype="multipart/form-data">
-							<div class="col-lg-6">
-								<input class="btn btn-primary" type="file" name="avatar"  accept="image/png"><br>
-							</div>
-							<div class="col-lg-6">
-								<input class="btn btn-primary" type="submit" value="Upload" />
+							<label class="col-lg-3 btn btn-default btn-file">
+								Choose file<input style="display: none;" type="file" name="avatar"  accept="image/png"><br>
+							</label>
+							<div class="col-lg-3 right"></div>
+							<div class="col-lg-6 right">
+								<input class="btn btn-primary " type="submit" value="Upload" />
 							</div>
 						</form>
 						<c:if test="${ error != null }">
@@ -105,7 +113,7 @@ margin: 5px;
 					<br>
 					<label for="text" class="col-lg-2 control-label">password:</label>
 					<div class="col-lg-10">
-				 		<input class="form-control" type="text" name="oldPassword" required="required">
+				 		<input class="form-control" type="password" name="oldPassword" required="required">
 				 		<span class="help-block">Required</span>
 				 	</div>
 				 	<c:if test="${errorPassword != null }">
