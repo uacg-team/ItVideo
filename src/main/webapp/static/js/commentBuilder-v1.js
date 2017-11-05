@@ -205,7 +205,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	htmlOneComment=htmlOneComment.concat('</a>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<div class="comment-box-inner col-lg-11 container-fluid">');
-	htmlOneComment=htmlOneComment.concat('<p >' + text + '</p> <br>');
+	htmlOneComment=htmlOneComment.concat('<pre><span >' + text + '</span></pre> <br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
 	htmlOneComment=htmlOneComment.concat('<div class="col-lg-2 comment-buttons-left">');
@@ -289,7 +289,7 @@ function buildReply(commentId, text, userId, videoId, replyId, likes, dislikes, 
 	htmlOneComment=htmlOneComment.concat('</div>');
 	
 	htmlOneComment=htmlOneComment.concat('<div class="reply-box-inner col-lg-11 container-fluid">');
-	htmlOneComment=htmlOneComment.concat('<p>' + text + '</p><br>');
+	htmlOneComment=htmlOneComment.concat('<pre><span>' + text + '</span></pre><br>');
 	htmlOneComment=htmlOneComment.concat('</div>');
 	htmlOneComment=htmlOneComment.concat('<p class="comment-date">' + dateParse(date) + '</p>');
 	htmlOneComment=htmlOneComment.concat('</div>');

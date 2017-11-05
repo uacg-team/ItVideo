@@ -20,25 +20,6 @@ div.inline {
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
 	<b>Playlist:${requestScope.playlistName}</b><br>
-	<c:forEach items="${requestScope.videos}" var="video">
-	<div class="inline">
-				<c:out value="Name: ${video.name}"></c:out><br>
-				<c:out value="Description: ${video.description}"></c:out><br>
-				<c:out value="Owner: ${video.userName}"></c:out><br>
-				<c:out value="Published: ${video.date}"></c:out><br>
-				<c:out value="Views: ${video.views}"></c:out><br>
-				<c:out value="Privacy: ${video.privacy}"></c:out><br>
-				<c:out value="Tags: "></c:out><br>
-				<c:forEach items="${video.tags}" var="tag">	
-						<c:out value="#${tag.tag} "></c:out>
-				</c:forEach>
-				<br>
-				<a href="<c:url value="/player/${video.videoId}" />">	
-					<video width="320" height="240" preload="none" poster="<c:url value="/thumbnail/${video.videoId}" />">
-				  		<source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
-					</video>
-				</a><br>
-			</div>
-	</c:forEach>
+	<jsp:include page="showVideosRequest.jsp"></jsp:include>
 </body>
 </html>

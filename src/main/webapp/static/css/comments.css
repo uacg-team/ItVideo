@@ -23,13 +23,15 @@ width: auto;
 -moz-border-radius: 5px; 
   padding: 8px;  
  }
-.comment-box-inner p{
+.comment-box-inner pre{
 background: none repeat scroll 0 0 #FFF;
 padding: 20px;
  border-radius: 5px;
 -webkit-border-radius: 5px;
 -moz-border-radius: 5px;
-
+background-color: white;
+font-family:"Times New Roman", Georgia, Serif;
+font-size: 18px;
 }
 .comment-box p.comment-header{
 margin: 5px 0;
@@ -59,12 +61,15 @@ width:auto;
 -moz-border-radius: 5px; 
   padding: 8px;  
  }
-.reply-box-inner p{
+.reply-box-inner pre{
 background: none repeat scroll 0 0 #FFF;
 padding: 20px;
  border-radius: 5px;
 -webkit-border-radius: 5px;
 -moz-border-radius: 5px; 
+background-color: white;
+font-family:"Times New Roman", Georgia, Serif;
+font-size: 18px;
 }
 .reply-box p.reply-header{
 margin: 5px 0;
