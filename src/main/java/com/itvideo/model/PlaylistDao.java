@@ -46,11 +46,8 @@ public class PlaylistDao {
 				ps.setString(2, playlist.getPlaylistName());
 				ps.executeUpdate();
 				try (ResultSet rs = ps.getGeneratedKeys()) {
-					if (rs.next()) {
-						playlist.setId(rs.getLong(1));
-					} else {
-						throw new PlaylistException(PlaylistException.CANT_CREATE);
-					}
+					rs.next();
+					playlist.setId(rs.getLong(1));
 				}
 			}
 			return;

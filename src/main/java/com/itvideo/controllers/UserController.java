@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.itvideo.model.Playlist;
+import com.itvideo.model.PlaylistDao;
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
@@ -39,7 +41,7 @@ public class UserController {
 	VideoDao vd;
 	
 	@Autowired
-	PlaylistController pc;
+	PlaylistDao pd;
 	
 	@ResponseBody
 	@RequestMapping(value="/player/asyncFollow", method = RequestMethod.POST)
@@ -226,7 +228,10 @@ public class UserController {
 				model.addAttribute("followers", followers);
 				model.addAttribute("following", following);
 				model.addAttribute("videos", videos);
-				pc.loadPlaylistsForUser(model, u.getUserId());
+
+				List<Playlist> playlists = null;
+				playlists=pd.getPlaylistForUser(userId);
+				model.addAttribute("myPlaylists", playlists);
 			} catch (SQLException e) {
 				model.addAttribute("exception", "SQLException");
 				model.addAttribute("getMessage", e.getMessage());

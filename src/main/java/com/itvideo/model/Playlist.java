@@ -3,13 +3,10 @@ package  com.itvideo.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 
 import com.itvideo.model.exceptions.playlists.PlaylistException;
-import com.itvideo.model.exceptions.user.UserException;
-import com.itvideo.model.exceptions.video.VideoException;
-import com.itvideo.model.exceptions.video.VideoNotFoundException;
+import com.itvideo.model.utils.Validator;
 
 
 public class Playlist {
@@ -22,7 +19,7 @@ public class Playlist {
 	private boolean isLoaded;
 
 	private List<Video> videos;
-	
+	//is video in playlist, when user watch video
 	private int videoStatus;
 	/**
 	 * get from DB , for loading videos use PlaylistDAO -loadVideosInPlaylist
@@ -62,82 +59,26 @@ public class Playlist {
 		return userId;
 	}
 
-	public void setId(long playlistId) throws PlaylistException {
-		if (playlistId < 1) {
-			throw new PlaylistException(PlaylistException.INVALID_ID);
-		}
+	void setId(long playlistId) throws PlaylistException {
 		this.playlistId = playlistId;
 	}
 
 	public void setName(String playlistName) throws PlaylistException {
-		if (playlistName == null || playlistName.isEmpty()) {
+		if (Validator.isEmpty(playlistName)) {
 			throw new PlaylistException(PlaylistException.INVALID_NAME);
 		}
-		if (playlistName.length() < MIN_LENGTH_PLAYLIST_NAME) {
-			throw new PlaylistException(PlaylistException.INVALID_NAME_LENGTH_MIN);
+		if (Validator.isValidLength(MIN_LENGTH_PLAYLIST_NAME, MAX_LENGTH_PLAYLIST_NAME, playlistName)) {
+			throw new PlaylistException(PlaylistException.INVALID_NAME_LENGTH);
 		}
-		if (playlistName.length() >= MAX_LENGTH_PLAYLIST_NAME) {
-			throw new PlaylistException(PlaylistException.INVALID_NAME_LENGTH_MAX);
-		}
-		if (!Pattern.matches("[^;#/%|\\\\\"<>]+", playlistName)) {
+		if (Validator.isContaingSpecialChars(playlistName)) {
 			throw new PlaylistException(PlaylistException.INVALID_NAME_SYMBOLS);
 		}
 		this.playlistName = playlistName;
 	}
 
-	public void setUserId(long userId) throws PlaylistException {
-		if (userId < 1) {
-			throw new PlaylistException(UserException.INVALID_ID);
-		}
+	void setUserId(long userId) throws PlaylistException {
 		this.userId = userId;
 	}
-
-	/**
-	 * <b>Always use with PlaylistDAO addVideo.Before use check for videos
-	 * loaded in playlist</b>
-	 * 
-	 * @param video
-	 * @throws PlaylistException-VIDEOS_NOT_LOADED,VIDEO_AREADY_EXIST
-	 * @throws VideoException-INVALID_ID
-	 */
-	public void addVideo(Video video) throws PlaylistException, VideoException {
-		if (video == null || video.getVideoId() == 0) {
-			throw new VideoException(VideoException.INVALID_ID);
-		}
-		if (!isLoaded) {
-			throw new PlaylistException(PlaylistException.VIDEOS_NOT_LOADED);
-		}
-		if (videos.contains(video)) {
-			throw new PlaylistException(PlaylistException.VIDEO_ALREADY_EXIST);
-		}
-		videos.add(video);
-	}
-
-	/**
-	 * <b>Always use with PlaylistDAO addVideo.Before use check for videos
-	 * loaded in playlist</b>
-	 * 
-	 * @param video
-	 * @throws VideoException-INVALID_ID,
-	 * @throws VideoNotFoundException NOT_FOUND
-	 * @throws PlaylistException VIDEOS_NOT_LOADED
-	 */
-	public void removeVideo(Video video) throws VideoException, VideoNotFoundException, PlaylistException {
-		if (video == null || video.getVideoId() == 0) {
-			throw new VideoException(VideoException.INVALID_ID);
-		}
-		if (!isLoaded) {
-			throw new PlaylistException(PlaylistException.VIDEOS_NOT_LOADED);
-		}
-		if (videos.contains(video)) {
-			throw new VideoNotFoundException(VideoNotFoundException.NOT_FOUND);
-		}
-		videos.remove(video);
-	}
-
-	/**
-	 * @return unmodifiableList(videos)
-	 */
 	public List<Video> getVideos() {
 		return Collections.unmodifiableList(videos);
 	}
@@ -150,20 +91,7 @@ public class Playlist {
 		return isLoaded;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Playlist))
-			return false;
-		Playlist other = (Playlist) obj;
-		if (playlistId != other.playlistId)
-			return false;
-		return true;
-	}
-	public void setVideoStatus(int videoStatus) {
+	void setVideoStatus(int videoStatus) {
 		this.videoStatus = videoStatus;
 	}
 	public int getVideoStatus() {

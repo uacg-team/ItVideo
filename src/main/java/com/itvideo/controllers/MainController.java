@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.itvideo.model.CommentDao;
+import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
@@ -37,10 +38,7 @@ public class MainController {
 	UserDao ud;
 	
 	@Autowired
-	CommentDao comment;
-	
-	@Autowired
-	PlaylistController pc;
+	CommentDao cd;
 	
 	@Autowired
 	PlaylistDao pd;
@@ -243,10 +241,12 @@ public class MainController {
 			
 			model.addAttribute("mainVideo", video);
 			model.addAttribute("videos", related);
-			model.addAttribute("countComments",comment.getNumberOfCommentsForVideo(videoId));
+			model.addAttribute("countComments",cd.getNumberOfCommentsForVideo(videoId));
 			model.addAttribute("date",LocalDateTime.now().toString());
 			if (session.getAttribute("user") != null) {
-				pc.loadPlaylistsForUserWithStatus(model, userId,videoId);
+				List<Playlist> playlists = null;
+				playlists = pd.getPlaylistForUserWithStatus(userId,videoId);
+				model.addAttribute("myPlaylists", playlists);
 			}
 			return "player";
 		} catch (SQLException e) {
@@ -255,6 +255,10 @@ public class MainController {
 			return "error";
 		} catch (VideoNotFoundException e) {
 			model.addAttribute("exception", "VideoNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		} catch (UserException e) {
+			model.addAttribute("exception", "MessagingException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}
