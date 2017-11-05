@@ -109,7 +109,9 @@ public class UserController {
 			if (user.getUserId() == userId) {
 				ud.delete(user.getUserId());
 			}
+			session.invalidate();
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";

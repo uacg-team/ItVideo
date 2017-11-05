@@ -319,7 +319,6 @@ public class UserDao {
 
 				// delete comment likes
 				// delete comments
-				
 				cd.deleteAllCommentsAndLikesForUser(userId,con);
 
 				// delete videos
@@ -329,9 +328,17 @@ public class UserDao {
 				
 				// delete playlists
 				pd.deletePlaylistsForUser(userId,con);
-
+				
+				//delete the user, or whatever is left of it
+				String del = "DELETE FROM users WHERE user_id = ?;";
+				try (PreparedStatement ps = con.prepareStatement(del);) {
+					ps.setLong(1,userId);
+					ps.executeUpdate();
+				}
+				
 				con.commit();
 			} catch (SQLException e) {
+				e.printStackTrace();
 				con.rollback();
 				throw e;
 			} finally {

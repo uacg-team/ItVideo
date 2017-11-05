@@ -94,7 +94,6 @@ public class VideoDao {
 	 */
 	public void deleteVideo(long videoId) throws SQLException {
 		synchronized (con) {
-			con.setAutoCommit(false);
 			try {
 				deleteVideoLikes(videoId);
 				deleteVideosFromPlaylist(videoId);
@@ -106,12 +105,9 @@ public class VideoDao {
 					ps.setLong(1, videoId);
 					ps.executeUpdate();
 				}
-				con.commit();
 			} catch (SQLException e) {
-				con.rollback();
+				e.printStackTrace();
 				throw e;
-			} finally {
-				con.setAutoCommit(true);
 			}
 		}
 	}
