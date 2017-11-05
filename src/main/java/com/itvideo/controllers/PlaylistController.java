@@ -77,7 +77,7 @@ public class PlaylistController {
 		return "redirect:/viewProfile/"+userId;
 	}
 	@RequestMapping(value = "/showPlaylist", method = RequestMethod.GET)
-	private String loadVideosForPlaylist(HttpServletRequest req,Model model) {
+	public String loadVideosForPlaylist(HttpServletRequest req,Model model) {
 		Long userId = Long.valueOf(req.getParameter("userId"));
 		String playlistName = req.getParameter("playlistName");
 		try {
