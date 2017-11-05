@@ -50,15 +50,19 @@ public class UserService {
 			response.setStatus(200);
 			return new ReportMsg(" ", " ","none");
 		} catch (SQLException e) {
+			e.printStackTrace();
 			response.setStatus(500);
 			return new ReportMsg("sqlError", e.getMessage() ,"none");
 		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 			response.setStatus(400);
 			return new ReportMsg("userError", e.getMessage(),"none");
 		} catch (UserException e) {
+			e.printStackTrace();
 			response.setStatus(400);
 			return new ReportMsg("userError", e.getMessage(),"none");
 		} catch (MessagingException e) {
+			e.printStackTrace();
 			response.setStatus(400);
 			return new ReportMsg("emailError", e.getMessage(),"none");
 		}
@@ -85,12 +89,15 @@ public class UserService {
 				return new ReportMsg("passwordError", "Wrong Password","none");
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			response.setStatus(500);
 			return new ReportMsg("sqlError", "Our team has been alerted of the issue, we are looking into it immediately","none");
 		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 			response.setStatus(401);
 			return new ReportMsg("usernameError", e.getMessage(),"none");
 		} catch (UserException e) {
+			e.printStackTrace();
 			response.setStatus(401);
 			return new ReportMsg("usernameError", e.getMessage(),"none");
 		} 
@@ -131,6 +138,7 @@ public class UserService {
 			response.setStatus(500);
 			return new ReportMsg("sqlError", "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.","none");
 		} catch (UserException e) {
+			e.printStackTrace();
 			response.setStatus(400);
 			return new ReportMsg("userError",  e.getMessage(), "none");
 		} catch (IOException e) {
@@ -138,6 +146,7 @@ public class UserService {
 			response.setStatus(500);
 			return new ReportMsg("IOError",  "DataBase problem.Our team has been alerted of the issue, we are looking into it immediately.", "none");
 		} catch (MessagingException e) {
+			e.printStackTrace();
 			response.setStatus(400);
 			return new ReportMsg("emailError",  e.getMessage(), "none");
 		}

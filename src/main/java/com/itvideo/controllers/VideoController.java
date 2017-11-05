@@ -79,10 +79,12 @@ public class VideoController {
 			model.addAttribute("username", user.getUsername());
 			model.addAttribute("userId", user.getUserId());
 		} catch (VideoNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "VideoNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
@@ -110,14 +112,17 @@ public class VideoController {
 			v.setPrivacyId(newPrivacy);
 			vd.updateVideo(v);
 		} catch (VideoNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "VideoNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (VideoException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "VideoException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
@@ -131,10 +136,12 @@ public class VideoController {
 			Resources.deleteVideo(vd.getVideo(videoId));
 			vd.deleteVideo(videoId);
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (VideoNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "VideoNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";

@@ -68,35 +68,64 @@ public class MainController {
 				return "/main";
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (VideoException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "VideoException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (UserException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "UserException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}
 	}
 
-	@RequestMapping(value="/search/tag/{tag}", method = RequestMethod.GET)
-	public String searchTag(HttpServletRequest request, Model model, @PathVariable("tag") String tag) {
+	@RequestMapping(value="/search/tag/{tag}/{pageid}", method = RequestMethod.GET)
+	public String searchTag(
+			HttpServletRequest request, 
+			Model model, 
+			@PathVariable("tag") String tag,
+			@PathVariable("pageid") int pageid) {
 		try {
-			List<Video> videos = vd.getVideos(tag);
+			
+			int totalPages = (int) Math.ceil(vd.getPublicVideosSize() * 1.0 / VIDEOS_PER_PAGE);
+			
+			if (pageid > totalPages) {
+				pageid = totalPages;
+			}
+			
+			int offset = 0;
+			
+			if (pageid == 1) {
+				offset = 0;
+			} else {
+				offset = (pageid - 1) * VIDEOS_PER_PAGE;
+			}
+			
+			
+			
+			List<Video> videos = vd.getVideos(tag, offset, VIDEOS_PER_PAGE);
 			for (Video video : videos) {
 				video.setUserName(vd.getUserName(video.getUserId()));
 				video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
 			}
-			request.setAttribute("videos", videos);
+			
+			model.addAttribute("totalPages", totalPages);
+			model.addAttribute("pageid", pageid);
+			model.addAttribute("list", videos);
 			return "main";
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "UserNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
@@ -180,10 +209,12 @@ public class MainController {
 				return "main";
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "UserNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
@@ -246,10 +277,12 @@ public class MainController {
 			
 			return "main";
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "UserNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
@@ -299,14 +332,17 @@ public class MainController {
 			}
 			return "player";
 		} catch (SQLException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (VideoNotFoundException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "VideoNotFoundException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		} catch (UserException e) {
+			e.printStackTrace();
 			model.addAttribute("exception", "MessagingException");
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";

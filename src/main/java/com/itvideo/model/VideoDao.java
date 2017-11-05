@@ -483,8 +483,14 @@ public class VideoDao {
 	}
 
 	public Video getVideoForPlayer(long videoId, long userId) throws SQLException, VideoNotFoundException {
-		//TODO: Cool sql query
-		String sql = "SELECT v.*, SUM(IF(vl.isLike = 1, 1, 0)) AS likes, SUM(IF(vl.isLike = 0, 1, 0)) AS dislikes, SUM(IF(vl.user_id = ?, IF(vl.isLike = 1, 1, -1), 0)) AS current_user_vote, u.username AS video_owner_username FROM videos AS v LEFT JOIN video_likes AS vl ON (v.video_id = vl.video_id) JOIN users AS u ON (u.user_id = v.user_id) WHERE v.video_id = ? GROUP BY (v.video_id);";
+		//Pretty sql query
+		String sql = "SELECT v.*, SUM(IF(vl.isLike = 1, 1, 0)) AS likes, "
+				+ "SUM(IF(vl.isLike = 0, 1, 0)) AS dislikes, "
+				+ "SUM(IF(vl.user_id = ?, IF(vl.isLike = 1, 1, -1), 0)) AS current_user_vote, "
+				+ "u.username AS video_owner_username FROM videos AS v "
+				+ "LEFT JOIN video_likes AS vl ON (v.video_id = vl.video_id) "
+				+ "JOIN users AS u ON (u.user_id = v.user_id) "
+				+ "WHERE v.video_id = ? GROUP BY (v.video_id);";
 		Video video = null;
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, userId);
@@ -549,8 +555,11 @@ public class VideoDao {
 		return allUserVideos;
 	}
 
-	public List<Video> getVideos(String tag) throws SQLException {
-		String sql = "SELECT v.* FROM videos AS v JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) JOIN tags AS t ON (vt.tag_id = t.tag_id) WHERE t.tag = ?;";
+	public List<Video> getVideos(String tag, int offset, int videosPerPage) throws SQLException {
+		String sql = "SELECT v.* FROM videos AS v "
+				+ "JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) "
+				+ "JOIN tags AS t ON (vt.tag_id = t.tag_id) "
+				+ "WHERE t.tag = ?  LIMIT " + offset + "," + videosPerPage + ";";           
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setString(1, tag);
 			try(ResultSet rs = ps.executeQuery();){
@@ -665,32 +674,6 @@ public class VideoDao {
 		}
 	}
 	
-
-	//TODO test pagination
-	public List<Video> getVideosByPage(int pageid, int total) throws SQLException {
-		String sql = "SELECT * FROM videos LIMIT " + (pageid - 1) + "," + total;
-		List<Video> page = new ArrayList<>();
-		try (PreparedStatement ps = con.prepareStatement(sql);){
-			try (ResultSet rs = ps.executeQuery();) {
-				while (rs.next()) {
-					page.add(
-						new Video(
-							rs.getLong("video_id"), 
-							rs.getString("name"), 
-							rs.getInt("views"),
-							DateTimeConvertor.sqlToLdt(rs.getString("date")), 
-							rs.getString("location_url"),
-							rs.getLong("user_id"), 
-							rs.getString("thumbnail_url"), 
-							rs.getString("description"),
-							rs.getLong("privacy_id"), 
-							getTags(rs.getLong("video_id"))));
-				}
-			}
-			
-		}
-		return page;
-	}
 	public int getPublicVideosSize() throws SQLException {
 		String sql = "SELECT count(*) as total FROM videos WHERE privacy_id = 1;";
 		try (PreparedStatement ps = con.prepareStatement(sql);){
@@ -701,7 +684,6 @@ public class VideoDao {
 					return 0;
 				}
 			}
-			
 		}
 	}
 }
