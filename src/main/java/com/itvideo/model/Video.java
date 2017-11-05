@@ -10,7 +10,7 @@ import com.itvideo.model.exceptions.video.VideoException;
 
 
 
-public class Video implements Serializable {
+public class Video implements Serializable, Searchable {
 
 	private static final long serialVersionUID = 1L;
 	

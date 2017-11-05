@@ -53,12 +53,7 @@
 	             <groupId>com.sun.mail</groupId>
 	             <artifactId>javax.mail</artifactId>
 	             <version>1.6.0</version>
-	         </dependency>
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
+	    </dependency>
 		<dependency>
 			<groupId>ca.juliusdavies</groupId>
 			<artifactId>not-yet-commons-ssl</artifactId>
@@ -69,6 +64,11 @@
 		    <groupId>xuggle</groupId>
 		    <artifactId>xuggle-xuggler</artifactId>
 		    <version>5.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.sargue</groupId>
+		    <artifactId>java-time-jsptags</artifactId>
+		    <version>1.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>
@@ -100,6 +100,11 @@
 		    <groupId>uk.co.caprica</groupId>
 		    <artifactId>vlcj</artifactId>
 		    <version>3.10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp.jstl</groupId>
+			<artifactId>jstl-api</artifactId>
+			<version>1.2</version>
 		</dependency>
 	</dependencies>
 	

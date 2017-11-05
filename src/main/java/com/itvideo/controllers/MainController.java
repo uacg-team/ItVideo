@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.itvideo.model.CommentDao;
 import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
+import com.itvideo.model.Searchable;
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
@@ -53,20 +54,23 @@ public class MainController {
 			HttpSession session, 
 			Model model) {
 		session.setAttribute("searchParam", searchParam);
+
+		List<Searchable> result = null;
 		try {
 			switch (searchParam) {
 			case "users":
-				request.setAttribute("searchResult", ud.searchUser(search));
-				return "search";
+				result = ud.searchUser(search);
+				break;
 			case "videos":
-				request.setAttribute("videos", vd.searchVideo(search));
-				return "search";
+				result = vd.searchVideo(search);
+				break;
 			case "playlists":
-				request.setAttribute("searchResult", pd.searchPlaylist(search));
-				return "search";
-			default:
-				return "/main";
+				result = pd.searchPlaylist(search);
+				break;
 			}
+
+			model.addAttribute("list", result);
+			return "search";
 		} catch (SQLException e) {
 			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");
@@ -85,40 +89,20 @@ public class MainController {
 		}
 	}
 
-	@RequestMapping(value="/search/tag/{tag}/{pageid}", method = RequestMethod.GET)
+	@RequestMapping(value="/search/tag/{tag}", method = RequestMethod.GET)
 	public String searchTag(
 			HttpServletRequest request, 
 			Model model, 
-			@PathVariable("tag") String tag,
-			@PathVariable("pageid") int pageid) {
+			@PathVariable("tag") String tag) {
 		try {
-			
-			int totalPages = (int) Math.ceil(vd.getPublicVideosSize() * 1.0 / VIDEOS_PER_PAGE);
-			
-			if (pageid > totalPages) {
-				pageid = totalPages;
-			}
-			
-			int offset = 0;
-			
-			if (pageid == 1) {
-				offset = 0;
-			} else {
-				offset = (pageid - 1) * VIDEOS_PER_PAGE;
-			}
-			
-			
-			
-			List<Video> videos = vd.getVideos(tag, offset, VIDEOS_PER_PAGE);
+			List<Video> videos = vd.getVideos(tag);
 			for (Video video : videos) {
 				video.setUserName(vd.getUserName(video.getUserId()));
 				video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
 			}
-			
-			model.addAttribute("totalPages", totalPages);
-			model.addAttribute("pageid", pageid);
+
 			model.addAttribute("list", videos);
-			return "main";
+			return "searchTag";
 		} catch (SQLException e) {
 			e.printStackTrace();
 			model.addAttribute("exception", "SQLException");

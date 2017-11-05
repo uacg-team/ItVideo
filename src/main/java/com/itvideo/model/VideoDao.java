@@ -555,11 +555,11 @@ public class VideoDao {
 		return allUserVideos;
 	}
 
-	public List<Video> getVideos(String tag, int offset, int videosPerPage) throws SQLException {
+	public List<Video> getVideos(String tag) throws SQLException {
 		String sql = "SELECT v.* FROM videos AS v "
 				+ "JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) "
 				+ "JOIN tags AS t ON (vt.tag_id = t.tag_id) "
-				+ "WHERE t.tag = ?  LIMIT " + offset + "," + videosPerPage + ";";           
+				+ "WHERE t.tag = ?;";           
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setString(1, tag);
 			try(ResultSet rs = ps.executeQuery();){
@@ -627,7 +627,7 @@ public class VideoDao {
 		}
 	}
 	
-	public List<Video> searchVideo(String name) throws SQLException, VideoException {
+	public List<Searchable> searchVideo(String name) throws SQLException, VideoException {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM videos WHERE privacy_id = 1");
 		
@@ -643,7 +643,7 @@ public class VideoDao {
 			}
 			
 			try (ResultSet rs = ps.executeQuery();) {
-				List<Video> videos = new ArrayList<>();
+				List<Searchable> videos = new ArrayList<>();
 				while (rs.next()) {
 					videos.add(
 							new Video(

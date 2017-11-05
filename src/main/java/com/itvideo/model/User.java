@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.itvideo.model.exceptions.user.UserException;
 
-public class User {
+public class User implements Searchable{
 	
 	private static final String EMAIL_PATTERN =
 			"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"

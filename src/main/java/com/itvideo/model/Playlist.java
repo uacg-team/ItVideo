@@ -9,7 +9,7 @@ import com.itvideo.model.exceptions.playlists.PlaylistException;
 import com.itvideo.model.utils.Validator;
 
 
-public class Playlist {
+public class Playlist implements Searchable {
 	public static final int MIN_LENGTH_PLAYLIST_NAME = 3;
 	public static final int MAX_LENGTH_PLAYLIST_NAME = 45;
 	

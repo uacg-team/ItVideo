@@ -55,7 +55,7 @@ video {
 					<p class="text-primary">
 					<c:if test="${not empty video.tags }">
 						<c:forEach items="${video.tags}" var="tag">	
-								<a href="<c:url value="/search/tag/${tag.tag}/1"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
+								<a href="<c:url value="/search/tag/${tag.tag}"/>" class="btn btn-primary btn-xs"><c:out value="#${tag.tag} "></c:out></a>
 						</c:forEach>
 					</c:if>
 					</p>
@@ -85,8 +85,5 @@ window.onload = function() { //executes code after DOM loads
 	 }
 	}
 </script>
-
-<jsp:include page="pagination.jsp"></jsp:include>
-
 </body>
 </html>

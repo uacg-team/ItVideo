@@ -247,8 +247,8 @@ public class PlaylistDao {
 	 * @return list 
 	 * @throws SQLException
 	 */
-	public List<Playlist> searchPlaylist(String searchPlaylistName) throws SQLException {
-		List<Playlist> playlist = new ArrayList<>();
+	public List<Searchable> searchPlaylist(String searchPlaylistName) throws SQLException {
+		List<Searchable> playlist = new ArrayList<>();
 		String sql = "SELECT * FROM playlists WHERE playlist_name like ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setString(1, "%" + searchPlaylistName.toLowerCase().trim() + "%");
