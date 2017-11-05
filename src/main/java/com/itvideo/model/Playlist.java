@@ -67,7 +67,7 @@ public class Playlist {
 		if (Validator.isEmpty(playlistName)) {
 			throw new PlaylistException(PlaylistException.INVALID_NAME);
 		}
-		if (Validator.isValidLength(MIN_LENGTH_PLAYLIST_NAME, MAX_LENGTH_PLAYLIST_NAME, playlistName)) {
+		if (!Validator.isValidLength(MIN_LENGTH_PLAYLIST_NAME, MAX_LENGTH_PLAYLIST_NAME, playlistName)) {
 			throw new PlaylistException(PlaylistException.INVALID_NAME_LENGTH);
 		}
 		if (Validator.isContaingSpecialChars(playlistName)) {
