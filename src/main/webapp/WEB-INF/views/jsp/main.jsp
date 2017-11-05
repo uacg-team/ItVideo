@@ -10,7 +10,6 @@
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
 	
-	
 	<div class="container-fluid text-center">    
 	  <div class="row content">
 	    <div class="col-sm-1 sidenav">
@@ -29,16 +28,41 @@
  			</li>
  		</ul>
  		
-		<jsp:include page="showVideosRequest.jsp"></jsp:include>
+		<jsp:include page="showVideosRequestP.jsp"></jsp:include>
 		
+		<!-- pagination -->
+		<br/>	    
+		<br/>	    
+		<div class="container">
+			<div class="row content">
+				<div class="col-sm-1">
+				</div>
+				<div class="col-sm-10 text-center">
+					<form action="/ItVideo/main/page" method="get">
+					    <button class="btn btn-primary" type="submit" value="1" name="pageid">&laquo;</button>
+						<c:forEach begin="1" end="${totalPages}" varStatus="loop">
+							<c:if test="${pageid == loop.index}">
+								<button class="btn disabled" type="submit" value="${loop.index}" name="pageid">${loop.index}</button>
+							</c:if>
+							<c:if test="${pageid != loop.index}">
+								<button class="btn btn-primary" type="submit" value="${loop.index}" name="pageid">${loop.index}</button>
+							</c:if>
+						</c:forEach>
+						<button class="btn btn-primary" type="submit" name="pageid" value="${totalPages}" >&raquo;</button>
+					</form>
+				</div>
+				<div class="col-sm-1">
+				</div>
+			</div>
+		</div>
+		<br/>	    
+		<br/>
+		<!-- pagination -->
+			
 	    </div>
 	    <div class="col-sm-1 sidenav">
 	    </div>
 	  </div>
 	</div>
-
-
-
-
 </body>
 </html>

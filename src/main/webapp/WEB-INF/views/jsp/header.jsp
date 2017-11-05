@@ -302,6 +302,7 @@ function forgotPassword(){
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
       <form class="center-search-itvideo" action="<c:url value="/search" />" method="get">
       		<div class="col-lg-6">
+      			<!-- <input type="hidden" name="pageid"  value="1"> -->
 				<input class="form-control" type="search" name="search" placeholder="Search...">
 			</div>
 			 <!--  onchange="location = this.value;"  -->

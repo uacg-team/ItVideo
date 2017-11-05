@@ -99,7 +99,6 @@ public class CommentDao {
 		String sql4 = "DELETE FROM comments WHERE user_id=?";
 		synchronized (con) {
 			try {
-				con.setAutoCommit(false);
 				try (PreparedStatement ps = con.prepareStatement(sql1)) {
 					ps.setLong(1, userId);
 					ps.executeUpdate();
@@ -116,12 +115,9 @@ public class CommentDao {
 					ps.setLong(1, userId);
 					ps.executeUpdate();
 				}
-				con.commit();
 			} catch (SQLException e) {
-				con.rollback();
+				e.printStackTrace();
 				throw e;
-			} finally {
-				con.setAutoCommit(true);
 			}
 		}
 	}

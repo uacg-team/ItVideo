@@ -94,7 +94,6 @@ public class VideoDao {
 	 */
 	public void deleteVideo(long videoId) throws SQLException {
 		synchronized (con) {
-			con.setAutoCommit(false);
 			try {
 				deleteVideoLikes(videoId);
 				deleteVideosFromPlaylist(videoId);
@@ -106,12 +105,9 @@ public class VideoDao {
 					ps.setLong(1, videoId);
 					ps.executeUpdate();
 				}
-				con.commit();
 			} catch (SQLException e) {
-				con.rollback();
+				e.printStackTrace();
 				throw e;
-			} finally {
-				con.setAutoCommit(true);
 			}
 		}
 	}
@@ -181,8 +177,8 @@ public class VideoDao {
 		}
 	}
 
-	public List<Video> getAllVideoOrderByDate() throws SQLException {
-		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY date DESC;";
+	public List<Video> getAllVideoOrderByDate(int pageNumber, int videosPerPage) throws SQLException {
+		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY date DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try(ResultSet rs = ps.executeQuery();){
 				List<Video> videos = new ArrayList<>();
@@ -205,8 +201,8 @@ public class VideoDao {
 		}
 	}
 	
-	public List<Video> getAllVideoOrderByLikes() throws SQLException {
-		String sql = "SELECT v.video_id, v.name, v.views, v.date, v.location_url, v.user_id, v.thumbnail_url, v.description, v.privacy_id, SUM(video_likes.isLike) AS likes FROM videos as v LEFT JOIN video_likes USING (video_id) GROUP BY video_id ORDER BY SUM(video_likes.isLike) DESC;";
+	public List<Video> getAllVideoOrderByLikes(int pageNumber, int videosPerPage) throws SQLException {
+		String sql = "SELECT v.video_id, v.name, v.views, v.date, v.location_url, v.user_id, v.thumbnail_url, v.description, v.privacy_id, SUM(video_likes.isLike) AS likes FROM videos as v LEFT JOIN video_likes USING (video_id) GROUP BY video_id ORDER BY SUM(video_likes.isLike) DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try (ResultSet rs = ps.executeQuery();) {
 				List<Video> videos = new ArrayList<>();
@@ -229,8 +225,8 @@ public class VideoDao {
 		}
 	}
 
-	public List<Video> getAllVideoOrderByViews() throws SQLException {
-		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY views DESC;";
+	public List<Video> getAllVideoOrderByViews(int pageNumber, int videosPerPage) throws SQLException {
+		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY views DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try(ResultSet rs = ps.executeQuery();){
 				List<Video> videos = new ArrayList<>();
@@ -487,8 +483,14 @@ public class VideoDao {
 	}
 
 	public Video getVideoForPlayer(long videoId, long userId) throws SQLException, VideoNotFoundException {
-		//TODO: Cool sql query
-		String sql = "SELECT v.*, SUM(IF(vl.isLike = 1, 1, 0)) AS likes, SUM(IF(vl.isLike = 0, 1, 0)) AS dislikes, SUM(IF(vl.user_id = ?, IF(vl.isLike = 1, 1, -1), 0)) AS current_user_vote, u.username AS video_owner_username FROM videos AS v LEFT JOIN video_likes AS vl ON (v.video_id = vl.video_id) JOIN users AS u ON (u.user_id = v.user_id) WHERE v.video_id = ? GROUP BY (v.video_id);";
+		//Pretty sql query
+		String sql = "SELECT v.*, SUM(IF(vl.isLike = 1, 1, 0)) AS likes, "
+				+ "SUM(IF(vl.isLike = 0, 1, 0)) AS dislikes, "
+				+ "SUM(IF(vl.user_id = ?, IF(vl.isLike = 1, 1, -1), 0)) AS current_user_vote, "
+				+ "u.username AS video_owner_username FROM videos AS v "
+				+ "LEFT JOIN video_likes AS vl ON (v.video_id = vl.video_id) "
+				+ "JOIN users AS u ON (u.user_id = v.user_id) "
+				+ "WHERE v.video_id = ? GROUP BY (v.video_id);";
 		Video video = null;
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setLong(1, userId);
@@ -554,7 +556,10 @@ public class VideoDao {
 	}
 
 	public List<Video> getVideos(String tag) throws SQLException {
-		String sql = "SELECT v.* FROM videos AS v JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) JOIN tags AS t ON (vt.tag_id = t.tag_id) WHERE t.tag = ?;";
+		String sql = "SELECT v.* FROM videos AS v "
+				+ "JOIN videos_has_tags AS vt ON (v.video_id = vt.video_id) "
+				+ "JOIN tags AS t ON (vt.tag_id = t.tag_id) "
+				+ "WHERE t.tag = ?;";           
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setString(1, tag);
 			try(ResultSet rs = ps.executeQuery();){
@@ -622,7 +627,7 @@ public class VideoDao {
 		}
 	}
 	
-	public List<Video> searchVideo(String name) throws SQLException, VideoException {
+	public List<Searchable> searchVideo(String name) throws SQLException, VideoException {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM videos WHERE privacy_id = 1");
 		
@@ -638,7 +643,7 @@ public class VideoDao {
 			}
 			
 			try (ResultSet rs = ps.executeQuery();) {
-				List<Video> videos = new ArrayList<>();
+				List<Searchable> videos = new ArrayList<>();
 				while (rs.next()) {
 					videos.add(
 							new Video(
@@ -669,34 +674,8 @@ public class VideoDao {
 		}
 	}
 	
-
-	//TODO test pagination
-	public List<Video> getVideosByPage(int pageid, int total) throws SQLException {
-		String sql = "SELECT * FROM videos LIMIT " + (pageid - 1) + "," + total;
-		List<Video> page = new ArrayList<>();
-		try (PreparedStatement ps = con.prepareStatement(sql);){
-			try (ResultSet rs = ps.executeQuery();) {
-				while (rs.next()) {
-					page.add(
-						new Video(
-							rs.getLong("video_id"), 
-							rs.getString("name"), 
-							rs.getInt("views"),
-							DateTimeConvertor.sqlToLdt(rs.getString("date")), 
-							rs.getString("location_url"),
-							rs.getLong("user_id"), 
-							rs.getString("thumbnail_url"), 
-							rs.getString("description"),
-							rs.getLong("privacy_id"), 
-							getTags(rs.getLong("video_id"))));
-				}
-			}
-			
-		}
-		return page;
-	}
-	public int getAllVideos() throws SQLException {
-		String sql = "SELECT count(*) as total FROM videos;";
+	public int getPublicVideosSize() throws SQLException {
+		String sql = "SELECT count(*) as total FROM videos WHERE privacy_id = 1;";
 		try (PreparedStatement ps = con.prepareStatement(sql);){
 			try (ResultSet rs = ps.executeQuery();) {
 				if (rs.next()) {
@@ -705,7 +684,6 @@ public class VideoDao {
 					return 0;
 				}
 			}
-			
 		}
 	}
 }

@@ -53,7 +53,7 @@ public class UserDao {
 		}
 	}
 
-	public List<User> searchUser(String username) throws SQLException, UserException {
+	public List<Searchable> searchUser(String username) throws SQLException, UserException {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM users");
 		
@@ -76,7 +76,7 @@ public class UserDao {
 			}
 			
 			try (ResultSet rs = ps.executeQuery();) {
-				List<User> users = new ArrayList<>();
+				List<Searchable> users = new ArrayList<>();
 				while (rs.next()) {
 					users.add(
 							new User(
@@ -319,7 +319,6 @@ public class UserDao {
 
 				// delete comment likes
 				// delete comments
-				
 				cd.deleteAllCommentsAndLikesForUser(userId,con);
 
 				// delete videos
@@ -329,9 +328,17 @@ public class UserDao {
 				
 				// delete playlists
 				pd.deletePlaylistsForUser(userId,con);
-
+				
+				//delete the user, or whatever is left of it
+				String del = "DELETE FROM users WHERE user_id = ?;";
+				try (PreparedStatement ps = con.prepareStatement(del);) {
+					ps.setLong(1,userId);
+					ps.executeUpdate();
+				}
+				
 				con.commit();
 			} catch (SQLException e) {
+				e.printStackTrace();
 				con.rollback();
 				throw e;
 			} finally {
@@ -385,5 +392,10 @@ public class UserDao {
 				}
 			}
 		}
+	}
+
+	public double searchUserCount(String search) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

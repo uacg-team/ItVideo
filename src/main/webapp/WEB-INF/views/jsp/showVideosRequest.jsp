@@ -44,7 +44,7 @@ video {
 		<div class="video">
 			<a href="<c:url value="/player/${video.videoId}" />">	
 				<%-- 	<c:url value="thumbnail/${video.videoId}" /> --%>
-				<video width="320" height="240" preload="none" poster="${pageContext.request.contextPath}/thumbnail/${video.videoId}">
+				 <video width="320" height="240" preload="none" poster="${pageContext.request.contextPath}/thumbnail/${video.videoId}">
 				      <source src="<c:url value="/video/${video.videoId}" />" type="video/mp4">
 				</video>
 			</a>
@@ -83,35 +83,5 @@ window.onload = function() { //executes code after DOM loads
 	 }
 	}
 </script>
-
-<!--  onmouseover="Play()" onmouseout="Pause()" 
-<script type="text/javascript"> 
-var myVideo=document.getElementById("video"); 
-
-function Pause()
-{ 
-  myVideo.pause(); 
-}
-function Play()
-{
-if (myVideo.paused) 
-  myVideo.play();     
-}    
-    
-</script>  -->
-
-<!-- <script type="text/javascript">
-var figure = $(".video").hover( hoverVideo, hideVideo );
-
-function hoverVideo(e) {  
-    $('video', this).get(0).play(); 
-}
-
-function hideVideo(e) {
-    $('video', this).get(0).pause(); 
-}
-</script>
- -->
- 
 </body>
 </html>
