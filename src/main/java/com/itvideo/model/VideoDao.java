@@ -181,8 +181,8 @@ public class VideoDao {
 		}
 	}
 
-	public List<Video> getAllVideoOrderByDate() throws SQLException {
-		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY date DESC;";
+	public List<Video> getAllVideoOrderByDate(int pageNumber, int videosPerPage) throws SQLException {
+		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY date DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try(ResultSet rs = ps.executeQuery();){
 				List<Video> videos = new ArrayList<>();
@@ -205,8 +205,8 @@ public class VideoDao {
 		}
 	}
 	
-	public List<Video> getAllVideoOrderByLikes() throws SQLException {
-		String sql = "SELECT v.video_id, v.name, v.views, v.date, v.location_url, v.user_id, v.thumbnail_url, v.description, v.privacy_id, SUM(video_likes.isLike) AS likes FROM videos as v LEFT JOIN video_likes USING (video_id) GROUP BY video_id ORDER BY SUM(video_likes.isLike) DESC;";
+	public List<Video> getAllVideoOrderByLikes(int pageNumber, int videosPerPage) throws SQLException {
+		String sql = "SELECT v.video_id, v.name, v.views, v.date, v.location_url, v.user_id, v.thumbnail_url, v.description, v.privacy_id, SUM(video_likes.isLike) AS likes FROM videos as v LEFT JOIN video_likes USING (video_id) GROUP BY video_id ORDER BY SUM(video_likes.isLike) DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try (ResultSet rs = ps.executeQuery();) {
 				List<Video> videos = new ArrayList<>();
@@ -229,8 +229,8 @@ public class VideoDao {
 		}
 	}
 
-	public List<Video> getAllVideoOrderByViews() throws SQLException {
-		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY views DESC;";
+	public List<Video> getAllVideoOrderByViews(int pageNumber, int videosPerPage) throws SQLException {
+		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY views DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try(ResultSet rs = ps.executeQuery();){
 				List<Video> videos = new ArrayList<>();
@@ -695,8 +695,8 @@ public class VideoDao {
 		}
 		return page;
 	}
-	public int getAllVideos() throws SQLException {
-		String sql = "SELECT count(*) as total FROM videos;";
+	public int getPublicVideosSize() throws SQLException {
+		String sql = "SELECT count(*) as total FROM videos WHERE privacy_id = 1;";
 		try (PreparedStatement ps = con.prepareStatement(sql);){
 			try (ResultSet rs = ps.executeQuery();) {
 				if (rs.next()) {

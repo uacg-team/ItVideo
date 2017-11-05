@@ -22,13 +22,14 @@ public class TestPaging {
 	
 	@Autowired
 	private VideoDao vd;
-	
-	@RequestMapping(value = "/main1", method = RequestMethod.POST)
+	/*
+	@RequestMapping(value = "/showVideosRequestP", method = RequestMethod.POST)
 	public String videosPagePost(@RequestParam("pageid") int pageid, Model model) {
 		List<Video> list = null;
 		try {
-			int totalPages = vd.getAllVideos();
+			int totalPages = vd.getPublicVideosSize();
 			int total = ITEMS_PER_PAGE;
+			model.addAttribute("pageid", pageid);
 			
 			if (pageid == 1) {
 			} else {
@@ -41,23 +42,23 @@ public class TestPaging {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return "main1";
+		return "showVideosRequestP";
 	}
 
-	@RequestMapping(value = "/main1")
+	@RequestMapping(value = "/showVideosRequestP")
 	public String main1(Model model) {
-
-		List<Video> list = null;
 		try {
-			int totalPages = vd.getAllVideos();
+			int totalPages = vd.getPublicVideosSize();
 			int total = ITEMS_PER_PAGE;
-			list = vd.getVideosByPage(1, total);
+			List<Video> list = vd.getVideosByPage(1, total);
 			model.addAttribute("totalPages", totalPages);
 			model.addAttribute("total", total);
+			model.addAttribute("pageid", 1);
 			model.addAttribute("list", list);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return "main1";
+		return "showVideosRequestP";
 	}
+	*/
 }

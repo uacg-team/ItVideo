@@ -10,7 +10,6 @@
 <body>
 	<jsp:include page="header.jsp"></jsp:include><br>
 	
-	
 	<div class="container-fluid text-center">    
 	  <div class="row content">
 	    <div class="col-sm-1 sidenav">
@@ -29,16 +28,11 @@
  			</li>
  		</ul>
  		
-		<jsp:include page="showVideosRequest.jsp"></jsp:include>
-		
+		<jsp:include page="showVideosRequestP.jsp"></jsp:include>
 	    </div>
 	    <div class="col-sm-1 sidenav">
 	    </div>
 	  </div>
 	</div>
-
-
-
-
 </body>
 </html>

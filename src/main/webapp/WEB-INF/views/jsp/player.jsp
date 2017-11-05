@@ -457,26 +457,5 @@ video {
    		<jsp:include page="related.jsp"></jsp:include>
     </div>
 </div>
-    
-    
-      
-<%-- 	
-<!-- related videos -->
-<h1>RELATED</h1>
-<jsp:include page="showVideosRequest.jsp"></jsp:include>
-
-<c:forEach items="${requestScope.related}" var="relVideo">	
-	Name: <c:out value="${relVideo.name }"></c:out><br>
-	<a href="<c:url value= "/player/${relVideo.videoId}" />">	
-		<video width="320" height="240">
-	  		<source src="/video/${relVideo.userId}" type="video/mp4">
-		</video>
-	</a><br>	
-	Tags: <c:forEach items="${relVideo.tags}" var="tag">	
-		<c:out value="#${tag.tag } "></c:out>
-	</c:forEach>
-</c:forEach>
---%>
-	
 </body>
 </html>

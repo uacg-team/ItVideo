@@ -45,6 +45,8 @@ public class MainController {
 	@Autowired
 	PlaylistDao pd;
 	
+	private static final int VIDEOS_PER_PAGE = 4;
+	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
 	public String search(
 			@RequestParam("search") String search,
@@ -104,34 +106,146 @@ public class MainController {
 	}
 	
 	@RequestMapping(value="/main/sort/{param}", method = RequestMethod.GET)
-	public String sort(HttpSession session,HttpServletRequest request, Model model, @PathVariable("param") String param) {
+	public String sort(HttpSession session,
+			@PathVariable("param") String param) {
+		session.setAttribute("sort",param);
+		return "redirect:/main";
+	}
+	
+	
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index() {
+		return "redirect:main";
+	}
+
+	@RequestMapping(value = "/main", method = RequestMethod.GET)
+	public String main(HttpSession session, Model model, HttpServletRequest request, HttpServletResponse response) {
 		try {
+			int pageNumber = 1;
+			response.setHeader("Accept-Ranges", "bytes");
+			response.setHeader("Connection", "Keep-Alive");
+			
+			String param = (String) session.getAttribute("sort");
 			List<Video> videos = null;
+			if (param == null) {
+				
+				videos = vd.getAllVideoOrderByDate(pageNumber, VIDEOS_PER_PAGE);
+				if (videos != null) {
+					for (Video video : videos) {
+						video.setUserName(vd.getUserName(video.getUserId()));
+						video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
+					}
+				}
+				session.setAttribute("sort", "date");
+				
+				/*pagination*/
+					int totalPages = (int) Math.ceil(vd.getPublicVideosSize() * 1.0 / VIDEOS_PER_PAGE);
+					model.addAttribute("totalPages", totalPages);
+					model.addAttribute("pageid", 1);
+					model.addAttribute("list", videos);
+				/*pagination*/
+				
+				//request.setAttribute("videos", videos);
+				return "main";
+			}else {
+				switch (param) {
+				case "date":
+					session.setAttribute("sort", "date");
+					videos = vd.getAllVideoOrderByDate(pageNumber, VIDEOS_PER_PAGE);
+					break;
+				case "like":
+					session.setAttribute("sort", "like");
+					videos = vd.getAllVideoOrderByLikes(pageNumber, VIDEOS_PER_PAGE);
+					break;
+				case "view":
+					session.setAttribute("sort", "view");
+					videos = vd.getAllVideoOrderByViews(pageNumber, VIDEOS_PER_PAGE);
+					break;
+				default:
+					session.setAttribute("sort", "date");
+					videos = vd.getAllVideoOrderByDate(pageNumber, VIDEOS_PER_PAGE);
+					break;
+				}
+				
+				for (Video video : videos) {
+					video.setUserName(vd.getUserName(video.getUserId()));
+					video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
+				}
+
+				/*pagination*/
+				int totalPages = (int) Math.ceil(vd.getPublicVideosSize() * 1.0 / VIDEOS_PER_PAGE);
+				model.addAttribute("totalPages", totalPages);
+				model.addAttribute("pageid", 1);
+				model.addAttribute("list", videos);
+				/*pagination*/
+				
+				return "main";
+			}
+		} catch (SQLException e) {
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		} catch (UserNotFoundException e) {
+			model.addAttribute("exception", "UserNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value = "/main/page", method = RequestMethod.GET )
+	public String videosPagePost(
+			@RequestParam("pageid") int pageid, 
+			Model model,
+			HttpSession session,
+			HttpServletRequest request,
+			HttpServletResponse response) {
+		
+		String param = (String) session.getAttribute("sort");
+		List<Video> videos = null;
+		try {
+			int totalPages = (int) Math.ceil(vd.getPublicVideosSize() * 1.0 / VIDEOS_PER_PAGE);
+			
+			if (pageid > totalPages) {
+				pageid = totalPages;
+			}
+			
+			int offset = 0;
+			
+			if (pageid == 1) {
+				offset = 0;
+			} else {
+				offset = (pageid - 1) * VIDEOS_PER_PAGE;
+			}
+			
 			switch (param) {
 			case "date":
 				session.setAttribute("sort", "date");
-				videos = vd.getAllVideoOrderByDate();
+				videos = vd.getAllVideoOrderByDate(offset, VIDEOS_PER_PAGE);
 				break;
 			case "like":
 				session.setAttribute("sort", "like");
-				videos = vd.getAllVideoOrderByLikes();
+				videos = vd.getAllVideoOrderByLikes(offset, VIDEOS_PER_PAGE);
 				break;
 			case "view":
 				session.setAttribute("sort", "view");
-				videos = vd.getAllVideoOrderByViews();
+				videos = vd.getAllVideoOrderByViews(offset, VIDEOS_PER_PAGE);
 				break;
 			default:
 				session.setAttribute("sort", "date");
-				videos = vd.getAllVideoOrderByDate();
+				videos = vd.getAllVideoOrderByDate(offset, VIDEOS_PER_PAGE);
 				break;
 			}
-			
+
 			for (Video video : videos) {
 				video.setUserName(vd.getUserName(video.getUserId()));
 				video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
 			}
 			
-			request.setAttribute("videos", videos);
+			// for paginations
+			model.addAttribute("totalPages", totalPages);
+			model.addAttribute("pageid", pageid);
+			model.addAttribute("list", videos);
+			
 			return "main";
 		} catch (SQLException e) {
 			model.addAttribute("exception", "SQLException");
@@ -142,71 +256,6 @@ public class MainController {
 			model.addAttribute("getMessage", e.getMessage());
 			return "error";
 		}
-	}
-	
-	
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index() {
-		return "redirect:/main";
-	}
-
-	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public String main(HttpSession session, Model model, HttpServletRequest request, HttpServletResponse response) {
-		try {
-			response.setHeader("Accept-Ranges", "bytes");
-			response.setHeader("Connection", "Keep-Alive");
-			
-			String param = (String) session.getAttribute("sort");
-			List<Video> videos = null;
-			if (param == null) {
-				
-				videos = vd.getAllVideoOrderByDate();
-				if (videos != null) {
-					for (Video video : videos) {
-						video.setUserName(vd.getUserName(video.getUserId()));
-						video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
-					}
-				}
-				
-				session.setAttribute("sort", "date");
-				request.setAttribute("videos", videos);
-				return "main";
-			}else {
-				switch (param) {
-				case "date":
-					session.setAttribute("sort", "date");
-					videos = vd.getAllVideoOrderByDate();
-					break;
-				case "like":
-					session.setAttribute("sort", "like");
-					videos = vd.getAllVideoOrderByLikes();
-					break;
-				case "view":
-					session.setAttribute("sort", "view");
-					videos = vd.getAllVideoOrderByViews();
-					break;
-				default:
-					session.setAttribute("sort", "date");
-					videos = vd.getAllVideoOrderByDate();
-					break;
-				}
-				
-				for (Video video : videos) {
-					video.setUserName(vd.getUserName(video.getUserId()));
-					video.setPrivacy(vd.getPrivacy(video.getPrivacyId()));
-				}
-				request.setAttribute("videos", videos);
-			}
-		} catch (SQLException e) {
-			model.addAttribute("exception", "SQLException");
-			model.addAttribute("getMessage", e.getMessage());
-			return "error";
-		} catch (UserNotFoundException e) {
-			model.addAttribute("exception", "UserNotFoundException");
-			model.addAttribute("getMessage", e.getMessage());
-			return "error";
-		}
-		return "main";
 	}
 	
 	@RequestMapping(value="/player/{videoId}", method = RequestMethod.GET)
