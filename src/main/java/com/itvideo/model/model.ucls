@@ -3,7 +3,7 @@
   associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="com.itvideo.model.Video" project="ItVideo" 
     file="/ItVideo/src/main/java/com/itvideo/model/Video.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="54" width="178" x="226" y="-289"/>    
+    <position height="343" width="178" x="251" y="-391"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -12,7 +12,7 @@
   </class>  
   <class id="2" language="java" name="com.itvideo.model.User" project="ItVideo" 
     file="/ItVideo/src/main/java/com/itvideo/model/User.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="54" width="242" x="377" y="-403"/>    
+    <position height="347" width="242" x="468" y="-391"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -21,7 +21,7 @@
   </class>  
   <class id="3" language="java" name="com.itvideo.model.Tag" project="ItVideo" 
     file="/ItVideo/src/main/java/com/itvideo/model/Tag.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="127" width="143" x="248" y="-201"/>    
+    <position height="110" width="143" x="263" y="-9"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -30,7 +30,7 @@
   </class>  
   <class id="4" language="java" name="com.itvideo.model.Playlist" project="ItVideo" 
     file="/ItVideo/src/main/java/com/itvideo/model/Playlist.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="54" width="201" x="47" y="-400"/>    
+    <position height="184" width="201" x="17" y="-392"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -39,7 +39,7 @@
   </class>  
   <class id="5" language="java" name="com.itvideo.model.Comment" project="ItVideo" 
     file="/ItVideo/src/main/java/com/itvideo/model/Comment.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="55" width="171" x="432" y="-290"/>    
+    <position height="311" width="176" x="37" y="-166"/>    
     <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -47,12 +47,12 @@
     </display>  
   </class>  
   <association id="6">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="7" name="following">        
-        <position height="0" width="0" x="-191" y="68"/>      
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="7" name="owner">        
+        <position height="0" width="0" x="-100" y="80"/>      
       </attribute>      
-      <multiplicity id="8" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-191" y="68"/>      
+      <multiplicity id="8" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-100" y="80"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
@@ -61,10 +61,10 @@
   <association id="9">    
     <end type="SOURCE" refId="1" navigable="false">      
       <attribute id="10" name="tags">        
-        <position height="0" width="0" x="-464" y="-556"/>      
+        <position height="0" width="0" x="-449" y="-364"/>      
       </attribute>      
       <multiplicity id="11" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-464" y="-556"/>      
+        <position height="0" width="0" x="-449" y="-364"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
@@ -73,22 +73,22 @@
   <association id="12">    
     <end type="SOURCE" refId="4" navigable="false">      
       <attribute id="13" name="videos">        
-        <position height="0" width="0" x="-187" y="-279"/>      
+        <position height="0" width="0" x="-162" y="-381"/>      
       </attribute>      
       <multiplicity id="14" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-187" y="-279"/>      
+        <position height="0" width="0" x="-162" y="-381"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="1" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="15">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="16" name="owner">        
-        <position height="0" width="0" x="-191" y="68"/>      
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="16" name="following">        
+        <position height="0" width="0" x="-100" y="80"/>      
       </attribute>      
-      <multiplicity id="17" minimum="0" maximum="1">        
-        <position height="0" width="0" x="-191" y="68"/>      
+      <multiplicity id="17" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-100" y="80"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
@@ -97,10 +97,10 @@
   <association id="18">    
     <end type="SOURCE" refId="2" navigable="false">      
       <attribute id="19" name="followers">        
-        <position height="0" width="0" x="-191" y="68"/>      
+        <position height="0" width="0" x="-100" y="80"/>      
       </attribute>      
       <multiplicity id="20" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="-191" y="68"/>      
+        <position height="0" width="0" x="-100" y="80"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    

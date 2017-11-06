@@ -61,6 +61,7 @@ textarea { resize: none; }
 }
 .comment-textarea{
 background-color: white;
+cursor: default;
 }
 </style>
 </head>
