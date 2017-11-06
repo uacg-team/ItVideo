@@ -85,34 +85,32 @@ public class CommentDao {
 	 * @throws SQLException
 	 */
 	public void deleteAllCommentsAndLikesForUser(long userId,Connection con) throws SQLException {
-		//delete votes for replies in comments by user with id:
-		String sql1 = "DELETE cl.* FROM comments_likes AS cl INNER JOIN comments AS r ON(cl.comment_id=r.comment_id) "
-				+ "INNER JOIN comments AS c ON(r.reply_id=c.comment_id) WHERE c.user_id=?;";
-		//delete likes/dislikes for comments by user_id;
-		String sql2 = "DELETE FROM comments_likes WHERE user_id=?";
-		//delete all replies to comments from user_id;
-		String sql3 =  "DELETE FROM comments WHERE comment_id IN "
-				+ "(SELECT * FROM (SELECT r.comment_id FROM comments AS c "
-				+ "INNER JOIN comments AS r ON (r.reply_id = c.comment_id) WHERE c.user_id=?) AS d);";
-		//delete all comments to user_id;
-		String sql4 = "DELETE FROM comments WHERE user_id=?";
+		String sql[] = new String[9];
+		/*delete all user votes */
+		sql[0]="DELETE cl . * FROM users AS u INNER JOIN comments_likes AS cl ON (u.user_id = cl.user_id) WHERE u.user_id = ?;";
+		/*all comments with authour user votes*/
+		sql[1]="DELETE cl . * FROM comments AS c INNER JOIN comments_likes AS cl ON (cl.comment_id = c.comment_id) WHERE c.user_id = ?;";
+		/*all replies to comment with authour user votes*/
+		sql[2]="DELETE cl . * FROM comments AS c INNER JOIN comments AS r ON (r.reply_id = c.comment_id) INNER JOIN comments_likes AS cl ON (r.comment_id = cl.comment_id) WHERE c.user_id = ?;";
+		/* all videos with authour user with comments delete votes*/
+		sql[3]="DELETE cl . * FROM users AS u INNER JOIN videos AS v ON (u.user_id = v.user_id) JOIN comments AS c ON (v.video_id = c.video_id) INNER JOIN comments_likes AS cl ON (c.comment_id = cl.comment_id) WHERE u.user_id = ?;";
+		/* all replies to comment with authour user*/
+		sql[4]="DELETE r . * FROM comments AS c INNER JOIN comments AS r ON (r.reply_id = c.comment_id) WHERE c.user_id = ?;";
+		/* all replies with authour user*/
+		sql[5]="DELETE c . * FROM comments AS c WHERE c.user_id = ? AND c.reply_id IS NOT NULL;";
+		/* all replies for video with authour user*/
+		sql[6]="DELETE c . * FROM users AS u INNER JOIN videos AS v ON (u.user_id = v.video_id) INNER JOIN comments AS c ON (v.video_id = c.video_id) WHERE u.user_id = ? AND c.reply_id IS NOT NULL;";
+		/* all comments with authour user */
+		sql[7]="DELETE c . * FROM comments AS c WHERE c.user_id = ?;";
+		/* all comments for video with authour user*/
+		sql[8]="DELETE c . * FROM users AS u INNER JOIN videos AS v ON (u.user_id = v.video_id) INNER JOIN comments AS c ON (v.video_id = c.video_id) WHERE u.user_id = ?;";
 		synchronized (con) {
 			try {
-				try (PreparedStatement ps = con.prepareStatement(sql1)) {
-					ps.setLong(1, userId);
-					ps.executeUpdate();
-				}
-				try (PreparedStatement ps = con.prepareStatement(sql2)) {
-					ps.setLong(1, userId);
-					ps.executeUpdate();
-				}
-				try (PreparedStatement ps = con.prepareStatement(sql3)) {
-					ps.setLong(1, userId);
-					ps.executeUpdate();
-				}
-				try (PreparedStatement ps = con.prepareStatement(sql4)) {
-					ps.setLong(1, userId);
-					ps.executeUpdate();
+				for (int i = 0; i < 9; i++) {
+					try (PreparedStatement ps = con.prepareStatement(sql[i])) {
+						ps.setLong(1, userId);
+						ps.executeUpdate();
+					}
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
