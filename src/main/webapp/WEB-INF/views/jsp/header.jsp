@@ -354,12 +354,14 @@ function forgotPassword(){
 		<div id="pass-err-login">
 		</div>
       <button class="btn btn-info btn-login-itvideo" onclick="loginPost()">Login</button>
+      <button type="button" class="btn btn-info btn-login-itvideo" onclick="document.getElementById('login-form-itvideo').style.display='none';document.getElementById('register-form-itvideo').style.display='block';">Register form</button>    	
+      
       	<div id="other-err-login">
 		</div>
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="document.getElementById('login-form-itvideo').style.display='none'" class="btn btn-danger">Cancel</button>
-      <button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='none';document.getElementById('forgot-password').style.display='block';" style="width:auto;">Forgot password?</button>
+      <button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='none';document.getElementById('register-form-itvideo').style.display='none';document.getElementById('forgot-password').style.display='block';" style="width:auto;">Forgot password?</button>
     </div>
   </div>
 </div>
@@ -377,6 +379,7 @@ function forgotPassword(){
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="forgotPassword()" class="btn btn-danger">send new password</button>
+      <button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='none';document.getElementById('forgot-password').style.display='block';" style="width:auto;">Forgot password?</button>
       <button type="button" onclick="document.getElementById('forgot-password').style.display='none'" class="btn btn-info" style="float: right;">Cancel</button>
     </div>
   </div>
@@ -391,7 +394,7 @@ function forgotPassword(){
 
     <div class="container-login">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="username" class="form-control field-addition" required id="username-register">
+      <input type="text" placeholder="Enter Username" name="username" class="form-control field-addition" required id="username-register" maxlength="40">
 	  	<div id="user-err-register"></div>
       <label><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="password" class="form-control field-addition" required id="password-register">
@@ -399,14 +402,15 @@ function forgotPassword(){
       <input type="password" placeholder="Confirm Password" name="confirmPassword" class="form-control field-addition" required id="confirmPassword-register">
 		<div id="pass-err-register"></div>
 	  <label><b>Email</b></label>
-	  <input type="email" placeholder="Email" class="form-control field-addition" name="email" required id="email-register"><br>
+	  <input type="email" placeholder="Email" class="form-control field-addition" name="email" required id="email-register" maxlength="50"><br>
       	<div id="other-err-register"></div>
 		<div id="success-register"></div>
       <button class="btn btn-info btn-login-itvideo" onclick="registerPost()">Register</button>
+      <button type="button" class="btn btn-info btn-login-itvideo" onclick="document.getElementById('register-form-itvideo').style.display='none';document.getElementById('login-form-itvideo').style.display='block';">Login form</button>    	
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="document.getElementById('register-form-itvideo').style.display='none'" class="btn btn-danger">Cancel</button>
-      <button type="button" onclick="document.getElementById('register-form-itvideo').style.display='none'" class="btn btn-info" style="float: right;">Ok</button>
+	  <button type="button" onclick="document.getElementById('register-form-itvideo').style.display='none'" class="btn btn-info" style="float: right;">Ok</button>
     </div>
   </div>
 </div>
