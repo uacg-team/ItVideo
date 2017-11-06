@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.itvideo.model.CommentDao;
 import com.itvideo.model.Playlist;
 import com.itvideo.model.PlaylistDao;
-import com.itvideo.model.Searchable;
 import com.itvideo.model.User;
 import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
@@ -29,6 +28,7 @@ import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
+import com.itvideo.model.interfaces.Searchable;
 
 @Controller
 public class MainController {
@@ -44,7 +44,7 @@ public class MainController {
 	@Autowired
 	PlaylistDao pd;
 	
-	private static final int VIDEOS_PER_PAGE = 4;
+	private static final int VIDEOS_PER_PAGE = 8;
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
 	public String search(
@@ -133,6 +133,10 @@ public class MainController {
 	public String main(HttpSession session, Model model, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			int pageNumber = 1;
+			int offset = (pageNumber - 1) * VIDEOS_PER_PAGE;
+			
+			
+			
 			response.setHeader("Accept-Ranges", "bytes");
 			response.setHeader("Connection", "Keep-Alive");
 			
@@ -140,7 +144,7 @@ public class MainController {
 			List<Video> videos = null;
 			if (param == null) {
 				
-				videos = vd.getAllVideoOrderByDate(pageNumber, VIDEOS_PER_PAGE);
+				videos = vd.getAllVideoOrderByDate(offset, VIDEOS_PER_PAGE);
 				if (videos != null) {
 					for (Video video : videos) {
 						video.setUserName(vd.getUserName(video.getUserId()));
@@ -162,19 +166,19 @@ public class MainController {
 				switch (param) {
 				case "date":
 					session.setAttribute("sort", "date");
-					videos = vd.getAllVideoOrderByDate(pageNumber, VIDEOS_PER_PAGE);
+					videos = vd.getAllVideoOrderByDate(offset, VIDEOS_PER_PAGE);
 					break;
 				case "like":
 					session.setAttribute("sort", "like");
-					videos = vd.getAllVideoOrderByLikes(pageNumber, VIDEOS_PER_PAGE);
+					videos = vd.getAllVideoOrderByLikes(offset, VIDEOS_PER_PAGE);
 					break;
 				case "view":
 					session.setAttribute("sort", "view");
-					videos = vd.getAllVideoOrderByViews(pageNumber, VIDEOS_PER_PAGE);
+					videos = vd.getAllVideoOrderByViews(offset, VIDEOS_PER_PAGE);
 					break;
 				default:
 					session.setAttribute("sort", "date");
-					videos = vd.getAllVideoOrderByDate(pageNumber, VIDEOS_PER_PAGE);
+					videos = vd.getAllVideoOrderByDate(offset, VIDEOS_PER_PAGE);
 					break;
 				}
 				

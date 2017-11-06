@@ -19,6 +19,7 @@ import com.itvideo.model.exceptions.tags.TagNotFoundException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.exceptions.video.VideoNotFoundException;
+import com.itvideo.model.interfaces.Searchable;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 
@@ -31,10 +32,11 @@ public class VideoDao {
     private void initField() {
 		 con = DBConnection.VIDEOS.getConnection();
     }
-
+	
+	
 	@Autowired
 	CommentDao cd;
-	
+
 	@Autowired
 	TagDao td;
 	
@@ -73,7 +75,7 @@ public class VideoDao {
 			con.setAutoCommit(true);
 		}
 	}
-
+	
 	/**
 	 * Delete all the likes of the videos that user has made
 	 * @param userId
@@ -86,7 +88,7 @@ public class VideoDao {
 			ps.executeUpdate();
 		}
 	}
-	
+
 	/**
 	 * Delete single video from database
 	 * @param videoId
@@ -111,19 +113,6 @@ public class VideoDao {
 			}
 		}
 	}
-		
-	/**
-	 * Delete video tags without transaction
-	 * @param videoId
-	 * @throws SQLException
-	 */
-	private void deleteVideoTags(long videoId) throws SQLException {
-		String sql = "DELETE FROM videos_has_tags WHERE video_id = ?;";
-		try (PreparedStatement ps = con.prepareStatement(sql);) {
-			ps.setLong(1, videoId);
-			ps.executeUpdate();
-		}
-	}
 	
 	/**
 	 * Delete video likes without transaction
@@ -137,7 +126,7 @@ public class VideoDao {
 			ps.executeUpdate();
 		}
 	}
-	
+		
 	public void deleteVideos(long userId) throws SQLException {
 		List<Video> videos = getVideos(userId);
 		for (Video video : videos) {
@@ -157,7 +146,20 @@ public class VideoDao {
 			ps.executeUpdate();
 		}
 	}
-
+	
+	/**
+	 * Delete video tags without transaction
+	 * @param videoId
+	 * @throws SQLException
+	 */
+	private void deleteVideoTags(long videoId) throws SQLException {
+		String sql = "DELETE FROM videos_has_tags WHERE video_id = ?;";
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setLong(1, videoId);
+			ps.executeUpdate();
+		}
+	}
+	
 	/**
 	 * Check if video exists
 	 * @param video_id
@@ -200,9 +202,14 @@ public class VideoDao {
 			}
 		}
 	}
-	
+
 	public List<Video> getAllVideoOrderByLikes(int pageNumber, int videosPerPage) throws SQLException {
-		String sql = "SELECT v.video_id, v.name, v.views, v.date, v.location_url, v.user_id, v.thumbnail_url, v.description, v.privacy_id, SUM(video_likes.isLike) AS likes FROM videos as v LEFT JOIN video_likes USING (video_id) GROUP BY video_id ORDER BY SUM(video_likes.isLike) DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
+		String sql = "SELECT v.*, SUM(video_likes.isLike) AS likes "
+				+ "FROM videos as v "
+				+ "LEFT JOIN video_likes USING (video_id) "
+				+ "GROUP BY video_id "
+				+ "ORDER BY SUM(video_likes.isLike) DESC "
+				+ "LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try (ResultSet rs = ps.executeQuery();) {
 				List<Video> videos = new ArrayList<>();
@@ -224,7 +231,7 @@ public class VideoDao {
 			}
 		}
 	}
-
+	
 	public List<Video> getAllVideoOrderByViews(int pageNumber, int videosPerPage) throws SQLException {
 		String sql = "SELECT * FROM videos WHERE privacy_id = 1 ORDER BY views DESC LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
@@ -315,7 +322,7 @@ public class VideoDao {
 			}
 		}
 	}
-	
+
 	public List<Video> getPublicVideos(long user_id) throws SQLException {
 		String sql = "SELECT * FROM videos WHERE privacy_id = 1 AND user_id = ?;";
 		List<Video> allUserVideos = new ArrayList<>();
@@ -325,20 +332,33 @@ public class VideoDao {
 				while (rs.next()) {
 					allUserVideos.add(
 							new Video(
-									rs.getLong("video_id"), 
-									rs.getString("name"), 
-									rs.getInt("views"),
-									DateTimeConvertor.sqlToLdt(rs.getString("date")),
-									rs.getString("location_url"), 
-									rs.getLong("user_id"), 
-									rs.getString("thumbnail_url"),
-									rs.getString("description"), 
-									rs.getLong("privacy_id"), 
-									getTags(rs.getLong("video_id"))));
+								rs.getLong("video_id"), 
+								rs.getString("name"), 
+								rs.getInt("views"),
+								DateTimeConvertor.sqlToLdt(rs.getString("date")),
+								rs.getString("location_url"), 
+								rs.getLong("user_id"), 
+								rs.getString("thumbnail_url"),
+								rs.getString("description"), 
+								rs.getLong("privacy_id"), 
+								getTags(rs.getLong("video_id"))));
 				}
 			}
 		}
 		return allUserVideos;
+	}
+	
+	public int getPublicVideosSize() throws SQLException {
+		String sql = "SELECT count(*) as total FROM videos WHERE privacy_id = 1;";
+		try (PreparedStatement ps = con.prepareStatement(sql);){
+			try (ResultSet rs = ps.executeQuery();) {
+				if (rs.next()) {
+					return rs.getInt("total");
+				}else {
+					return 0;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -372,9 +392,6 @@ public class VideoDao {
 			for (int i = 0; i < arr.length; i++) {
 				ps.setString(i+1, arr[i].getTag());
 			}
-			
-			System.out.println(ps.toString());
-			
 			try (ResultSet rs = ps.executeQuery();) {
 				while (rs.next()) {
 					Video video = new Video(
@@ -388,6 +405,9 @@ public class VideoDao {
 							rs.getString("description"),
 							rs.getLong("privacy_id"), 
 							getTags(rs.getLong("video_id")));
+					if (video.getVideoId() == videoId) {
+						continue;
+					}
 					relatedVideos.add(video);
 				}
 			}
@@ -626,7 +646,7 @@ public class VideoDao {
 			}
 		}
 	}
-	
+
 	public List<Searchable> searchVideo(String name) throws SQLException, VideoException {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM videos WHERE privacy_id = 1");
@@ -662,7 +682,7 @@ public class VideoDao {
 			}
 		}
 	}
-
+	
 	public void updateVideo(Video v) throws SQLException {
 		String sql = "UPDATE videos SET name = ?, description = ?, privacy_id = ? WHERE video_id = ?;";
 		try (PreparedStatement ps = con.prepareStatement(sql);){
@@ -671,19 +691,6 @@ public class VideoDao {
 			ps.setLong(3, v.getPrivacyId());
 			ps.setLong(4, v.getVideoId());
 			ps.executeUpdate();
-		}
-	}
-	
-	public int getPublicVideosSize() throws SQLException {
-		String sql = "SELECT count(*) as total FROM videos WHERE privacy_id = 1;";
-		try (PreparedStatement ps = con.prepareStatement(sql);){
-			try (ResultSet rs = ps.executeQuery();) {
-				if (rs.next()) {
-					return rs.getInt("total");
-				}else {
-					return 0;
-				}
-			}
 		}
 	}
 }
