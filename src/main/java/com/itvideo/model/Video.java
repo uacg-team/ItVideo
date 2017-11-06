@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
+import com.itvideo.model.interfaces.Searchable;
 
 
 

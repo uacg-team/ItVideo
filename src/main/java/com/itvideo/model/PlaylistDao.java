@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.itvideo.model.exceptions.playlists.PlaylistException;
 import com.itvideo.model.exceptions.playlists.PlaylistNotFoundException;
 import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.interfaces.Searchable;
 import com.itvideo.model.utils.DBConnection;
 import com.itvideo.model.utils.DateTimeConvertor;
 

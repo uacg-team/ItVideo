@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.itvideo.model.exceptions.user.UserException;
+import com.itvideo.model.interfaces.Searchable;
 
 public class User implements Searchable{
 	

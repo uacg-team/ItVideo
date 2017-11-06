@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import com.itvideo.model.exceptions.playlists.PlaylistException;
+import com.itvideo.model.interfaces.Searchable;
 import com.itvideo.model.utils.Validator;
 
 

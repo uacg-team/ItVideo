@@ -278,7 +278,6 @@ function forgotPassword(){
 	var url = "/ItVideo/forgotPassword";
 	var email = document.getElementById('email-forgot').value;
 	var param = "email=" + email;
-	alert(url+param);
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
