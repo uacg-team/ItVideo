@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.tree.RowMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -95,22 +93,26 @@ public class VideoDao {
 	 * @throws SQLException
 	 */
 	public void deleteVideo(long videoId) throws SQLException {
-		synchronized (con) {
-			try {
-				deleteVideoLikes(videoId);
-				deleteVideosFromPlaylist(videoId);
-				cd.deleteAllCommentsForVideo(videoId,con);
-				deleteVideoTags(videoId);
-	
-				String sql = "DELETE FROM videos WHERE video_id = ?;";
-				try (PreparedStatement ps = con.prepareStatement(sql);) {
-					ps.setLong(1, videoId);
-					ps.executeUpdate();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw e;
+		try {
+			con.setAutoCommit(false);
+			deleteVideoLikes(videoId);
+			deleteVideosFromPlaylist(videoId);
+			cd.deleteAllCommentsForVideo(videoId, con);
+			deleteVideoTags(videoId);
+
+			String sql = "DELETE FROM videos WHERE video_id = ?;";
+			try (PreparedStatement ps = con.prepareStatement(sql);) {
+				ps.setLong(1, videoId);
+				ps.executeUpdate();
 			}
+
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			e.printStackTrace();
+			throw e;
+		} finally {
+			con.setAutoCommit(true);
 		}
 	}
 	
@@ -127,10 +129,21 @@ public class VideoDao {
 		}
 	}
 		
-	public void deleteVideos(long userId) throws SQLException {
-		List<Video> videos = getVideos(userId);
-		for (Video video : videos) {
-			deleteVideo(video.getVideoId());
+	public void deleteUserVideos(long userId, Connection con) throws SQLException {
+		synchronized (con) {
+			List<Video> videos = getVideos(userId);
+			for (Video video : videos) {
+				deleteVideoLikes(video.getVideoId());
+				deleteVideosFromPlaylist(video.getVideoId());
+				cd.deleteAllCommentsForVideo(video.getVideoId(), con);
+				deleteVideoTags(video.getVideoId());
+
+				String sql = "DELETE FROM videos WHERE video_id = ?;";
+				try (PreparedStatement ps = con.prepareStatement(sql);) {
+					ps.setLong(1, video.getVideoId());
+					ps.executeUpdate();
+				}
+			}
 		}
 	}
 	
@@ -240,16 +253,16 @@ public class VideoDao {
 				while (rs.next()) {
 					videos.add(
 							new Video(
-									rs.getLong("video_id"), 
-									rs.getString("name"), 
-									rs.getInt("views"),
-									DateTimeConvertor.sqlToLdt(rs.getString("date")),
-									rs.getString("location_url"), 
-									rs.getLong("user_id"), 
-									rs.getString("thumbnail_url"),
-									rs.getString("description"), 
-									rs.getLong("privacy_id"), 
-									getTags(rs.getLong("video_id"))));
+								rs.getLong("video_id"), 
+								rs.getString("name"), 
+								rs.getInt("views"),
+								DateTimeConvertor.sqlToLdt(rs.getString("date")),
+								rs.getString("location_url"), 
+								rs.getLong("user_id"), 
+								rs.getString("thumbnail_url"),
+								rs.getString("description"), 
+								rs.getLong("privacy_id"), 
+								getTags(rs.getLong("video_id"))));
 				}
 				return videos;
 			}

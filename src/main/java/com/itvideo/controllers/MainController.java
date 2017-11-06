@@ -135,10 +135,12 @@ public class MainController {
 			int pageNumber = 1;
 			int offset = (pageNumber - 1) * VIDEOS_PER_PAGE;
 			
-			
-			
 			response.setHeader("Accept-Ranges", "bytes");
 			response.setHeader("Connection", "Keep-Alive");
+			
+			if (session.getAttribute("searchParam") == null) {
+				session.setAttribute("searchParam", "videos");
+			}
 			
 			String param = (String) session.getAttribute("sort");
 			List<Video> videos = null;

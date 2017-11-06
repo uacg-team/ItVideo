@@ -78,7 +78,7 @@ public class UserDao {
 
 				// delete videos
 				// delete video likes
-				vd.deleteVideos(userId);
+				vd.deleteUserVideos(userId, con);
 				vd.deleteAllVideoLikes(userId);
 				
 				// delete playlists
