@@ -221,7 +221,7 @@ public class VideoDao {
 				+ "FROM videos as v "
 				+ "LEFT JOIN video_likes USING (video_id) "
 				+ "GROUP BY video_id "
-				+ "ORDER BY SUM(video_likes.isLike) DESC "
+				+ "ORDER BY SUM(video_likes.isLike) DESC, v.date DESC "
 				+ "LIMIT " + pageNumber + "," + videosPerPage + ";";
 		try (PreparedStatement ps = con.prepareStatement(sql);) {
 			try (ResultSet rs = ps.executeQuery();) {
@@ -386,7 +386,9 @@ public class VideoDao {
 		Set<Video> relatedVideos = new HashSet<>();
 		
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT v.* FROM videos as v JOIN videos_has_tags AS vt ON(v.video_id = vt.video_id) JOIN tags AS t ON (vt.tag_id = t.tag_id) ");
+		sql.append("SELECT v.* FROM videos as v");
+		sql.append(" JOIN videos_has_tags AS vt ON(v.video_id = vt.video_id)");
+		sql.append(" JOIN tags AS t ON (vt.tag_id = t.tag_id) ");
 		
 		for (int i = 0; i < tags.size(); i++) {
 			if (i == 0) {
@@ -398,13 +400,16 @@ public class VideoDao {
 				sql.append(" t.tag = ? OR");
 			}
 		}
-		sql.append(" ORDER BY v.views DESC LIMIT 5;");
+		sql.append("GROUP BY v.video_id ORDER BY v.views DESC LIMIT 5;");
 		
 		try (PreparedStatement ps = con.prepareStatement(sql.toString());) {
 			Tag[] arr = tags.toArray(new Tag[tags.size()]);
 			for (int i = 0; i < arr.length; i++) {
 				ps.setString(i+1, arr[i].getTag());
 			}
+			
+			System.out.println(ps);
+			
 			try (ResultSet rs = ps.executeQuery();) {
 				while (rs.next()) {
 					Video video = new Video(

@@ -54,6 +54,11 @@
 	             <artifactId>javax.mail</artifactId>
 	             <version>1.6.0</version>
 	    </dependency>
+	    <dependency>
+		    <groupId>net.sargue</groupId>
+		    <artifactId>java-time-jsptags</artifactId>
+		    <version>1.1.4</version>
+		</dependency>
 		<dependency>
 			<groupId>ca.juliusdavies</groupId>
 			<artifactId>not-yet-commons-ssl</artifactId>

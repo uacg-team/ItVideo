@@ -117,7 +117,7 @@
 <body>
 <!-- show my playlist while watching  -->
 	
-<div class="btn-group">
+<div class="btn-group  btn-margin">
   <a href="#" class="btn btn-primary">add to playlist</a>
   <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></a>
 	<ul class="dropdown-menu">	

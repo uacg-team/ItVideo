@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://sargue.net/jsptags/time" prefix="javatime" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,7 +11,6 @@
 <link href="http://vjs.zencdn.net/6.2.8/video-js.css" rel="stylesheet">
 <link type="text/css" rel="stylesheet" href="<c:url value="/css/comments.css"/>"/>
 <link type="text/css" rel="stylesheet" href="<c:url value="/css/Video-js-Sublime-Skin.css"/>"/>
-<%-- <link type="text/css" rel="stylesheet" href="<c:url value="/css/inline.css" />" /> --%>
 <title>Player</title>
 <script type="text/javascript">
 		function likeVideo(videoId,userId) {
@@ -148,7 +149,7 @@ function editVideo(videoId){
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.send(param);
 }
-	</script>
+</script>
 <style type="text/css">
 video {
     max-width: 100%;
@@ -171,6 +172,9 @@ video {
           transform: rotate(-10deg);
 }
 
+.btn-margin {
+	margin: 5px;
+}
 
 /* The Modal (background) */
 .modal {
@@ -241,20 +245,25 @@ video {
 </style>
 </head>
 <body>
+
 <!-- Video Edit form-->
 <div id="edit-video-form" class="modal">
 	<div class="modal-content animate" onsubmit="editVideo( ${mainVideo.videoId})">
-	 	name: <input id="name"  type="text" placeholder="${mainVideo.name }" name="name"><br>
-	 	description: <input id="description" type="text" placeholder="${mainVideo.description }" name="description"><br>
- 		
-	  	<select id="privacy" name="privacy">
-		  <option <c:if test="${mainVideo.privacyId == \"1\" }"> selected </c:if> value="1">Public</option>
-		  <option <c:if test="${mainVideo.privacyId == \"2\" }"> selected </c:if> value="2">Private</option>
-		</select><br>
-		
-		<button class="btn btn-info btn-edit-video" onclick="editVideo( ${mainVideo.videoId} )">update</button>
-		<!-- back to player -->
-		<button type="button" onclick="document.getElementById('edit-video-form').style.display='none'" class="btn btn-danger">Cancel</button>
+		<div class="well bs-component">
+		 <fieldset>
+		 	name: <input class="form-control field-addition"  id="name"  type="text" placeholder="${mainVideo.name }" name="name"><br>
+		 	description: <input class="form-control field-addition"  id="description" type="text" placeholder="${mainVideo.description }" name="description"><br>
+	 		
+		  	<select id="privacy" name="privacy">
+			  <option <c:if test="${mainVideo.privacyId == \"1\" }"> selected </c:if> value="1">Public</option>
+			  <option <c:if test="${mainVideo.privacyId == \"2\" }"> selected </c:if> value="2">Private</option>
+			</select><br>
+			
+			<button class="btn btn-info btn-edit-video btn-margin" onclick="editVideo( ${mainVideo.videoId} )">update</button>
+			<!-- back to player -->
+			<button class="btn btn-danger btn-margin" type="button" onclick="document.getElementById('edit-video-form').style.display='none'">Cancel</button>
+		</fieldset>
+		</div>
 	</div>
 </div>
 
@@ -289,7 +298,7 @@ video {
 		</div>
 	    <div class="row">
 	    <br>
-			<!-- myPlaylists -->
+			 <!-- myPlaylists -->
              <c:if test="${not empty sessionScope.user}">
                  <span style="float:left;">
                      <jsp:include page="myPlaylists.jsp"></jsp:include>
@@ -299,13 +308,13 @@ video {
                  <c:if test="${sessionScope.user.userId == requestScope.mainVideo.userId}">
                      <span style="float:left;">
                          <!-- Edit video -->
-                         <button type="button" class="btn btn-warning" onclick="document.getElementById('edit-video-form').style.display='block'">edit</button>
+                         <button type="button" class="btn btn-warning  btn-margin" onclick="document.getElementById('edit-video-form').style.display='block'">edit</button>
                      </span>
                      <span style="float:left;">
                          <!-- Delete video -->
                          <form action="<c:url value="/deleteVideo "/>" method="post">
                              <input type="hidden" value="${requestScope.mainVideo.videoId}" name="videoId">
-                             <input class="btn btn-danger" type="submit" value="delete">
+                             <input class="btn btn-danger  btn-margin" type="submit" value="delete">
                          </form>
                      </span>
                  </c:if>
@@ -403,9 +412,15 @@ video {
                         </div>
                         <!-- ajax like dislike end -->
                     </div>
-                    <div class="row pagination-centered">
-                        <h4 style="text-align: center" class="text-primary text-right">
-                            <c:out value="${mainVideo.views }"></c:out> views</h4>
+                     
+                    <div class="row">
+                        <span class="text-primary text-right" >
+                            <c:out value="${mainVideo.views }"></c:out> views</span>
+                    </div>
+                    <div class="row">
+                        <span class="text-primary text-right" >
+                            <c:out value="Published: ${publishedDate}"></c:out>
+                        </span>
                     </div>
                 </div>
             </div>

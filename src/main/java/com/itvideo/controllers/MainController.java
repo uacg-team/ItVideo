@@ -2,6 +2,7 @@ package com.itvideo.controllers;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -314,6 +315,11 @@ public class MainController {
 			model.addAttribute("mainVideo", video);
 			model.addAttribute("videos", related);
 			model.addAttribute("countComments",cd.getNumberOfCommentsForVideo(videoId));
+			
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	        String formatDateTime = video.getDate().format(formatter);
+			model.addAttribute("publishedDate",formatDateTime);
+			
 			model.addAttribute("date",LocalDateTime.now().toString());
 			if (session.getAttribute("user") != null) {
 				List<Playlist> playlists = null;

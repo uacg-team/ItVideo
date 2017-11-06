@@ -13,6 +13,10 @@
   flex-wrap: wrap;
 }
 
+.btn-margin {
+	margin: 5px;
+}
+
 .background {
 	background-color: rgba(76, 177, 234, 0.15);
 	border-radius: 15px;
@@ -38,10 +42,10 @@
 			<c:if test="${ not empty sessionScope.user  }">
 				<c:if test="${sessionScope.user.userId == user.userId}">
 					<form action="<c:url value="/updateUser/${sessionScope.user.userId}"/>" method="get">
-						<input class="btn btn-warning btn-xs" type="submit" value="edit user">
+						<input class="btn btn-warning btn-xs btn-margin" type="submit" value="edit user">
 					</form>
 					<form action="<c:url value="/deleteUser/${sessionScope.user.userId}"/>" method="post">
-						<input class="btn btn-danger btn-xs" type="submit" value="delete user">
+						<input class="btn btn-danger btn-xs btn-margin" type="submit" value="delete user">
 					</form>
 				</c:if>
 			</c:if>
