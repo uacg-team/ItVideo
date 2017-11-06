@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class PlaylistController {
 	private PlaylistDao pd;
 	@Autowired
 	private UserDao ud;
-
+	
 	@ResponseBody
 	@RequestMapping(value = "player/addToPlaylist", method = RequestMethod.POST)
 	public void addToPlaylists(HttpServletRequest req) throws SQLException {
@@ -42,6 +43,72 @@ public class PlaylistController {
 			throw e;
 		}
 	}
+	
+	@RequestMapping(value = "/deletePlaylist", method = RequestMethod.POST)
+	public String deletePlaylist(HttpServletRequest req,Model model,HttpSession session) {
+		long userId=0;
+		try {
+			userId=((User)session.getAttribute("user")).getUserId();
+		}catch(NullPointerException e) {
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", "You don't own this playlist");
+			e.printStackTrace();
+			return "error";
+		}
+		try {
+			long playlistId = Long.parseLong(req.getParameter("playlistId"));
+			pd.deletePlaylist(playlistId,userId);
+		} catch (PlaylistException e) {
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
+			e.printStackTrace();
+			return "error";
+		} catch (SQLException e) {
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			e.printStackTrace();
+			return "error";
+		}
+		return "redirect:/viewProfile/"+userId;
+	}
+	
+	@RequestMapping(value = "/editPlaylist", method = RequestMethod.POST)
+	public String editPlaylist(HttpServletRequest req,Model model,HttpSession session) {
+		long userId=0;
+		try {
+			userId=((User)session.getAttribute("user")).getUserId();
+		}catch(NullPointerException e) {
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", "You don't own this playlist");
+			e.printStackTrace();
+			return "error";
+		}
+		try {
+			long playlistId = Long.parseLong(req.getParameter("playlistId"));
+			String playlistName = req.getParameter("newPlaylistName");
+			if(playlistName==null||playlistName.trim().isEmpty()) {
+				return "redirect:/viewProfile/"+userId;
+			}
+			Playlist newPlaylist = new Playlist(playlistName, userId);
+			newPlaylist.setPlaylistId(playlistId);
+			pd.updatePlaylist(newPlaylist);
+		} catch (PlaylistException e) {
+			model.addAttribute("exception", "MessagingException");
+			model.addAttribute("getMessage", e.getMessage());
+			e.printStackTrace();
+			return "error";
+		} catch (SQLException e) {
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			e.printStackTrace();
+			return "error";
+		} catch (UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "redirect:/viewProfile/"+userId;
+	}
+	
 	@RequestMapping(value = "/createPlaylist", method = RequestMethod.POST)
 	public String createPlaylist(HttpServletRequest req,Model model) {
 		long userId = Long.parseLong(req.getParameter("userId"));
@@ -90,6 +157,8 @@ public class PlaylistController {
 			}
 			req.setAttribute("videos", videos);
 			req.setAttribute("playlistName", playlistName);
+			req.setAttribute("userId", thePlaylist.getUserId());
+			req.setAttribute("playlistId", thePlaylist.getPlaylistId());
 		} catch (UserException e) {
 			model.addAttribute("exception", "MessagingException");
 			model.addAttribute("getMessage", e.getMessage());

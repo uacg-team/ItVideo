@@ -84,9 +84,18 @@ public class PlaylistDao {
 	 * @throws PlaylistException
 	 * @throws SQLException
 	 */
-	public void deletePlaylist(long playlistId) throws PlaylistException, SQLException {
+	public void deletePlaylist(long playlistId,long userId) throws PlaylistException, SQLException {
 		try {
 			con.setAutoCommit(false);
+			//initial checks
+			String init="SELECT * FROM playlists WHERE playlist_id=? AND user_id=?";
+			try (PreparedStatement ps = con.prepareStatement(init,Statement.RETURN_GENERATED_KEYS)) {
+				ps.setLong(1, playlistId);
+				ps.setLong(2, userId);
+				if(!ps.executeQuery().next()) {
+					throw new PlaylistException(PlaylistException.NOT_SUPORTED_OPERATION);
+				}
+			}
 			// delete videos in playlist
 			deleteVideosInPlaylist(playlistId);
 			// delete playlist
