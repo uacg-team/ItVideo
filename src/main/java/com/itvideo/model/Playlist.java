@@ -98,4 +98,7 @@ public class Playlist implements Searchable {
 	public int getVideoStatus() {
 		return videoStatus;
 	}
+	public void setPlaylistId(long playlistId) {
+		this.playlistId = playlistId;
+	}
 }

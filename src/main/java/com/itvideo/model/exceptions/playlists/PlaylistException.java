@@ -8,6 +8,7 @@ public class PlaylistException extends Exception {
 	public static final String INVALID_NAME_SYMBOLS = "dont use symbols: ; # % | \\ \" < or >";
 	public static final String PLAYLIST_ALREADY_EXISTS = "playlist name already exist!";
 	public static final String PLAYLIST_NOT_FOUND = "Playlist not found!";
+	public static final String NOT_SUPORTED_OPERATION = "Cant delete this playlist!";
 	public PlaylistException(String message) {
 		super(message);
 	}

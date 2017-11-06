@@ -6,6 +6,8 @@ import com.itvideo.model.exceptions.comments.CommentException;
 import com.itvideo.model.utils.Validator;
 
 public class Comment {
+	private static final int MAX_LENGTH_FOR_COMMENT = 1000;
+	private static final int MIN_LENGTH_FOR_COMMENT = 1;
 	private long commentId;
 	private String text;
 	private LocalDateTime date;
@@ -79,6 +81,9 @@ public class Comment {
 	void setText(String text) throws CommentException {
 		if (Validator.isEmpty(text)) {
 			throw new CommentException(CommentException.INVALID_TEXT);
+		}
+		if(!Validator.isValidLength(MIN_LENGTH_FOR_COMMENT, MAX_LENGTH_FOR_COMMENT, text)) {
+			throw new CommentException(CommentException.INVALID_TEXT_LENGTH);
 		}
 		this.text = text;
 	}

@@ -308,6 +308,7 @@ public class CommentDao {
 			}
 		}
 	}
+	
 	private String createComparator(String comparator) {
 		if(comparator.equals("likes desc")||comparator.equals("dislikes desc")) {
 			return comparator+",c.date desc";
@@ -315,6 +316,7 @@ public class CommentDao {
 			return comparator;
 		}
 	}
+	
 	public List<Comment> getAllCommentsWithVotesByVideoWithoutReplies(int pageid,long videoId,long myUserId,String comparator,String dateFromRequest) throws SQLException {
 		int count=10;
 		comparator=createComparator(comparator);

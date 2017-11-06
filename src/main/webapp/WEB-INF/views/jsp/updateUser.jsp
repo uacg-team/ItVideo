@@ -44,7 +44,7 @@ margin: 10px;
 							</label>
 							<div class="col-lg-3 right"></div>
 							<div class="col-lg-6 right">
-								<input class="btn btn-primary " type="submit" value="Upload" />
+								<input class="btn btn-primary" type="submit" value="Upload" />
 							</div>
 						</form>
 						<c:if test="${ error != null }">
