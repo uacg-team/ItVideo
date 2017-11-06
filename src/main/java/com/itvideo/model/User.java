@@ -193,10 +193,10 @@ public class User implements Searchable{
 	}
 
 	public void setUsername(String username) throws UserException {
-		if (username == null || username.isEmpty()) {
+		if (username == null || username.trim().isEmpty()) {
 			throw new UserException(UserException.INVALID_USERNAME);
 		}
-		if (username.length() < MIN_USERNAME_LENGTH) {
+		if (username.trim().length() < MIN_USERNAME_LENGTH) {
 			throw new UserException(UserException.INVALID_USERNAME_LENGTH);
 		}
 		this.username = username;

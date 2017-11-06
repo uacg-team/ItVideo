@@ -53,13 +53,10 @@ public class FileController {
 				}
 			}
 		} catch (VideoNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -71,13 +68,10 @@ public class FileController {
 			String avatarUrl = ud.getAvatarUrl(userId);
 			Resources.readAvatar(avatarUrl, userId, response);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UserNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -90,22 +84,21 @@ public class FileController {
 			String absolutePath = Resources.ROOT + File.separator + userId + File.separator + Resources.VIDEO_URL
 					+ File.separator + thumbnailUrl;
 			File image = new File(absolutePath);
-			FileInputStream fis = new FileInputStream(image);
-			BufferedInputStream bis = new BufferedInputStream(fis);
-			response.setContentType("image/png");
-			BufferedOutputStream output = new BufferedOutputStream(response.getOutputStream());
-			for (int data; (data = bis.read()) > -1;) {
-				output.write(data);
+			
+			try (FileInputStream fis = new FileInputStream(image);
+					BufferedInputStream bis = new BufferedInputStream(fis);
+					BufferedOutputStream output = new BufferedOutputStream(response.getOutputStream());) {
+				response.setContentType("image/png");
+				for (int data; (data = bis.read()) > -1;) {
+					output.write(data);
+				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (VideoNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
 }

@@ -191,6 +191,7 @@ function showReplies(commentId, myUserId, comparator){
 /**
  * @returns html for one comment
  */
+//SHOWME: JS antipattern
 function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator){
 	var htmlOneComment="";
 	htmlOneComment=htmlOneComment.concat('<div id="' + commentId + '">');

@@ -1,9 +1,11 @@
 package com.itvideo.model.exceptions.user;
 
-import sun.security.util.Password;
-
 public class UserException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String INVALID_USERNAME_LENGTH = "Invalid username length";
 	public static final String INVALID_USERNAME = "Invalid username";
 	public static final String INVALID_PASSWORD_LENGTH = "Invalid password length";

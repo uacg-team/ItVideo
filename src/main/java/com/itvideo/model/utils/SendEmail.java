@@ -10,7 +10,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.itvideo.model.User;
-import com.itvideo.model.exceptions.user.UserException;
 
 
 public class SendEmail {

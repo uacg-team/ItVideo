@@ -47,6 +47,7 @@ public class UserController {
 	@RequestMapping(value="/player/asyncFollow", method = RequestMethod.POST)
 	public void followAsyncPost(
 			HttpSession session,
+			HttpServletResponse response,
 			Model model, 
 			@RequestParam("following") int followingId, 
 			@RequestParam("follower") int followerId, 
@@ -62,7 +63,7 @@ public class UserController {
 				model.addAttribute("follow", false);
 			}
 		} catch (SQLException e) {
-			//TODO: return status code and handle it with JS
+			response.setStatus(500);
 			e.printStackTrace();
 		}
 	}

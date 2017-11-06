@@ -39,7 +39,7 @@ public class VideoController {
 			try {
 				vd.like(videoId, userId, like);
 			} catch (SQLException e) {
-				//TODO: return status code and handle it with JS
+				response.setStatus(500);
 				e.printStackTrace();
 			}
 		}

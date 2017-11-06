@@ -77,8 +77,8 @@ public class UserDao {
 				cd.deleteAllCommentsAndLikesForUser(userId,con);
 
 				// delete videos
-				// delete video likes
 				vd.deleteUserVideos(userId, con);
+				// delete video likes
 				vd.deleteAllVideoLikes(userId);
 				
 				// delete playlists
@@ -355,11 +355,6 @@ public class UserDao {
 				return users;
 			}
 		}
-	}
-
-	public double searchUserCount(String search) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	public void unfollowUser(long user_id, long following_id) throws SQLException {

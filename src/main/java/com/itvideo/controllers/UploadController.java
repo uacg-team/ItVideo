@@ -36,7 +36,6 @@ import com.itvideo.model.UserDao;
 import com.itvideo.model.Video;
 import com.itvideo.model.VideoDao;
 import com.itvideo.model.exceptions.tags.TagNotFoundException;
-import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.user.UserNotFoundException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.utils.Resources;
@@ -173,22 +172,23 @@ public class UploadController {
 			vd.createVideo(v);
 			
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "IOException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (VideoException e) {
 			model.addAttribute("error", e.getMessage());
 			return "upload";
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "SQLException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (TagNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			model.addAttribute("exception", "TagNotFoundException");
+			model.addAttribute("getMessage", e.getMessage());
+			return "error";
 		} catch (JCodecException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//was this way but when redirected to main video is not uploaded

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.itvideo.model.exceptions.user.UserException;
 import com.itvideo.model.exceptions.video.VideoException;
 import com.itvideo.model.interfaces.Searchable;
 
@@ -16,6 +15,7 @@ public class Video implements Serializable, Searchable {
 	private static final long serialVersionUID = 1L;
 	
 	private static final int MIN_NAME_LENGTH = 3;
+	private static final int MAX_NAME_LENGTH = 40;
 	
 	private long videoId;
 	private String name;
@@ -172,17 +172,17 @@ public class Video implements Serializable, Searchable {
 	}
 
 	public void setLocationUrl(String locationUrl) throws VideoException {
-		if (name == null || name.isEmpty()) {
+		if (name == null || name.trim().isEmpty()) {
 			throw new VideoException(VideoException.INVALID_LOCATION);
 		}
 		this.locationUrl = locationUrl;
 	}
 
 	public void setName(String name) throws VideoException {
-		if (name == null || name.isEmpty()) {
+		if (name == null || name.trim().isEmpty()) {
 			throw new VideoException(VideoException.INVALID_NAME);
 		}
-		if (name.trim().length() < MIN_NAME_LENGTH) {
+		if (name.trim().length() < MIN_NAME_LENGTH && name.trim().length() > MAX_NAME_LENGTH) {
 			throw new VideoException(VideoException.INVALID_NAME_LENGTH);
 		}
 		this.name = name;
@@ -197,9 +197,6 @@ public class Video implements Serializable, Searchable {
 	}
 	
 	public void setPrivacyId(long privacyId) throws VideoException {
-		if (privacyId < 1) {
-			throw new VideoException(VideoException.INVALID_PRIVACY);
-		}
 		this.privacyId = privacyId;
 	}
 	
@@ -215,9 +212,6 @@ public class Video implements Serializable, Searchable {
 	}
 
 	public void setUserId(long userId) throws VideoException {
-		if (userId < 1) {
-			throw new VideoException(UserException.INVALID_ID);
-		}
 		this.userId = userId;
 	}
 

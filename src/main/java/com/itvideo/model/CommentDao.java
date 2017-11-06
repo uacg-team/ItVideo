@@ -316,7 +316,7 @@ public class CommentDao {
 			return comparator;
 		}
 	}
-	
+	//SHOWME: comment query
 	public List<Comment> getAllCommentsWithVotesByVideoWithoutReplies(int pageid,long videoId,long myUserId,String comparator,String dateFromRequest) throws SQLException {
 		int count=10;
 		comparator=createComparator(comparator);

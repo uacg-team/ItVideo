@@ -27,9 +27,6 @@ public abstract class Resources {
 	public static final String VIDEO_URL = "videos";
 	public static final String IMAGE_URL = "images";
 	
-	private static final int FRAME_NUMBER = 50;
-
-	
 	/**
 	 * Example: C:\\Users\\YouTube-PNG-Photos.png
 	 * @param absolutePath
@@ -93,7 +90,6 @@ public abstract class Resources {
 			Files.copy(myFile.toPath(), out);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -101,7 +97,6 @@ public abstract class Resources {
 	public static void readAvatar(String filename, Long userId, HttpServletResponse response) throws IOException {
 		String absolutePath = Resources.ROOT + File.separator + userId + File.separator + Resources.IMAGE_URL
 				+ File.separator + filename;
-//		System.out.println("Resources:readImage:absolutePath:"+absolutePath);
 		read(absolutePath, userId, response);
 	}
 

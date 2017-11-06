@@ -20,36 +20,42 @@
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
-				var like = document.getElementById("like_v".concat(videoId));
-			    var dislike = document.getElementById("dislike_v".concat(videoId));
-			   
-			    var likes = document.getElementById("likes_v".concat(videoId));
-			    var countLikes = likes.innerHTML;
-			    var dislikes = document.getElementById("dislikes_v".concat(videoId));
-			    var countDislikes = dislikes.innerHTML;
-			    
-			    if(like.alt==="like" && dislike.alt==="dislike"){
-			    	
-			    	countLikes++;
-			    	likes.innerHTML=countLikes;
-			        like.alt="liked";
-			        like.src="<c:url value="/pics/liked.png"/>";
-			    }else if(like.alt==="like" && dislike.alt==="disliked"){
-			    	countLikes++;
-			    	likes.innerHTML=countLikes;
-			    	countDislikes--;
-			    	dislikes.innerHTML=countDislikes;
-			    	like.alt="liked";
-			    	like.src="<c:url value="/pics/liked.png"/>";
-			    	dislike.alt="dislike";
-			    	dislike.src="<c:url value="/pics/dislike.png"/>";
-			    }else{
-			        //like.alt=="liked"
-			        countLikes--;
-			        likes.innerHTML=countLikes;
-			        like.alt="like";
-			        like.src="<c:url value="/pics/like.png"/>";
-			    }
+				if (this.readyState == 4) {
+					if(this.status == 200){
+						var like = document.getElementById("like_v".concat(videoId));
+					    var dislike = document.getElementById("dislike_v".concat(videoId));
+					   
+					    var likes = document.getElementById("likes_v".concat(videoId));
+					    var countLikes = likes.innerHTML;
+					    var dislikes = document.getElementById("dislikes_v".concat(videoId));
+					    var countDislikes = dislikes.innerHTML;
+					    
+					    if(like.alt==="like" && dislike.alt==="dislike"){
+					    	
+					    	countLikes++;
+					    	likes.innerHTML=countLikes;
+					        like.alt="liked";
+					        like.src="<c:url value="/pics/liked.png"/>";
+					    }else if(like.alt==="like" && dislike.alt==="disliked"){
+					    	countLikes++;
+					    	likes.innerHTML=countLikes;
+					    	countDislikes--;
+					    	dislikes.innerHTML=countDislikes;
+					    	like.alt="liked";
+					    	like.src="<c:url value="/pics/liked.png"/>";
+					    	dislike.alt="dislike";
+					    	dislike.src="<c:url value="/pics/dislike.png"/>";
+					    }else{
+					        //like.alt=="liked"
+					        countLikes--;
+					        likes.innerHTML=countLikes;
+					        like.alt="like";
+					        like.src="<c:url value="/pics/like.png"/>";
+					    }
+					}else if(this.status == 500){
+						alert("Our team has been alerted of the issue, we are looking into it immediately");
+					}
+				}
 			};
 			var url = "videoAsyncLike";
 			var param1 = "videoId=";
@@ -66,34 +72,40 @@
 			}
 			var request = new XMLHttpRequest();
 			request.onreadystatechange =  function() {
-				var like = document.getElementById("like_v".concat(videoId));
-			    var dislike = document.getElementById("dislike_v".concat(videoId));
-			    
-			    var likes = document.getElementById("likes_v".concat(videoId));
-			    var countLikes = likes.innerHTML;
-			    var dislikes = document.getElementById("dislikes_v".concat(videoId));
-			    var countDislikes = dislikes.innerHTML;
-			    
-			    if(like.alt==="like" && dislike.alt==="dislike"){
-			    	countDislikes++;
-			    	dislikes.innerHTML=countDislikes;
-			    	dislike.alt="disliked";
-					dislike.src="<c:url value="/pics/disliked.png"/>";
-				}else if(dislike.alt==="dislike" && like.alt==="liked"){
-					countDislikes++;
-					dislikes.innerHTML=countDislikes;
-					countLikes--;
-					likes.innerHTML=countLikes;
-					dislike.alt="disliked";
-					dislike.src="<c:url value="/pics/disliked.png"/>";
-					like.alt="like";
-					like.src="<c:url value="/pics/like.png"/>";
-				}else{
-					countDislikes--;
-					dislikes.innerHTML=countDislikes;
-					//dislike.alt=="disliked"
-					dislike.alt="dislike";
-					dislike.src="<c:url value="/pics/dislike.png"/>";
+				if (this.readyState == 4) {
+					if(this.status == 200){
+						var like = document.getElementById("like_v".concat(videoId));
+					    var dislike = document.getElementById("dislike_v".concat(videoId));
+					    
+					    var likes = document.getElementById("likes_v".concat(videoId));
+					    var countLikes = likes.innerHTML;
+					    var dislikes = document.getElementById("dislikes_v".concat(videoId));
+					    var countDislikes = dislikes.innerHTML;
+					    
+					    if(like.alt==="like" && dislike.alt==="dislike"){
+					    	countDislikes++;
+					    	dislikes.innerHTML=countDislikes;
+					    	dislike.alt="disliked";
+							dislike.src="<c:url value="/pics/disliked.png"/>";
+						}else if(dislike.alt==="dislike" && like.alt==="liked"){
+							countDislikes++;
+							dislikes.innerHTML=countDislikes;
+							countLikes--;
+							likes.innerHTML=countLikes;
+							dislike.alt="disliked";
+							dislike.src="<c:url value="/pics/disliked.png"/>";
+							like.alt="like";
+							like.src="<c:url value="/pics/like.png"/>";
+						}else{
+							countDislikes--;
+							dislikes.innerHTML=countDislikes;
+							//dislike.alt=="disliked"
+							dislike.alt="dislike";
+							dislike.src="<c:url value="/pics/dislike.png"/>";
+						}
+					}else if(this.status == 500){
+						alert("Our team has been alerted of the issue, we are looking into it immediately");
+					}
 				}
 			};
 			var url = "videoAsyncLike";
@@ -119,9 +131,14 @@
 			    return;
 			}
 			var request = new XMLHttpRequest();
-
 			request.onreadystatechange = function() {
-				changeFollowButton();
+				if (this.readyState == 4) {
+					if(this.status == 200){
+						changeFollowButton();
+					}else if(this.status == 500){
+						alert("Our team has been alerted of the issue, we are looking into it immediately");
+					}
+				}
 			};
 			var elem = document.getElementById("follow-button");
 			var url = "asyncFollow";

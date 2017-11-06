@@ -103,8 +103,10 @@ public class PlaylistController {
 			e.printStackTrace();
 			return "error";
 		} catch (UserException e) {
-			// TODO Auto-generated catch block
+			model.addAttribute("exception", "UserException");
+			model.addAttribute("getMessage", e.getMessage());
 			e.printStackTrace();
+			return "error";
 		}
 		return "redirect:/viewProfile/"+userId;
 	}
