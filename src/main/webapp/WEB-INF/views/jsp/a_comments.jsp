@@ -59,8 +59,8 @@ textarea { resize: none; }
 .comment-box-inner p{
 	word-wrap: break-word;
 }
-.comment-sort-by{
-
+.comment-textarea{
+background-color: white;
 }
 </style>
 </head>
@@ -109,10 +109,10 @@ textarea { resize: none; }
 		</div>
 		<div class="col-lg-6">
 			<c:if test="${sessionScope.user!=null}">
-			<button class="btn btn-primary" onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),0)">Show comments</button>
+				<button class="btn btn-primary" onclick="comments(${sessionScope.user.userId},${requestScope.mainVideo.videoId},getSelected(),0)">Show comments</button>
 			</c:if>
 			<c:if test="${sessionScope.user==null}">
-			<button class="btn btn-primary" onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),0)">Show comments</button>
+				<button class="btn btn-primary" onclick="comments(0,${requestScope.mainVideo.videoId},getSelected(),0)">Show comments</button>
 			</c:if>
 		</div>
 	</div>
