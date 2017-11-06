@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -251,53 +250,6 @@ public class CommentDao {
 		return count;
 	}
 
-	/**
-	 * @param videoId
-	 * @param myUserId
-	 * @param comparator
-	 * @return all comments for video without replies,sorted by comparator
-	 * @throws SQLException
-	 */
-	public List<Comment> getAllCommentsWithVotesByVideoWithoutReplies(long videoId,long myUserId,Comparator<Comment> comparator) throws SQLException {
-		//get all comments without replies with vote
-		String sql="SELECT c.*, SUM( IF( l.isLike = 1, 1, 0)) AS likes,"
-				+ "SUM( IF( l.isLike = 0, 1, 0)) AS dislikes,"
-				+ "SUM( IF( l.user_id = ?, IF( l.isLike = 1, 1, -1),0)) AS my_vote "
-				+ "FROM comments AS c LEFT JOIN comments_likes AS l "
-				+ "ON( c.comment_id = l.comment_id) "
-				+ "WHERE c.video_id=? AND c.reply_id IS NULL GROUP BY (c.comment_id);";
-		List<Comment> comments = new ArrayList<>();
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
-			ps.setLong(1, myUserId);
-			ps.setLong(2, videoId);
-			try (ResultSet rs = ps.executeQuery()) {
-				while (rs.next()) {
-					Long id = rs.getLong("comment_id");
-					String text = rs.getString("text");
-					LocalDateTime date = DateTimeConvertor.sqlToLdt(rs.getString("date"));
-					Long userId = rs.getLong("user_id");
-					Comment comment = new Comment(id, text, date, userId, videoId, (long)0);
-					comment.setLikes(rs.getLong("likes"));
-					comment.setDislikes(rs.getLong("dislikes"));
-					comment.setVote(rs.getInt("my_vote"));
-					loadUserInfo(comment);
-					comments.add(comment);
-				}
-			}
-		}
-		String repNumber="SELECT COUNT(*) FROM comments WHERE reply_id=?;";
-		for(Comment c:comments) {
-			try (PreparedStatement ps = con.prepareStatement(repNumber)) {
-				ps.setLong(1, c.getCommentId());
-				try(ResultSet rs =ps.executeQuery()) {
-					rs.next();
-					c.setNumberReplies(rs.getLong(1));
-				}
-			}
-		}
-		Collections.sort(comments, comparator);
-		return comments;
-	}
 
 	/**
 	 * @param commentId
@@ -306,13 +258,14 @@ public class CommentDao {
 	 * @return all replies for comment with comparator
 	 * @throws SQLException
 	 */
-	public List<Comment> getAllRepliesWithVotesForComment (long commentId,long myUserId,Comparator<Comment> comparator) throws SQLException{
-		String sql="select c.*,sum(if(l.isLike = 1, 1, 0)) as likes,"
-				+ "sum(if(l.isLike = 0, 1, 0)) as dislikes,"
-				+ "sum(if(l.user_id=?,if(l.isLike=1,1,-1),0)) as my_vote "
-				+ "from comments as c left join comments_likes as l "
-				+ "on(c.comment_id=l.comment_id) where c.reply_id=? "
-				+ "group by (c.comment_id);";
+	public List<Comment> getAllRepliesWithVotesForComment (long commentId,long myUserId,String  comparator) throws SQLException{
+		comparator=createComparator(comparator);
+		String sql="SELECT c.*,SUM(if(l.isLike = 1, 1, 0)) AS likes,"
+				+ "SUM(IF(l.isLike = 0, 1, 0)) AS dislikes,"
+				+ "SUM(IF(l.user_id = ?, IF(l.isLike=1,1,-1),0)) AS my_vote "
+				+ "FROM comments AS c LEFT JOIN comments_likes as l "
+				+ "ON(c.comment_id=l.comment_id) WHERE c.reply_id=? "
+				+ "GROUP BY (c.comment_id)  ORDER BY "+comparator+";";
 		List<Comment> replies = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, myUserId);
@@ -334,7 +287,6 @@ public class CommentDao {
 				}
 			}
 		}
-		Collections.sort(replies, comparator);
 		return replies;
 	}
 
@@ -356,10 +308,16 @@ public class CommentDao {
 			}
 		}
 	}
-
+	private String createComparator(String comparator) {
+		if(comparator.equals("likes desc")||comparator.equals("dislikes desc")) {
+			return comparator+",c.date desc";
+		}else {
+			return comparator;
+		}
+	}
 	public List<Comment> getAllCommentsWithVotesByVideoWithoutReplies(int pageid,long videoId,long myUserId,String comparator,String dateFromRequest) throws SQLException {
 		int count=10;
-		
+		comparator=createComparator(comparator);
 		//get all comments without replies with vote
 		String sql="SELECT c.*, SUM( IF( l.isLike = 1, 1, 0)) AS likes,"
 				+ "SUM( IF( l.isLike = 0, 1, 0)) AS dislikes,"
@@ -367,8 +325,8 @@ public class CommentDao {
 				+ "FROM comments AS c LEFT JOIN comments_likes AS l "
 				+ "ON( c.comment_id = l.comment_id) "
 				+ "WHERE c.video_id=? AND c.date <= STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s.%f') "
-				+ "AND c.reply_id IS NULL GROUP BY (c.comment_id) ORDER BY "+comparator+",c.date desc "
-				+ "limit "+count+" offset "+count*pageid;
+				+ "AND c.reply_id IS NULL GROUP BY (c.comment_id) ORDER BY "+comparator
+				+ " LIMIT "+count+" OFFSET "+count*pageid;
 		List<Comment> comments = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 			ps.setLong(1, myUserId);
