@@ -2,7 +2,6 @@ package com.itvideo.controllers;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,21 +29,21 @@ public class CommentsService {
 	 * @param compare-String coming from jsp
 	 * @return comparator for comments, default comparator is <b>DESC_BY_DATE<b>
 	 */
-	private Comparator<Comment> getComparator(String compare) {
+	private String getComparator(String compare) {
 		if (compare == null || compare.isEmpty()) {
-			return CommentDao.DESC_BY_DATE;
+			return "date desc";
 		}
 		switch (compare) {
 		case "newest":
-			return CommentDao.DESC_BY_DATE;
+			return "date desc";
 		case "oldest":
-			return CommentDao.ASC_BY_DATE;
+			return "date asc";
 		case "mostLiked":
-			return CommentDao.DESC_BY_LIKES;
+			return "likes desc";
 		case "mostDisliked":
-			return CommentDao.DESC_BY_DISLIKES;
+			return "dislikes desc";
 		default:
-			return CommentDao.DESC_BY_DATE;
+			return "date desc";
 		}
 	}
 
@@ -57,27 +56,7 @@ public class CommentsService {
 			@PathVariable Integer part, 
 			@PathVariable String date,
 			HttpServletResponse resp) {
-		String comparator = null;
-		if (compare == null || compare.isEmpty()) {
-			comparator ="date desc";
-		}
-		switch (compare) {
-		case "newest":
-			comparator ="date desc";
-			break;
-		case "oldest":
-			comparator ="date asc";
-			break;
-		case "mostLiked":
-			comparator ="likes desc";
-			break;
-		case "mostDisliked":
-			comparator ="dislikes desc";
-			break;
-		default:
-			comparator ="date desc";
-			break;
-		}
+		String comparator = getComparator(compare);
 		List<Comment> comments = null;
 		try {
 			comments = comment.getAllCommentsWithVotesByVideoWithoutReplies(part,videoId, myUserId, comparator,date);
@@ -95,7 +74,7 @@ public class CommentsService {
 			@PathVariable Long myUserId,
 			@PathVariable String compare,
 			HttpServletResponse resp) {
-		Comparator<Comment> comparator = getComparator(compare);
+		String comparator = getComparator(compare);
 		List<Comment> comments = null;
 		try {
 			comments = comment.getAllRepliesWithVotesForComment(commentId, myUserId, comparator);

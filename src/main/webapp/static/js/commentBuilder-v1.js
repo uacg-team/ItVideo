@@ -100,7 +100,7 @@ function comments(myUserId, video_id, comparator, part){
 					// myVoteinfo
 					var vote=comment.vote;
 					var numberReplies=comment.numberReplies;
-					htmlComments=htmlComments.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId));
+					htmlComments=htmlComments.concat(buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,likes,dislikes,username,url,vote,date,numberReplies,myUserId,comparator));
 				}
 				var videoComments = document.getElementById("comments");
 				videoComments.innerHTML =htmlComments;
@@ -212,7 +212,7 @@ function buildComment(commentId,text,userId,videoId,replyId,replies,hasReplies,l
 	//if hasReplies -add button show replies
 	if(numberReplies>0){
 		htmlOneComment=htmlOneComment.concat('<div  id="viewRepliesButton' + commentId + '">');
-			htmlOneComment=htmlOneComment.concat('<button class="btn btn-primary btn-xs" onclick="showReplies(' + commentId + ',' + myUserId + ',' + comparator + ')">show replies('+numberReplies+')</button>');
+			htmlOneComment=htmlOneComment.concat('<button class="btn btn-primary btn-xs" onclick="showReplies(' + commentId + ',' + myUserId + ',\'' + comparator + '\')">show replies('+numberReplies+')</button>');
 		htmlOneComment=htmlOneComment.concat('</div>');
 	}
 	htmlOneComment=htmlOneComment.concat('</div>');
