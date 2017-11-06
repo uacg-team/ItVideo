@@ -379,7 +379,7 @@ function forgotPassword(){
     </div>
     <div class="container-login" style="background-color:#f1f1f1">
       <button type="button" onclick="forgotPassword()" class="btn btn-danger">send new password</button>
-      <button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='none';document.getElementById('forgot-password').style.display='block';" style="width:auto;">Forgot password?</button>
+      <button type="button" class="btn btn-info" onclick="document.getElementById('login-form-itvideo').style.display='block';document.getElementById('forgot-password').style.display='none';" style="width:auto;">Login</button>
       <button type="button" onclick="document.getElementById('forgot-password').style.display='none'" class="btn btn-info" style="float: right;">Cancel</button>
     </div>
   </div>

@@ -70,9 +70,9 @@ public class UserService {
 	
 	@ResponseBody
 	@RequestMapping(value="/main/login", method = RequestMethod.POST)
-	public ReportMsg loginPostTest(HttpSession session, HttpServletResponse response,HttpServletRequest request) {
-		String username=request.getParameter("username");
-		String password=request.getParameter("password");
+	public ReportMsg loginPostTest(HttpSession session, HttpServletResponse response, HttpServletRequest request) {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		String hashedPass = Hash.getHashPass(password);
 		try {
 			User u = ud.getUser(username);

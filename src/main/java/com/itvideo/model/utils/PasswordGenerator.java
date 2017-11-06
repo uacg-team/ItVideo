@@ -9,7 +9,7 @@ public class PasswordGenerator {
 	private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
 	private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private static final String DIGITS = "0123456789";
-	private static final String PUNCTUATION = "!@#$%&*";
+	private static final String PUNCTUATION = "!@#*";
 	private static boolean useLower = true;
 	private static boolean useUpper = true;
 	private static boolean useDigits = true;
